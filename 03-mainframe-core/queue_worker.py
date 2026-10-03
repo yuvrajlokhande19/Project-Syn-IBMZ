@@ -16,7 +16,7 @@ def init_db():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS telemetry (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            device_id TEXT NOT NULL,
+            packet_id TEXT NOT NULL,
             timestamp REAL NOT NULL,
             data TEXT NOT NULL
         )
@@ -29,8 +29,8 @@ def save_to_db(item):
         conn = sqlite3.connect(DB_PATH, timeout=10)
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO telemetry (device_id, timestamp, data) VALUES (?, ?, ?)",
-            (item['device_id'], item['timestamp'], json.dumps(item['data']))
+            "INSERT INTO telemetry (packet_id, timestamp, data) VALUES (?, ?, ?)",
+            (item['packet_id'], item['unix_timestamp'], json.dumps(item))
         )
         conn.commit()
         conn.close()
@@ -39,8 +39,8 @@ def save_to_db(item):
         append_to_ledger(item)
         
         # Check for anomalies and alert (example logic)
-        if item.get('data', {}).get('anomaly') == True:
-            dispatch_alert(f"Anomaly detected for device {item['device_id']}")
+        if item.get('status') == 'critical':
+            dispatch_alert(f"Critical anomaly detected for sensor {item['sensor_location']}")
             
     except Exception as e:
         logger.error(f"Failed to save to DB: {e}")
