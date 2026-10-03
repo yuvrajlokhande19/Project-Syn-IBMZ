@@ -58,6 +58,7 @@ def generate_telemetry_packet(tick: int) -> dict:
     is_flood = False
     is_power_failure = False
     is_earthquake = False
+    is_organ_transport = False
     
     # CCTV & Supply Chain Defaults
     cctv_status = "CLEAR"
@@ -86,6 +87,12 @@ def generate_telemetry_packet(tick: int) -> dict:
         cctv_status = "STRUCTURAL_DAMAGE"
         ai_confidence = 0.98
         is_earthquake = True
+    elif rand_val > 0.88 and rand_val <= 0.92:
+        # Organ Transplant / Green Corridor
+        congestion = 0  # Traffic lights cleared by system
+        cctv_status = "GREEN_CORRIDOR_ACTIVE"
+        ai_confidence = 0.99
+        is_organ_transport = True
     else:
         # Simulate Route Congestion normally
         congestion = int(max(10, min(95, 40 + (math.cos(tick * 0.05) * 30) + random.uniform(-10, 10))))
@@ -94,6 +101,15 @@ def generate_telemetry_packet(tick: int) -> dict:
     network = "lora_radio_mesh" if (tick > 0 and (tick % 20 < 5)) else "satellite_api"
     
     weather = get_live_weather()
+
+    # Supply Chain & Insurance Metadata
+    supply_chain_data = {
+        "blood_units_o_neg": blood_o_neg,
+        "diesel_fuel_liters": diesel_fuel
+    }
+    if is_organ_transport:
+        supply_chain_data["organ_match"] = "HEART_VIABLE"
+        supply_chain_data["insurance_claim"] = "AUTO_FILED_APPROVED"
 
     return {
         "packet_id": f"SYN-{random.randint(1000, 9999)}",
@@ -108,16 +124,13 @@ def generate_telemetry_packet(tick: int) -> dict:
             "route_congestion": congestion,
             "temperature": weather["temperature"],
             "windspeed": weather["windspeed"],
-            "supply_chain": {
-                "blood_units_o_neg": blood_o_neg,
-                "diesel_fuel_liters": diesel_fuel
-            },
+            "supply_chain": supply_chain_data,
             "cctv_intel": {
                 "status": cctv_status,
                 "confidence": ai_confidence
             }
         },
-        "status": "critical" if (is_flood or is_power_failure or is_earthquake) else "nominal"
+        "status": "critical" if (is_flood or is_power_failure or is_earthquake or is_organ_transport) else "nominal"
     }
 
 def sign_packet(payload: bytes) -> str:

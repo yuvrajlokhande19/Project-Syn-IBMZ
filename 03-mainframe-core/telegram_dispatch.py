@@ -31,6 +31,10 @@ def format_alert_message(data: Dict[str, Any], anomaly_type: str, safe_route: st
         status_en = f"STRUCTURAL DAMAGE (EARTHQUAKE)! Immediate Fleet Reroute."
         status_hi = f"भूकंप से क्षति! तुरंत फ्लीट को डायवर्ट करें।"
         status_mr = f"भूकंपामुळे नुकसान! रुग्णवाहिकांना तत्काळ दुसरा मार्ग द्या."
+    elif anomaly_type == "ORGAN_TRANSPLANT":
+        status_en = f"HEART MATCH FOUND. GREEN CORRIDOR INITIATED. Auto-Insurance Claim Filed."
+        status_hi = f"हृदय मैच मिला। ग्रीन कॉरिडोर लागू। बीमा दावा स्वतः दर्ज।"
+        status_mr = f"हृदय जुळले. ग्रीन कॉरिडॉर सुरू. विमा दावा आपोआप दाखल."
     else:
         status_en = "General Anomaly."
         status_hi = "सामान्य विसंगति।"
