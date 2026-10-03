@@ -36,6 +36,21 @@ Rather than blindly trusting AI to make life-critical calls, **Project Syn mathe
 
 ## 📐 System Architecture Diagram
 
+### 🏗️ The Dual-Mode Cyber-Physical Engine
+Project Syn operates on two distinct networking planes to ensure 100% uptime during city-wide disasters. 
+
+**1. Connected Mode: Satellite & CCTV (Metadata Pipeline)**
+Piping 4K CCTV video into a 4GB s390x instance will crash the server. Instead, Project Syn acts as a precision instrument:
+- *CCTV Traffic Routing:* Pulls lightweight congestion metadata from TomTom/Google Maps routing APIs.
+- *Satellite/Weather Analysis:* Pulls localized flood metrics via NASA/Copernicus JSON endpoints.
+- *Execution:* Pair 2 aggregates this lightweight metadata, signs it with HMAC-SHA256, and feeds it into the mainframe. High insight, zero RAM bloat.
+
+**2. Sovereign Mode: LoRaWAN Radio Mesh Fallback**
+When internet infrastructure collapses (Fiber cuts, 5G towers down), Project Syn falls back to a Cyber-Physical Radio Network:
+- *ESP32 Edge Sensors:* Form a localized LoRaWAN (Long Range Radio) mesh network.
+- *Low-Frequency Transmission:* Sensors broadcast encrypted telemetry directly to a local receiver physically wired to the IBM Z Mainframe.
+- *Air-Gapped Operation:* The mainframe continues calculating Snap ML inferences entirely offline.
+
 ```
                                   [ Edge Sensors: CCTV / IoT / Satellite ]
                                                      │

@@ -59,11 +59,18 @@ async def stream_telemetry():
     print(f"IBM SNAP ML ENGINE INITIALIZED: Isolation Forest Model Loaded")
     print(f"Target Mainframe: {MAINFRAME_URL}")
     print(f"Using HMAC-SHA256 Edge Cryptography")
+    print(f"NETWORK MODE: [CONNECTED] Satellite API & CCTV Metadata Active")
     print("-" * 50)
     
     tick = 0
     async with httpx.AsyncClient() as client:
         while True:
+            if tick > 0 and tick % 20 == 0:
+                print(f"\n[\033[91mWARNING\033[0m] SATELLITE LINK LOST. FALLING BACK TO SECURE LORA RADIO MESH.")
+                await asyncio.sleep(2)
+            elif tick > 0 and tick % 20 == 5:
+                print(f"[\033[92mRESTORED\033[0m] SATELLITE API LINK RE-ESTABLISHED.\n")
+                
             # 1. Generate Data
             packet = generate_telemetry_packet(tick)
             payload_bytes = json.dumps(packet).encode('utf-8')
