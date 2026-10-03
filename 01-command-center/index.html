@@ -42,6 +42,25 @@
         </div>
     </header>
 
+    <!-- NETWORK SOVEREIGNTY MODE TABS -->
+    <div class="glass-panel rounded-xl p-2 z-10 neon-border flex items-center justify-between px-6">
+        <div class="flex items-center gap-6 text-sm font-bold tracking-widest text-gray-500">
+            <span class="text-white text-xs mr-4">OPERATING MODE:</span>
+            <button id="mode-connected" class="text-[#00f3ff] flex items-center gap-2 transition-all">
+                <span class="h-2 w-2 rounded-full bg-[#00f3ff] shadow-[0_0_8px_#00f3ff]"></span> CONNECTED (SATELLITE/API)
+            </button>
+            <button id="mode-sovereign" class="hover:text-yellow-400 flex items-center gap-2 transition-all">
+                <span class="h-2 w-2 rounded-full bg-gray-600 border border-gray-400"></span> SOVEREIGN (LORA/RADIO MESH)
+            </button>
+            <button id="mode-degraded" class="hover:text-red-500 flex items-center gap-2 transition-all">
+                <span class="h-2 w-2 rounded-full bg-gray-600 border border-gray-400"></span> DEGRADED (RULES ONLY)
+            </button>
+        </div>
+        <div class="text-[10px] text-gray-400 text-right">
+            <span id="active-features">Active: Cloud AI | Global Routing | Remote DB</span>
+        </div>
+    </div>
+
     <!-- MAIN GRID -->
     <main class="flex-1 grid grid-cols-12 gap-4 z-10 min-h-0">
         
@@ -238,6 +257,33 @@
                 document.getElementById('sys-status').firstElementChild.className = "h-3 w-3 rounded-full bg-[#00f3ff] animate-ping";
             }, 8000);
         }
+
+        // Operating Mode Toggles
+        const modes = {
+            'mode-connected': { color: 'text-[#00f3ff]', bg: 'bg-[#00f3ff]', shadow: 'shadow-[0_0_8px_#00f3ff]', features: 'Active: Cloud AI | Global Routing | Remote DB' },
+            'mode-sovereign': { color: 'text-yellow-400', bg: 'bg-yellow-400', shadow: 'shadow-[0_0_8px_#facc15]', features: 'Active: Local IBM Z AI | Local Routing | Local Ledger' },
+            'mode-degraded': { color: 'text-red-500', bg: 'bg-red-500', shadow: 'shadow-[0_0_8px_#ef4444]', features: 'Active: Deterministic Fallback Rules ONLY' }
+        };
+
+        Object.keys(modes).forEach(modeId => {
+            document.getElementById(modeId).addEventListener('click', (e) => {
+                // Reset all
+                Object.keys(modes).forEach(id => {
+                    const btn = document.getElementById(id);
+                    btn.className = `hover:${modes[id].color} flex items-center gap-2 transition-all text-gray-500`;
+                    btn.firstElementChild.className = "h-2 w-2 rounded-full bg-gray-600 border border-gray-400";
+                });
+                
+                // Activate clicked
+                const btn = document.getElementById(modeId);
+                const conf = modes[modeId];
+                btn.className = `${conf.color} flex items-center gap-2 transition-all font-bold`;
+                btn.firstElementChild.className = `h-2 w-2 rounded-full ${conf.bg} ${conf.shadow}`;
+                
+                // Update text
+                document.getElementById('active-features').innerText = conf.features;
+            });
+        });
 
         // Audit Verification
         document.getElementById('verify-chain-btn').addEventListener('click', () => {
