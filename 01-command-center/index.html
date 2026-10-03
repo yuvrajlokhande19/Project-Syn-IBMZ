@@ -9,20 +9,21 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
-        body { font-family: 'Share Tech Mono', monospace; background-color: #050505; color: #e0e0e0; overflow-x: hidden; }
-        .glass-panel { background: rgba(15, 15, 20, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); }
-        .neon-border { border: 1px solid #00f3ff; box-shadow: 0 0 10px rgba(0, 243, 255, 0.2); }
-        .neon-border-red { border: 1px solid #ff003c; box-shadow: 0 0 15px rgba(255, 0, 60, 0.4); animation: pulse-red 2s infinite; }
-        @keyframes pulse-red { 0% { box-shadow: 0 0 10px rgba(255, 0, 60, 0.2); } 50% { box-shadow: 0 0 25px rgba(255, 0, 60, 0.6); } 100% { box-shadow: 0 0 10px rgba(255, 0, 60, 0.2); } }
+        body { font-family: 'Share Tech Mono', monospace; background: linear-gradient(135deg, #e2e8f0 0%, #ffffff 100%); color: #1e293b; overflow-x: hidden; }
+        .glass-panel { background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05); }
+        .neon-border { border: 1px solid rgba(148, 163, 184, 0.5); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); }
+        .neon-border-red { border: 1px solid #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); } 50% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); } 100% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); } }
         
-        /* CRT Scanline Effect */
-        .scanlines { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 4px, 3px 100%; pointer-events: none; z-index: 100; opacity: 0.4; }
+        .scanlines { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.03) 50%); background-size: 100% 4px; pointer-events: none; z-index: 100; }
         
-        #map { height: 100%; width: 100%; filter: grayscale(100%) invert(100%) contrast(120%); }
+        #map { height: 100%; width: 100%; filter: grayscale(80%) contrast(110%); }
         .ledger-feed::-webkit-scrollbar { width: 4px; }
-        .ledger-feed::-webkit-scrollbar-thumb { background: #00f3ff; }
+        .ledger-feed::-webkit-scrollbar-thumb { background: #94a3b8; }
     </style>
+
 </head>
 <body class="h-screen w-screen flex flex-col p-4 gap-4 relative">
     <div class="scanlines"></div>
@@ -30,24 +31,24 @@
     <!-- HEADER -->
     <header class="glass-panel rounded-xl p-4 flex justify-between items-center z-10 neon-border">
         <div class="flex items-center gap-4">
-            <div class="h-10 w-10 bg-[#00f3ff] rounded-full flex items-center justify-center text-black font-bold text-xl shadow-[0_0_15px_#00f3ff]">Z</div>
+            <div class="h-10 w-10 bg-slate-700 rounded-full flex items-center justify-center text-black font-bold text-xl shadow-[0_4px_15px_rgba(0,0,0,0.1)]">Z</div>
             <div>
-                <h1 class="text-2xl font-bold tracking-widest text-white">PROJECT SYN <span class="text-[#00f3ff]">COMMAND CENTER</span></h1>
-                <p class="text-xs text-gray-400">MAINFRAME ARCHITECTURE: s390x | BIG-ENDIAN SECURE</p>
+                <h1 class="text-2xl font-bold tracking-widest text-slate-900">PROJECT SYN <span class="text-slate-700">COMMAND CENTER</span></h1>
+                <p class="text-xs text-slate-500">MAINFRAME ARCHITECTURE: s390x | BIG-ENDIAN SECURE</p>
             </div>
         </div>
-        <div id="sys-status" class="px-6 py-2 rounded border border-[#00f3ff] text-[#00f3ff] flex items-center gap-2 bg-[#00f3ff]/10">
-            <div class="h-3 w-3 rounded-full bg-[#00f3ff] animate-ping"></div>
+        <div id="sys-status" class="px-6 py-2 rounded border border-slate-400 text-slate-700 flex items-center gap-2 bg-slate-700/10">
+            <div class="h-3 w-3 rounded-full bg-slate-700 animate-ping"></div>
             <span id="sys-status-text" class="font-bold tracking-wider">SYSTEM NOMINAL</span>
         </div>
     </header>
 
     <!-- NETWORK SOVEREIGNTY MODE TABS -->
     <div class="glass-panel rounded-xl p-2 z-10 neon-border flex items-center justify-between px-6">
-        <div class="flex items-center gap-6 text-sm font-bold tracking-widest text-gray-500">
-            <span class="text-white text-xs mr-4">OPERATING MODE:</span>
-            <button id="mode-connected" class="text-[#00f3ff] flex items-center gap-2 transition-all">
-                <span class="h-2 w-2 rounded-full bg-[#00f3ff] shadow-[0_0_8px_#00f3ff]"></span> CONNECTED (SATELLITE/API)
+        <div class="flex items-center gap-6 text-sm font-bold tracking-widest text-slate-400">
+            <span class="text-slate-900 text-xs mr-4">OPERATING MODE:</span>
+            <button id="mode-connected" class="text-slate-700 flex items-center gap-2 transition-all">
+                <span class="h-2 w-2 rounded-full bg-slate-700 shadow-[0_0_8px_#00f3ff]"></span> CONNECTED (SATELLITE/API)
             </button>
             <button id="mode-sovereign" class="hover:text-yellow-400 flex items-center gap-2 transition-all">
                 <span class="h-2 w-2 rounded-full bg-gray-600 border border-gray-400"></span> SOVEREIGN (LORA/RADIO MESH)
@@ -56,7 +57,7 @@
                 <span class="h-2 w-2 rounded-full bg-gray-600 border border-gray-400"></span> DEGRADED (RULES ONLY)
             </button>
         </div>
-        <div class="text-[10px] text-gray-400 text-right">
+        <div class="text-[10px] text-slate-500 text-right">
             <span id="active-features">Active: Cloud AI | Global Routing | Remote DB</span>
         </div>
     </div>
@@ -72,44 +73,44 @@
                 <div id="map"></div>
                 
                 <!-- NEW: EDGE AI CCTV CAMERA OVERLAY -->
-                <div class="absolute top-4 left-4 glass-panel p-2 rounded border border-[#00f3ff]/50 z-[400] w-56 bg-black/70 backdrop-blur-md shadow-[0_0_15px_#00f3ff55]">
-                    <div class="flex justify-between items-center mb-1 border-b border-[#00f3ff]/30 pb-1">
-                        <span class="text-[10px] text-[#00f3ff] font-bold tracking-widest">EDGE AI: CCTV-04</span>
+                <div class="absolute top-4 left-4 glass-panel p-2 rounded border border-slate-400/50 z-[400] w-56 bg-white/60 backdrop-blur-md shadow-[0_0_15px_#00f3ff55]">
+                    <div class="flex justify-between items-center mb-1 border-b border-slate-400/30 pb-1">
+                        <span class="text-[10px] text-slate-700 font-bold tracking-widest">EDGE AI: CCTV-04</span>
                         <span class="h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
                     </div>
-                    <div id="cctv-feed" class="h-24 bg-gray-900 border border-gray-700 flex flex-col items-center justify-center relative overflow-hidden">
+                    <div id="cctv-feed" class="h-24 bg-white/50 border border-slate-300 flex flex-col items-center justify-center relative overflow-hidden">
                         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30"></div>
-                        <span id="cctv-status" class="text-gray-500 text-[10px] font-mono z-10">ANALYZING TRAFFIC...</span>
+                        <span id="cctv-status" class="text-slate-400 text-[10px] font-mono z-10">ANALYZING TRAFFIC...</span>
                         
                         <!-- Bounding Box (Hidden by Default) -->
                         <div id="cctv-bounding-box" class="hidden absolute border border-red-500 w-16 h-16 top-4 left-1/2 -translate-x-1/2 shadow-[0_0_10px_#ef4444] z-10 transition-all duration-300">
-                            <span id="cctv-alert-text" class="absolute -top-4 left-0 text-[8px] bg-red-500 text-white px-1 whitespace-nowrap">FLOOD DETECTED</span>
+                            <span id="cctv-alert-text" class="absolute -top-4 left-0 text-[8px] bg-red-500 text-slate-900 px-1 whitespace-nowrap">FLOOD DETECTED</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="absolute top-4 right-4 glass-panel p-3 rounded border border-white/20 z-[400]">
-                    <div class="text-xs text-[#00f3ff] mb-1 font-bold">IBM SNAP ML ANALYSIS</div>
-                    <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Grid Volt:</span> <span id="val-voltage" class="text-white font-bold">-- V</span></div>
-                    <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Flood Idx:</span> <span id="val-flood" class="text-white font-bold">--</span></div>
-                    <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Traffic:</span> <span id="val-congestion" class="text-white font-bold">--%</span></div>
+                <div class="absolute top-4 right-4 glass-panel p-3 rounded border border-slate-300 z-[400]">
+                    <div class="text-xs text-slate-700 mb-1 font-bold">IBM SNAP ML ANALYSIS</div>
+                    <div class="flex justify-between gap-8 text-sm"><span class="text-slate-500">Grid Volt:</span> <span id="val-voltage" class="text-slate-900 font-bold">-- V</span></div>
+                    <div class="flex justify-between gap-8 text-sm"><span class="text-slate-500">Flood Idx:</span> <span id="val-flood" class="text-slate-900 font-bold">--</span></div>
+                    <div class="flex justify-between gap-8 text-sm"><span class="text-slate-500">Traffic:</span> <span id="val-congestion" class="text-slate-900 font-bold">--%</span></div>
                 </div>
 
                 <!-- SOVEREIGN RADIO TERMINAL (Hidden by Default) -->
-                <div id="radio-terminal" class="hidden absolute bottom-4 right-4 glass-panel p-2 rounded border border-yellow-500/50 z-[400] w-64 bg-black/80 font-mono text-[9px] h-32 overflow-hidden flex flex-col shadow-[0_0_15px_#eab30855]">
+                <div id="radio-terminal" class="hidden absolute bottom-4 right-4 glass-panel p-2 rounded border border-yellow-500/50 z-[400] w-64 bg-white/70 font-mono text-[9px] h-32 overflow-hidden flex flex-col shadow-[0_0_15px_#eab30855]">
                     <div class="text-yellow-400 font-bold mb-1 border-b border-yellow-500/30 pb-1">📻 LORA RADIO SNIFFER</div>
-                    <div id="radio-logs" class="text-green-500 flex-1 overflow-y-auto space-y-1">
+                    <div id="radio-logs" class="text-emerald-600 flex-1 overflow-y-auto space-y-1">
                         <div>> TUNING 915 MHz...</div>
                         <div>> AWAITING MESH PAYLOADS...</div>
                     </div>
                 </div>
 
-                <div class="absolute bottom-4 left-4 glass-panel p-3 rounded border border-white/20 z-[400]">
-                    <div class="text-xs text-[#00f3ff] mb-1 font-bold">IBM Z EXECUTION</div>
-                    <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Architecture:</span> <span class="text-white font-bold">s390x</span></div>
-                    <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Queue Depth:</span> <span id="perf-queue" class="text-white font-bold">0</span></div>
-                    <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Events/sec:</span> <span id="perf-events" class="text-white font-bold">0</span></div>
-                    <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Median Latency:</span> <span class="text-white font-bold">~45 ms</span></div>
+                <div class="absolute bottom-4 left-4 glass-panel p-3 rounded border border-slate-300 z-[400]">
+                    <div class="text-xs text-slate-700 mb-1 font-bold">IBM Z EXECUTION</div>
+                    <div class="flex justify-between gap-8 text-sm"><span class="text-slate-500">Architecture:</span> <span class="text-slate-900 font-bold">s390x</span></div>
+                    <div class="flex justify-between gap-8 text-sm"><span class="text-slate-500">Queue Depth:</span> <span id="perf-queue" class="text-slate-900 font-bold">0</span></div>
+                    <div class="flex justify-between gap-8 text-sm"><span class="text-slate-500">Events/sec:</span> <span id="perf-events" class="text-slate-900 font-bold">0</span></div>
+                    <div class="flex justify-between gap-8 text-sm"><span class="text-slate-500">Median Latency:</span> <span class="text-slate-900 font-bold">~45 ms</span></div>
                 </div>
             </div>
 
@@ -124,39 +125,39 @@
             
             <!-- CPACF Hash Ledger -->
             <div class="glass-panel rounded-xl p-4 h-56 flex flex-col neon-border">
-                <div class="flex justify-between items-end mb-2 border-b border-white/10 pb-2">
-                    <h2 class="text-[#00f3ff] font-bold tracking-widest">CPACF HASH LEDGER</h2>
+                <div class="flex justify-between items-end mb-2 border-b border-slate-300 pb-2">
+                    <h2 class="text-slate-700 font-bold tracking-widest">CPACF HASH LEDGER</h2>
                     <span class="text-xs text-green-400 animate-pulse font-bold">● LIVE SYNC</span>
                 </div>
                 <div id="ledger-logs" class="ledger-feed flex-1 overflow-y-auto text-[10px] space-y-2 font-mono mb-2">
                     <!-- Logs injected here -->
                 </div>
-                <button id="verify-chain-btn" class="w-full bg-[#00f3ff]/10 hover:bg-[#00f3ff]/30 text-[#00f3ff] border border-[#00f3ff] rounded py-1 text-xs font-bold transition-all">
+                <button id="verify-chain-btn" class="w-full bg-slate-700/10 hover:bg-slate-700/30 text-slate-700 border border-slate-400 rounded py-1 text-xs font-bold transition-all">
                     [ VERIFY CRYPTOGRAPHIC CHAIN ]
                 </button>
             </div>
 
             <!-- AI Alert Terminal -->
             <div class="glass-panel rounded-xl p-4 flex-1 neon-border flex flex-col">
-                <h2 class="text-[#00f3ff] font-bold tracking-widest border-b border-white/10 pb-2 mb-2">LOCAL AI DECISION TRACE</h2>
-                <div id="llm-logs" class="flex-1 overflow-y-auto text-sm space-y-3 text-gray-300">
-                    <div class="text-xs text-gray-500 blink">Waiting for Snap ML Anomaly Detection...</div>
+                <h2 class="text-slate-700 font-bold tracking-widest border-b border-slate-300 pb-2 mb-2">LOCAL AI DECISION TRACE</h2>
+                <div id="llm-logs" class="flex-1 overflow-y-auto text-sm space-y-3 text-slate-600">
+                    <div class="text-xs text-slate-400 blink">Waiting for Snap ML Anomaly Detection...</div>
                 </div>
                 
                 <h3 class="text-red-500 font-bold tracking-widest mt-4 mb-2 text-xs border-t border-red-500/30 pt-2">CYBER ATTACK SIMULATOR</h3>
                 <div class="grid grid-cols-2 gap-2 text-[10px]">
-                    <button id="attack-btn-tamper" class="bg-red-900/40 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white rounded py-1 transition-all">Payload Tamper</button>
-                    <button id="attack-btn-replay" class="bg-red-900/40 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white rounded py-1 transition-all">Replay Attack</button>
-                    <button id="attack-btn-stale" class="bg-red-900/40 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white rounded py-1 transition-all">Stale Telemetry</button>
-                    <button id="attack-btn-spoof" class="bg-red-900/40 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white rounded py-1 transition-all">Sensor Spoofing</button>
+                    <button id="attack-btn-tamper" class="bg-red-900/40 border border-red-500 text-red-400 hover:bg-red-500 hover:text-slate-900 rounded py-1 transition-all">Payload Tamper</button>
+                    <button id="attack-btn-replay" class="bg-red-900/40 border border-red-500 text-red-400 hover:bg-red-500 hover:text-slate-900 rounded py-1 transition-all">Replay Attack</button>
+                    <button id="attack-btn-stale" class="bg-red-900/40 border border-red-500 text-red-400 hover:bg-red-500 hover:text-slate-900 rounded py-1 transition-all">Stale Telemetry</button>
+                    <button id="attack-btn-spoof" class="bg-red-900/40 border border-red-500 text-red-400 hover:bg-red-500 hover:text-slate-900 rounded py-1 transition-all">Sensor Spoofing</button>
                 </div>
                 
-                <h3 class="text-green-500 font-bold tracking-widest mt-4 mb-2 text-xs border-t border-green-500/30 pt-2">HOSPITAL SUPPLY CHAIN</h3>
+                <h3 class="text-emerald-600 font-bold tracking-widest mt-4 mb-2 text-xs border-t border-green-500/30 pt-2">HOSPITAL SUPPLY CHAIN</h3>
                 <div class="grid grid-cols-1 gap-2">
-                    <button id="trigger-green-corridor" class="w-full bg-green-900/40 border border-green-500 text-green-400 hover:bg-green-500 hover:text-white rounded py-1 transition-all text-[10px] tracking-widest">
+                    <button id="trigger-green-corridor" class="w-full bg-green-900/40 border border-green-500 text-green-400 hover:bg-green-500 hover:text-slate-900 rounded py-1 transition-all text-[10px] tracking-widest">
                         [ INITIATE ORGAN TRANSPLANT (GREEN CORRIDOR) ]
                     </button>
-                    <button id="trigger-blood-share" class="w-full bg-yellow-900/40 border border-yellow-500 text-yellow-400 hover:bg-yellow-500 hover:text-white rounded py-1 transition-all text-[10px] tracking-widest">
+                    <button id="trigger-blood-share" class="w-full bg-yellow-900/40 border border-yellow-500 text-yellow-400 hover:bg-yellow-500 hover:text-slate-900 rounded py-1 transition-all text-[10px] tracking-widest">
                         [ IOT RADIO: BLOOD DEFICIT BROADCAST ]
                     </button>
                 </div>
@@ -168,9 +169,9 @@
     </main>
 
     <!-- CYBER ATTACK TERMINAL OVERLAY -->
-    <div id="terminal-overlay" class="fixed inset-0 bg-black/90 z-[1000] hidden flex flex-col p-10 font-mono">
+    <div id="terminal-overlay" class="fixed inset-0 bg-slate-100/95 z-[1000] hidden flex flex-col p-10 font-mono">
         <div class="text-red-500 font-bold text-2xl mb-4 blink">>>> SYSTEM BREACH DETECTED: HMAC SIGNATURE INVALID <<<</div>
-        <div id="terminal-output" class="text-green-500 text-sm overflow-y-auto flex-1 whitespace-pre-wrap"></div>
+        <div id="terminal-output" class="text-emerald-600 text-sm overflow-y-auto flex-1 whitespace-pre-wrap"></div>
     </div>
 
     <script>
@@ -179,7 +180,7 @@
         
         // Obfuscated key to prevent GitHub scrapers while allowing local file:// execution
         const _k = atob("Y2IxXzNucXFfMV9hNTg2ZTE5ZTBjMTFlZWZjMDIxYmU3OGI=");
-        L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=${_k}`, {
+        L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png?key=${_k}`, {
             attribution: '© CARTO'
         }).addTo(map);
 
@@ -193,7 +194,7 @@
         // Custom IBM Z Icon
         const sysIcon = L.divIcon({
             className: 'custom-div-icon',
-            html: "<div class='h-4 w-4 bg-[#00f3ff] rounded-full shadow-[0_0_15px_#00f3ff]'></div>",
+            html: "<div class='h-4 w-4 bg-slate-700 rounded-full shadow-[0_4px_15px_rgba(0,0,0,0.1)]'></div>",
             iconSize: [16, 16],
             iconAnchor: [8, 8]
         });
@@ -315,7 +316,7 @@
                     // Update Ledger Hash
                     const entry = document.createElement('div');
                     entry.className = 'text-green-400 font-mono break-all bg-green-400/10 p-1 rounded border border-green-400/20';
-                    entry.innerHTML = `<span class="text-white">TX:</span> ${latest.hash.substring(0,40)}...`;
+                    entry.innerHTML = `<span class="text-slate-900">TX:</span> ${latest.hash.substring(0,40)}...`;
                     ledger.appendChild(entry);
                     if(ledger.childElementCount > 15) ledger.removeChild(ledger.firstChild);
                     ledger.scrollTop = ledger.scrollHeight;
@@ -348,9 +349,9 @@
             llmLogs.innerHTML = `
                 <div class="text-red-400 border border-red-500/30 p-2 rounded bg-red-900/20 mb-2 shadow-[0_0_10px_#ff003c]">
                     <span class="font-bold tracking-widest">[${time}] SNAP ML DETECTED ANOMALY</span><br/>
-                    <span class="text-white text-xs">Generating Trilingual Dispatch...</span>
+                    <span class="text-slate-900 text-xs">Generating Trilingual Dispatch...</span>
                 </div>
-                <div class="text-xs text-gray-300 border-l-2 border-[#00f3ff] pl-2 space-y-1">
+                <div class="text-xs text-slate-600 border-l-2 border-slate-400 pl-2 space-y-1">
                     <pre class="font-mono whitespace-pre-wrap">${alertData.message}</pre>
                 </div>
             `;
@@ -376,8 +377,8 @@
             setTimeout(() => {
                 document.querySelector('.neon-border-red')?.classList.remove('neon-border-red');
                 document.getElementById('sys-status-text').innerText = "SYSTEM NOMINAL";
-                document.getElementById('sys-status').className = "px-6 py-2 rounded border border-[#00f3ff] text-[#00f3ff] flex items-center gap-2 bg-[#00f3ff]/10";
-                document.getElementById('sys-status').firstElementChild.className = "h-3 w-3 rounded-full bg-[#00f3ff] animate-ping";
+                document.getElementById('sys-status').className = "px-6 py-2 rounded border border-slate-400 text-slate-700 flex items-center gap-2 bg-slate-700/10";
+                document.getElementById('sys-status').firstElementChild.className = "h-3 w-3 rounded-full bg-slate-700 animate-ping";
                 
                 if(cctvBox) {
                     cctvBox.classList.add('hidden');
@@ -391,7 +392,7 @@
 
         // Operating Mode Toggles
         const modes = {
-            'mode-connected': { color: 'text-[#00f3ff]', bg: 'bg-[#00f3ff]', shadow: 'shadow-[0_0_8px_#00f3ff]', features: 'Active: Cloud AI | Global Routing | Remote DB' },
+            'mode-connected': { color: 'text-slate-700', bg: 'bg-slate-700', shadow: 'shadow-[0_0_8px_#00f3ff]', features: 'Active: Cloud AI | Global Routing | Remote DB' },
             'mode-sovereign': { color: 'text-yellow-400', bg: 'bg-yellow-400', shadow: 'shadow-[0_0_8px_#facc15]', features: 'Active: Local IBM Z AI | Local Routing | Local Ledger' },
             'mode-degraded': { color: 'text-red-500', bg: 'bg-red-500', shadow: 'shadow-[0_0_8px_#ef4444]', features: 'Active: Deterministic Fallback Rules ONLY' }
         };
@@ -401,7 +402,7 @@
                 // Reset all
                 Object.keys(modes).forEach(id => {
                     const btn = document.getElementById(id);
-                    btn.className = `hover:${modes[id].color} flex items-center gap-2 transition-all text-gray-500`;
+                    btn.className = `hover:${modes[id].color} flex items-center gap-2 transition-all text-slate-400`;
                     btn.firstElementChild.className = "h-2 w-2 rounded-full bg-gray-600 border border-gray-400";
                 });
                 
@@ -446,23 +447,23 @@
         document.getElementById('verify-chain-btn').addEventListener('click', () => {
             const btn = document.getElementById('verify-chain-btn');
             btn.innerText = "VERIFYING BLOCKS...";
-            btn.classList.add("bg-[#00f3ff]");
-            btn.classList.replace("text-[#00f3ff]", "text-black");
+            btn.classList.add("bg-slate-700");
+            btn.classList.replace("text-slate-700", "text-black");
             
             setTimeout(() => {
                 const total = document.getElementById('ledger-logs').childElementCount;
                 if (isAttacked) {
                     btn.innerText = `[FAIL] TAMPERING DETECTED!`;
-                    btn.classList.replace("bg-[#00f3ff]", "bg-red-500");
-                    btn.classList.replace("border-[#00f3ff]", "border-red-500");
+                    btn.classList.replace("bg-slate-700", "bg-red-500");
+                    btn.classList.replace("border-slate-400", "border-red-500");
                 } else {
                     btn.innerText = `[PASS] 10,000+ BLOCKS VERIFIED`;
                 }
                 setTimeout(() => {
                     btn.innerText = "[ VERIFY CRYPTOGRAPHIC CHAIN ]";
-                    btn.classList.remove("bg-[#00f3ff]", "bg-red-500");
-                    btn.classList.replace("border-red-500", "border-[#00f3ff]");
-                    btn.classList.replace("text-black", "text-[#00f3ff]");
+                    btn.classList.remove("bg-slate-700", "bg-red-500");
+                    btn.classList.replace("border-red-500", "border-slate-400");
+                    btn.classList.replace("text-black", "text-slate-700");
                 }, 3000);
             }, 1000);
         });
@@ -476,7 +477,7 @@
         // ORGAN TRANSPLANT GREEN CORRIDOR
         document.getElementById('trigger-green-corridor').addEventListener('click', () => {
             isAttacked = true;
-            document.body.style.backgroundColor = "#001a00";
+            document.body.style.background = "#dcfce7";
             
             const panels = document.querySelectorAll('.glass-panel');
             panels.forEach(p => {
@@ -485,7 +486,7 @@
             });
 
             document.getElementById('sys-status-text').innerText = "GREEN CORRIDOR ACTIVE";
-            document.getElementById('sys-status').className = "px-6 py-2 rounded border border-green-500 text-green-500 flex items-center gap-2 bg-green-500/20 shadow-[0_0_20px_#22c55e]";
+            document.getElementById('sys-status').className = "px-6 py-2 rounded border border-green-500 text-emerald-600 flex items-center gap-2 bg-green-500/20 shadow-[0_0_20px_#22c55e]";
             document.getElementById('sys-status').firstElementChild.className = "h-3 w-3 rounded-full bg-green-500 animate-ping";
             
             const cctvBox = document.getElementById('cctv-bounding-box');
@@ -494,7 +495,7 @@
                 document.getElementById('cctv-status').innerText = "TRAFFIC CLEARED (ORGAN TRANSPORT)";
                 cctvBox.className = "absolute border-2 border-green-500 w-16 h-16 top-4 left-1/2 -translate-x-1/2 shadow-[0_0_10px_#22c55e] z-10";
                 document.getElementById('cctv-alert-text').innerText = "GREEN CORRIDOR";
-                document.getElementById('cctv-alert-text').className = "absolute -top-4 left-0 text-[8px] bg-green-500 text-white px-1 whitespace-nowrap";
+                document.getElementById('cctv-alert-text').className = "absolute -top-4 left-0 text-[8px] bg-green-500 text-slate-900 px-1 whitespace-nowrap";
             }
 
             // TAXI AND AMBULANCE GREEN CORRIDOR
@@ -517,9 +518,9 @@
             document.getElementById('llm-logs').innerHTML = `
                 <div class="text-green-400 border border-green-500/30 p-2 rounded bg-green-900/20 mb-2 shadow-[0_0_10px_#22c55e]">
                     <span class="font-bold tracking-widest">[${time}] ORGAN MATCH FOUND</span><br/>
-                    <span class="text-white text-xs">Initiating Trilingual Dispatch...</span>
+                    <span class="text-slate-900 text-xs">Initiating Trilingual Dispatch...</span>
                 </div>
-                <div class="text-xs text-gray-300 border-l-2 border-[#00f3ff] pl-2 space-y-1">
+                <div class="text-xs text-slate-600 border-l-2 border-slate-400 pl-2 space-y-1">
                     <pre class="font-mono whitespace-pre-wrap">🚨 PROJECT SYN MAINFRAME ALERT 🚨\nLocation: GMC_Nagpur\nEdge AI CCTV: GREEN_CORRIDOR_ACTIVE | O-Negative Blood: VERIFIED\nStatus: HEART MATCH FOUND. GREEN CORRIDOR INITIATED. Auto-Insurance Claim Filed.</pre>
                 </div>
             `;
@@ -532,7 +533,7 @@
         // IoT BLOOD SHARE PROTOCOL
         document.getElementById('trigger-blood-share').addEventListener('click', () => {
             isAttacked = true;
-            document.body.style.backgroundColor = "#1a1a00";
+            document.body.style.background = "#fef08a";
             
             const panels = document.querySelectorAll('.glass-panel');
             panels.forEach(p => {
@@ -550,7 +551,7 @@
                 document.getElementById('cctv-status').innerText = "RADIO BROADCAST SENT";
                 cctvBox.className = "absolute border-2 border-yellow-500 w-16 h-16 top-4 left-1/2 -translate-x-1/2 shadow-[0_0_10px_#eab308] z-10";
                 document.getElementById('cctv-alert-text').innerText = "BLOOD DEFICIT";
-                document.getElementById('cctv-alert-text').className = "absolute -top-4 left-0 text-[8px] bg-yellow-500 text-white px-1 whitespace-nowrap";
+                document.getElementById('cctv-alert-text').className = "absolute -top-4 left-0 text-[8px] bg-yellow-500 text-slate-900 px-1 whitespace-nowrap";
             }
 
             // TAXI DRAFT FOR BLOOD TRANSPORT
@@ -564,9 +565,9 @@
             document.getElementById('llm-logs').innerHTML = `
                 <div class="text-yellow-400 border border-yellow-500/30 p-2 rounded bg-yellow-900/20 mb-2 shadow-[0_0_10px_#eab308]">
                     <span class="font-bold tracking-widest">[${time}] CRITICAL BLOOD SHORTAGE DETECTED</span><br/>
-                    <span class="text-white text-xs">Initiating OpenRouter Llama-3 Trilingual Dispatch...</span>
+                    <span class="text-slate-900 text-xs">Initiating OpenRouter Llama-3 Trilingual Dispatch...</span>
                 </div>
-                <div class="text-xs text-gray-300 border-l-2 border-[#00f3ff] pl-2 space-y-1">
+                <div class="text-xs text-slate-600 border-l-2 border-slate-400 pl-2 space-y-1">
                     <pre class="font-mono whitespace-pre-wrap">🚨 PROJECT SYN MAINFRAME ALERT 🚨\nLocation: Mayo_Hospital\nEdge AI CCTV: HOSPITAL_OVERFLOW | O-Negative Blood: 0 units\nStatus: CRITICAL BLOOD SHORTAGE. IoT Radio Broadcast Sent. Civilian Swarm Driver assigned.</pre>
                 </div>
             `;
@@ -578,7 +579,7 @@
 
         function triggerAttack(e) {
             isAttacked = true;
-            document.body.style.backgroundColor = "#2a0000";
+            document.body.style.background = "#ffe4e6";
             
             const panels = document.querySelectorAll('.glass-panel');
             panels.forEach(p => {
