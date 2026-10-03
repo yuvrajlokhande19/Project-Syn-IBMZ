@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-def format_alert_message(data: Dict[str, Any], anomaly_type: str) -> str:
+def format_alert_message(data: Dict[str, Any], anomaly_type: str, safe_route: str = "") -> str:
     """Formats telemetry data into a Telegram-friendly alert message in English, Hindi, and Marathi."""
     packet_id = data.get("packet_id", "UNKNOWN-ID")
     location = data.get("sensor_location", "Unknown Location")
@@ -23,13 +23,13 @@ def format_alert_message(data: Dict[str, Any], anomaly_type: str) -> str:
     net_flag = "📡 SATELLITE API" if network != "LORA_RADIO_MESH" else "📻 LORA RADIO MESH (SOVEREIGN MODE)"
     
     if anomaly_type == "FLOOD":
-        status_en = "Critical flooding detected! Rerouting ambulances."
-        status_hi = "गंभीर बाढ़! एंबुलेंस का मार्ग बदला जा रहा है।"
-        status_mr = "गंभीर पूर! रुग्णवाहिकेचा मार्ग बदलत आहे."
+        status_en = f"Critical flooding detected! Rerouting ambulances via: {safe_route}"
+        status_hi = f"गंभीर बाढ़! एंबुलेंस का नया मार्ग: {safe_route}"
+        status_mr = f"गंभीर पूर! रुग्णवाहिकेचा नवीन मार्ग: {safe_route}"
     elif anomaly_type == "POWER":
-        status_en = "Power Grid Failure! ICU transitioning to backup generators."
-        status_hi = "पावर ग्रिड फेल! आईसीयू बैकअप जनरेटर पर जा रहा है।"
-        status_mr = "वीज पुरवठा खंडित! आयसीयू जनरेटरवर हलवत आहे."
+        status_en = f"Power Grid Failure! ICU transitioning to backup generators."
+        status_hi = f"पावर ग्रिड फेल! आईसीयू बैकअप जनरेटर पर जा रहा है।"
+        status_mr = f"वीज पुरवठा खंडित! आयसीयू जनरेटरवर हलवत आहे."
     else:
         status_en = "General Anomaly."
         status_hi = "सामान्य विसंगति।"
@@ -90,8 +90,22 @@ async def process_and_alert(data: Dict[str, Any]):
         from hash_ledger import HashLedger
         ledger = HashLedger()
         
+        # Determine Safe Route if Flooded
+        safe_route = ""
+        if anomaly_type == "FLOOD":
+            try:
+                from routing_algorithm import NagpurHospitalRouter
+                router = NagpurHospitalRouter()
+                router.update_weights(location, penalty=999)
+                target_hospital = "Mayo_Hospital" if location != "Mayo_Hospital" else "GMC_Nagpur"
+                path, cost = router.dijkstra("AIIMS_Nagpur", target_hospital)
+                safe_route = " -> ".join(path)
+            except Exception as e:
+                logger.error(f"Routing error: {e}")
+                safe_route = "Standard Backup Route"
+                
         # Generate the LLM message
-        message = format_alert_message(data, anomaly_type)
+        message = format_alert_message(data, anomaly_type, safe_route)
         
         # Save to DB so frontend can fetch it
         ledger.record_alert(location, message)
