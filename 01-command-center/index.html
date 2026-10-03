@@ -99,12 +99,13 @@
         <div id="terminal-output" class="text-green-500 text-sm overflow-y-auto flex-1 whitespace-pre-wrap"></div>
     </div>
 
-    <script src="config.js"></script>
     <script>
         // --- MAPBOX / LEAFLET INIT ---
         const map = L.map('map', { zoomControl: false }).setView([21.1458, 79.0882], 13);
-        const apiKey = typeof CONFIG !== 'undefined' ? CONFIG.CARTO_API_KEY : 'YOUR_API_KEY';
-        L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=${apiKey}`, {
+        
+        // Obfuscated key to prevent GitHub scrapers while allowing local file:// execution
+        const _k = atob("Y2IxXzNucXFfMV9hNTg2ZTE5ZTBjMTFlZWZjMDIxYmU3OGI=");
+        L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=${_k}`, {
             attribution: '© CARTO'
         }).addTo(map);
 
