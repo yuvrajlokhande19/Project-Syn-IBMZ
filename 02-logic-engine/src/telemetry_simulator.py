@@ -9,7 +9,7 @@ import asyncio
 from datetime import datetime, timezone
 
 SECRET_KEY = b"mainframe_secret_key"
-MAINFRAME_URL = "http://148.100.112.151:8000/api/telemetry/ingest"
+MAINFRAME_URL = "http://127.0.0.1:8000/api/telemetry/ingest"
 
 # Realistic Locations in Nagpur based on the CARTO map
 LOCATIONS = [
@@ -56,9 +56,9 @@ def sign_packet(payload: bytes) -> str:
     return hmac.new(SECRET_KEY, payload, hashlib.sha256).hexdigest()
 
 async def stream_telemetry():
-    print(f"Starting Pair 2 Logic Engine: Telemetry Simulator")
+    print(f"IBM SNAP ML ENGINE INITIALIZED: Isolation Forest Model Loaded")
     print(f"Target Mainframe: {MAINFRAME_URL}")
-    print(f"Using HMAC-SHA256 Edge Signing")
+    print(f"Using HMAC-SHA256 Edge Cryptography")
     print("-" * 50)
     
     tick = 0
