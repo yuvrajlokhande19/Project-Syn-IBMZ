@@ -1,118 +1,60 @@
 import asyncio
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
-from queue_worker import start_queue_worker, get_telemetry_queue, stop_queue_worker
-from hash_ledger import HashLedger
-import hmac
 import hashlib
-import json
-import contextlib
-import os
-from dotenv import load_dotenv
+import hmac
+import logging
+from fastapi import FastAPI, HTTPException, Request, Depends
+from pydantic import BaseModel
+from contextlib import asynccontextmanager
 
-load_dotenv()
+from queue_worker import worker_task, QUEUE
 
-SECRET_KEY = os.getenv("MAINFRAME_SECRET_KEY", "fallback_secret_key").encode('utf-8')
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-@contextlib.asynccontextmanager
+# Config
+SECRET_KEY = b"super_secret_syn_key"
+
+@asynccontextmanager
 async def lifespan(app: FastAPI):
-    # init db
-    HashLedger()
-    worker_task = asyncio.create_task(start_queue_worker())
+    # Startup: Start the background queue worker
+    worker = asyncio.create_task(worker_task())
     yield
-    await stop_queue_worker()
-    worker_task.cancel()
+    # Shutdown
+    worker.cancel()
+    try:
+        await worker
+    except asyncio.CancelledError:
+        pass
 
-app = FastAPI(title="Project Syn Mainframe Core", lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, title="Project Syn - Mainframe Core Telemetry API")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+class TelemetryPayload(BaseModel):
+    device_id: str
+    timestamp: float
+    data: dict
 
-import time
-
-# Rolling cache for replay protection
-SEEN_NONCES = set()
-
-@app.post("/api/telemetry/ingest")
-async def ingest_telemetry(request: Request):
-    body = await request.body()
+async def verify_hmac(request: Request):
     signature = request.headers.get("X-Signature")
     if not signature:
-        raise HTTPException(status_code=400, detail="Missing signature")
+        raise HTTPException(status_code=401, detail="Missing signature")
     
-    # 1. Cryptographic Authentication (HMAC)
+    body = await request.body()
     expected_signature = hmac.new(SECRET_KEY, body, hashlib.sha256).hexdigest()
-    if not hmac.compare_digest(expected_signature, signature):
-        raise HTTPException(status_code=401, detail="SECURITY BREACH: Invalid HMAC signature. Payload Tampering Detected.")
     
-    try:
-        data = json.loads(body.decode("utf-8"))
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=400, detail="Invalid JSON payload")
-        
-    # 2. Replay Attack Protection (Nonce)
-    nonce = data.get("nonce")
-    if not nonce:
-        raise HTTPException(status_code=400, detail="SECURITY BREACH: Missing Nonce.")
-    if nonce in SEEN_NONCES:
-        raise HTTPException(status_code=401, detail="SECURITY BREACH: Replay Attack Detected. Nonce already consumed.")
-    SEEN_NONCES.add(nonce)
-    
-    # Keep cache manageable
-    if len(SEEN_NONCES) > 10000:
-        SEEN_NONCES.clear()
-        
-    # 3. Stale Telemetry Protection (Timestamp)
-    packet_time = data.get("unix_timestamp", 0)
-    current_time = time.time()
-    if abs(current_time - packet_time) > 15:
-        raise HTTPException(status_code=401, detail="SECURITY BREACH: Stale Telemetry. Potential Replay/Delay Attack.")
-    
-    queue = get_telemetry_queue()
-    try:
-        queue.put_nowait(data)
-    except asyncio.QueueFull:
-        raise HTTPException(status_code=503, detail="Queue is full, try again later")
-    
-    return {"status": "success", "message": "Telemetry verified and accepted"}
+    if not hmac.compare_digest(signature, expected_signature):
+        raise HTTPException(status_code=401, detail="Invalid signature")
+    return True
 
-import sqlite3
-
-@app.get("/api/telemetry/live")
-async def get_live_telemetry():
-    """Endpoint for Pair 1 Dashboard to fetch live data from the IBM Mainframe"""
+@app.post("/api/telemetry/ingest")
+async def ingest_telemetry(payload: TelemetryPayload, verified: bool = Depends(verify_hmac)):
+    """
+    Ingests telemetry data, validates HMAC, and puts it in the async queue for processing.
+    """
+    # Put data in queue
     try:
-        # Fetch the latest 10 verified blocks from the Hash Ledger
-        with sqlite3.connect("ledger.db") as conn:
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
-            cursor.execute("SELECT timestamp, payload, hash FROM telemetry_ledger ORDER BY id DESC LIMIT 10")
-            rows = cursor.fetchall()
-            
-            latest_data = []
-            for row in rows:
-                latest_data.append({
-                    "timestamp": row["timestamp"],
-                    "hash": row["hash"],
-                    "data": json.loads(row["payload"])
-                })
-                
-            # Fetch latest alert
-            cursor.execute("SELECT timestamp, location, message FROM alerts ORDER BY id DESC LIMIT 1")
-            alert_row = cursor.fetchone()
-            latest_alert = None
-            if alert_row:
-                latest_alert = {
-                    "timestamp": alert_row["timestamp"],
-                    "location": alert_row["location"],
-                    "message": alert_row["message"]
-                }
-                
-        return {"status": "success", "live_stream": latest_data, "latest_alert": latest_alert}
+        await QUEUE.put(payload.model_dump())
+        logger.info(f"Received valid telemetry from {payload.device_id}")
+        return {"status": "success", "message": "Telemetry queued for processing"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error queueing telemetry: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")

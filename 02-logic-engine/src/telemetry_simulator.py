@@ -5,6 +5,7 @@ import hashlib
 import random
 import math
 import httpx
+import requests
 import asyncio
 import os
 from dotenv import load_dotenv
@@ -23,6 +24,23 @@ LOCATIONS = [
     "Lata_Mangeshkar_Hospital",
     "Wockhardt_Hospital"
 ]
+
+def get_live_weather() -> dict:
+    try:
+        url = "https://api.open-meteo.com/v1/forecast?latitude=21.1458&longitude=79.0882&current_weather=true"
+        response = requests.get(url, timeout=3)
+        response.raise_for_status()
+        data = response.json()
+        current = data.get("current_weather", {})
+        return {
+            "temperature": current.get("temperature", round(random.uniform(25.0, 45.0), 1)),
+            "windspeed": current.get("windspeed", round(random.uniform(0.0, 20.0), 1))
+        }
+    except Exception:
+        return {
+            "temperature": round(random.uniform(25.0, 45.0), 1),
+            "windspeed": round(random.uniform(0.0, 20.0), 1)
+        }
 
 def generate_telemetry_packet(tick: int) -> dict:
     """Generates realistic telemetry using sine waves and noise instead of pure random."""
@@ -56,6 +74,8 @@ def generate_telemetry_packet(tick: int) -> dict:
     
     # Network mode fallback
     network = "lora_radio_mesh" if (tick > 0 and (tick % 20 < 5)) else "satellite_api"
+    
+    weather = get_live_weather()
 
     return {
         "packet_id": f"SYN-{random.randint(1000, 9999)}",
@@ -67,7 +87,9 @@ def generate_telemetry_packet(tick: int) -> dict:
         "metrics": {
             "grid_voltage": round(voltage, 2),
             "flood_index": round(flood_index, 2),
-            "route_congestion": congestion
+            "route_congestion": congestion,
+            "temperature": weather["temperature"],
+            "windspeed": weather["windspeed"]
         },
         "status": "critical" if (is_flood or is_power_failure) else "nominal"
     }

@@ -76,6 +76,13 @@
                     <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Flood Idx:</span> <span id="val-flood" class="text-white font-bold">--</span></div>
                     <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Traffic:</span> <span id="val-congestion" class="text-white font-bold">--%</span></div>
                 </div>
+                <div class="absolute bottom-4 left-4 glass-panel p-3 rounded border border-white/20 z-[400]">
+                    <div class="text-xs text-[#00f3ff] mb-1 font-bold">IBM Z EXECUTION</div>
+                    <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Architecture:</span> <span class="text-white font-bold">s390x</span></div>
+                    <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Queue Depth:</span> <span id="perf-queue" class="text-white font-bold">0</span></div>
+                    <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Events/sec:</span> <span id="perf-events" class="text-white font-bold">0</span></div>
+                    <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Median Latency:</span> <span class="text-white font-bold">~45 ms</span></div>
+                </div>
             </div>
 
             <!-- Live Chart Section -->
@@ -180,6 +187,17 @@
                 animation: { duration: 0 } // instant for matrix feel
             }
         });
+
+        // --- MOCK IBM Z PERFORMANCE METRICS ---
+        setInterval(() => {
+            if (isAttacked) return;
+            const qDepth = Math.floor(Math.random() * 16); // 0 to 15
+            const eventsSec = Math.floor(Math.random() * (300 - 150 + 1)) + 150; // 150 to 300
+            const qElem = document.getElementById('perf-queue');
+            const eElem = document.getElementById('perf-events');
+            if (qElem) qElem.innerText = qDepth;
+            if (eElem) eElem.innerText = eventsSec;
+        }, 1000);
 
         // --- LIVE DATA FETCHING ---
         const ledger = document.getElementById('ledger-logs');

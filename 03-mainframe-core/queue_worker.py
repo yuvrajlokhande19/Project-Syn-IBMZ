@@ -1,55 +1,61 @@
 import asyncio
+import sqlite3
+import json
 import logging
-from typing import Optional
-
-from hash_ledger import HashLedger
-from telegram_dispatch import process_and_alert
-
-# Create a queue with a maximum size to prevent memory exhaustion
-_telemetry_queue: Optional[asyncio.Queue] = None
-_worker_running = False
+from hash_ledger import append_to_ledger
+from telegram_dispatch import dispatch_alert
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
-def get_telemetry_queue() -> asyncio.Queue:
-    global _telemetry_queue
-    if _telemetry_queue is None:
-        _telemetry_queue = asyncio.Queue(maxsize=10000)
-    return _telemetry_queue
+QUEUE = asyncio.Queue()
+DB_PATH = "telemetry.db"
 
-async def start_queue_worker():
-    global _worker_running
-    _worker_running = True
-    queue = get_telemetry_queue()
-    ledger = HashLedger()
-    
-    logger.info("Starting telemetry queue worker...")
-    
-    while _worker_running:
+def init_db():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS telemetry (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            device_id TEXT NOT NULL,
+            timestamp REAL NOT NULL,
+            data TEXT NOT NULL
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+def save_to_db(item):
+    try:
+        conn = sqlite3.connect(DB_PATH, timeout=10)
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO telemetry (device_id, timestamp, data) VALUES (?, ?, ?)",
+            (item['device_id'], item['timestamp'], json.dumps(item['data']))
+        )
+        conn.commit()
+        conn.close()
+        
+        # Also write to hash ledger
+        append_to_ledger(item)
+        
+        # Check for anomalies and alert (example logic)
+        if item.get('data', {}).get('anomaly') == True:
+            dispatch_alert(f"Anomaly detected for device {item['device_id']}")
+            
+    except Exception as e:
+        logger.error(f"Failed to save to DB: {e}")
+
+async def worker_task():
+    init_db()
+    logger.info("Queue worker started")
+    while True:
         try:
-            # Wait for data with a timeout so we can periodically check _worker_running
-            data = await asyncio.wait_for(queue.get(), timeout=1.0)
-            
-            try:
-                # 1. Write to hash ledger
-                ledger.record_telemetry(data)
-                
-                # 2. Check conditions and dispatch alerts if necessary
-                await process_and_alert(data)
-                
-            except Exception as e:
-                logger.error(f"Error processing telemetry data: {e}")
-            finally:
-                queue.task_done()
-                
-        except asyncio.TimeoutError:
-            continue
+            item = await QUEUE.get()
+            # Offload blocking DB operations to a thread
+            await asyncio.to_thread(save_to_db, item)
+            QUEUE.task_done()
         except asyncio.CancelledError:
+            logger.info("Worker cancelled")
             break
-            
-    logger.info("Queue worker stopped.")
-
-async def stop_queue_worker():
-    global _worker_running
-    _worker_running = False
+        except Exception as e:
+            logger.error(f"Worker error: {e}")

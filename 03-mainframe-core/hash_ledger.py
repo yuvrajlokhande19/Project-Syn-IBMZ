@@ -1,87 +1,69 @@
 import sqlite3
 import hashlib
 import json
-import os
-from datetime import datetime
-from typing import Dict, Any, Optional
+import logging
 
-class HashLedger:
-    """
-    Simulates a ledger using chained SHA-256 hashes (simulating CPACF acceleration
-    on IBM LinuxONE / s390x architecture).
-    """
+logger = logging.getLogger(__name__)
+
+LEDGER_DB_PATH = "ledger.db"
+
+def init_ledger_db():
+    conn = sqlite3.connect(LEDGER_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS hash_ledger (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            previous_hash TEXT NOT NULL,
+            data_hash TEXT NOT NULL,
+            chained_hash TEXT NOT NULL
+        )
+    """)
     
-    def __init__(self, db_path: str = "ledger.db"):
-        self.db_path = db_path
-        self._init_db()
+    # Initialize genesis block if empty
+    cursor.execute("SELECT COUNT(*) FROM hash_ledger")
+    if cursor.fetchone()[0] == 0:
+        genesis_hash = hashlib.sha256(b"genesis").hexdigest()
+        cursor.execute(
+            "INSERT INTO hash_ledger (previous_hash, data_hash, chained_hash) VALUES (?, ?, ?)",
+            ("0"*64, genesis_hash, genesis_hash)
+        )
+    conn.commit()
+    conn.close()
+
+def get_last_hash() -> str:
+    conn = sqlite3.connect(LEDGER_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT chained_hash FROM hash_ledger ORDER BY id DESC LIMIT 1")
+    result = cursor.fetchone()
+    conn.close()
+    return result[0] if result else "0"*64
+
+def append_to_ledger(data: dict):
+    """
+    Simulates CPACF (CP Assist for Cryptographic Function) accelerated SHA-256
+    by computing a chained hash and storing it in the ledger.
+    """
+    try:
+        init_ledger_db()
         
-    def _init_db(self):
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS telemetry_ledger (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    timestamp TEXT NOT NULL,
-                    payload TEXT NOT NULL,
-                    previous_hash TEXT NOT NULL,
-                    hash TEXT NOT NULL
-                )
-            ''')
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS alerts (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    timestamp TEXT NOT NULL,
-                    location TEXT NOT NULL,
-                    message TEXT NOT NULL
-                )
-            ''')
-            # Insert genesis block if empty
-            cursor.execute("SELECT COUNT(*) FROM telemetry_ledger")
-            if cursor.fetchone()[0] == 0:
-                genesis_hash = hashlib.sha256(b"genesis").hexdigest()
-                cursor.execute('''
-                    INSERT INTO telemetry_ledger (timestamp, payload, previous_hash, hash)
-                    VALUES (?, ?, ?, ?)
-                ''', (datetime.utcnow().isoformat(), "{}", "0" * 64, genesis_hash))
-            conn.commit()
-
-    def _get_latest_hash(self, cursor: sqlite3.Cursor) -> str:
-        cursor.execute("SELECT hash FROM telemetry_ledger ORDER BY id DESC LIMIT 1")
-        row = cursor.fetchone()
-        return row[0] if row else ("0" * 64)
-
-    def _calculate_hash(self, previous_hash: str, payload_str: str, timestamp: str) -> str:
-        # In a real s390x environment, this would ideally use hardware-accelerated 
-        # crypto via libica or standard libraries optimized for CPACF.
-        block_data = f"{previous_hash}{payload_str}{timestamp}".encode('utf-8')
-        return hashlib.sha256(block_data).hexdigest()
-
-    def record_telemetry(self, data: Dict[str, Any]) -> str:
-        payload_str = json.dumps(data, sort_keys=True)
-        timestamp = datetime.utcnow().isoformat()
+        data_bytes = json.dumps(data, sort_keys=True).encode('utf-8')
+        data_hash = hashlib.sha256(data_bytes).hexdigest()
         
-        # Use a short transaction to prevent DB locks
-        with sqlite3.connect(self.db_path, isolation_level='EXCLUSIVE') as conn:
-            cursor = conn.cursor()
-            previous_hash = self._get_latest_hash(cursor)
-            current_hash = self._calculate_hash(previous_hash, payload_str, timestamp)
-            
-            cursor.execute('''
-                INSERT INTO telemetry_ledger (timestamp, payload, previous_hash, hash)
-                VALUES (?, ?, ?, ?)
-            ''', (timestamp, payload_str, previous_hash, current_hash))
-            
-            conn.commit()
-            
-        return current_hash
-
-    def record_alert(self, location: str, message: str):
-        timestamp = datetime.utcnow().isoformat()
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                INSERT INTO alerts (timestamp, location, message)
-                VALUES (?, ?, ?)
-            ''', (timestamp, location, message))
-            conn.commit()
-
+        previous_hash = get_last_hash()
+        
+        # Compute chained hash
+        chained_input = (previous_hash + data_hash).encode('utf-8')
+        chained_hash = hashlib.sha256(chained_input).hexdigest()
+        
+        conn = sqlite3.connect(LEDGER_DB_PATH, timeout=10)
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO hash_ledger (previous_hash, data_hash, chained_hash) VALUES (?, ?, ?)",
+            (previous_hash, data_hash, chained_hash)
+        )
+        conn.commit()
+        conn.close()
+        logger.debug(f"Ledger updated with hash: {chained_hash}")
+        
+    except Exception as e:
+        logger.error(f"Error appending to ledger: {e}")
