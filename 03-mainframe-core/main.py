@@ -52,3 +52,28 @@ async def ingest_telemetry(request: Request):
         raise HTTPException(status_code=503, detail="Queue is full, try again later")
     
     return {"status": "success", "message": "Telemetry accepted for processing"}
+
+import sqlite3
+
+@app.get("/api/telemetry/live")
+async def get_live_telemetry():
+    """Endpoint for Pair 1 Dashboard to fetch live data from the IBM Mainframe"""
+    try:
+        # Fetch the latest 10 verified blocks from the Hash Ledger
+        with sqlite3.connect("ledger.db") as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute("SELECT timestamp, payload, hash FROM telemetry_ledger ORDER BY id DESC LIMIT 10")
+            rows = cursor.fetchall()
+            
+            latest_data = []
+            for row in rows:
+                latest_data.append({
+                    "timestamp": row["timestamp"],
+                    "hash": row["hash"],
+                    "data": json.loads(row["payload"])
+                })
+                
+        return {"status": "success", "live_stream": latest_data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

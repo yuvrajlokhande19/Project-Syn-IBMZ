@@ -277,24 +277,37 @@
             markers.push(marker);
         });
 
-        // Simulated Telemetry & Ledger
+        // Fetch Live Data from IBM Mainframe
         const ledger = document.getElementById('ledger-logs');
-        setInterval(() => {
-            // Generate Random SHA-256 Mock
-            const hash = Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
-            const entry = document.createElement('div');
-            entry.className = 'text-green-400/80 font-mono break-all';
-            entry.innerText = `[OK] ${hash.substring(0,32)}...`;
-            
-            ledger.appendChild(entry);
-            if(ledger.childElementCount > 10) ledger.removeChild(ledger.firstChild);
-            ledger.scrollTop = ledger.scrollHeight;
-            
-            // Fluctuate stats slightly
-            document.getElementById('val-voltage').innerText = (215 + Math.random() * 10).toFixed(1) + ' V';
-            document.getElementById('val-congestion').innerText = Math.floor(40 + Math.random() * 20) + '%';
-            
-        }, 1500);
+        setInterval(async () => {
+            if (document.getElementById('sys-status-text').innerText.includes('BREACHED')) return;
+
+            try {
+                // Fetch from the IBM LinuxONE Cloud IP
+                const res = await fetch('http://148.100.112.151:8000/api/telemetry/live');
+                const json = await res.json();
+                
+                if (json.live_stream && json.live_stream.length > 0) {
+                    const latest = json.live_stream[0]; // Get the most recent packet
+                    const data = latest.data;
+                    
+                    // Update Ledger Hash
+                    const entry = document.createElement('div');
+                    entry.className = 'text-green-400/80 font-mono break-all';
+                    entry.innerText = `[VERIFIED] ${latest.hash.substring(0,40)}...`;
+                    ledger.appendChild(entry);
+                    if(ledger.childElementCount > 10) ledger.removeChild(ledger.firstChild);
+                    ledger.scrollTop = ledger.scrollHeight;
+                    
+                    // Update Stats
+                    document.getElementById('val-voltage').innerText = data.metrics.grid_voltage.toFixed(1) + ' V';
+                    document.getElementById('val-flood').innerText = data.metrics.flood_index.toFixed(2);
+                    document.getElementById('val-congestion').innerText = data.metrics.route_congestion + '%';
+                }
+            } catch (err) {
+                console.error("Mainframe Connection Error", err);
+            }
+        }, 2000);
 
         // Cyber Attack Simulation
         document.getElementById('attack-btn').addEventListener('click', () => {
