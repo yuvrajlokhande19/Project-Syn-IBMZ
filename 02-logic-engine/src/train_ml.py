@@ -7,7 +7,7 @@ import os
 
 def train_model():
     print("Loading dataset...")
-    data_path = os.path.join(os.path.dirname(__file__), '..', 'artifacts', 'synthetic_hospital_data_10k.csv')
+    data_path = os.path.join(os.path.dirname(__file__), '..', '..', 'artifacts', 'synthetic_hospital_data_10k.csv')
     df = pd.read_csv(data_path)
 
     print("Preparing data...")
