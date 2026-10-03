@@ -14,28 +14,39 @@ logger = logging.getLogger(__name__)
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-def format_alert_message(data: Dict[str, Any]) -> str:
+def format_alert_message(data: Dict[str, Any], anomaly_type: str) -> str:
     """Formats telemetry data into a Telegram-friendly alert message in English, Hindi, and Marathi."""
     packet_id = data.get("packet_id", "UNKNOWN-ID")
     location = data.get("sensor_location", "Unknown Location")
+    network = data.get("network_mode", "satellite_api").upper()
     
-    # In a real s390x environment, a local Big-Endian LLM (like Phi-3) would dynamically translate this.
-    # For this task, we format the deterministic output in 3 languages.
+    net_flag = "📡 SATELLITE API" if network != "LORA_RADIO_MESH" else "📻 LORA RADIO MESH (SOVEREIGN MODE)"
     
+    if anomaly_type == "FLOOD":
+        status_en = "Critical flooding detected! Rerouting ambulances."
+        status_hi = "गंभीर बाढ़! एंबुलेंस का मार्ग बदला जा रहा है।"
+        status_mr = "गंभीर पूर! रुग्णवाहिकेचा मार्ग बदलत आहे."
+    elif anomaly_type == "POWER":
+        status_en = "Power Grid Failure! ICU transitioning to backup generators."
+        status_hi = "पावर ग्रिड फेल! आईसीयू बैकअप जनरेटर पर जा रहा है।"
+        status_mr = "वीज पुरवठा खंडित! आयसीयू जनरेटरवर हलवत आहे."
+    else:
+        status_en = "General Anomaly."
+        status_hi = "सामान्य विसंगति।"
+        status_mr = "सामान्य विसंगती."
+
     msg_en = f"🚨 *MAINFRAME ALERT* 🚨\n"
-    msg_en += f"Packet: `{packet_id}`\n"
+    msg_en += f"Network: `{net_flag}`\n"
     msg_en += f"Location: `{location}`\n"
-    msg_en += "Status: Anomaly Detected! Rerouting ambulances.\n"
+    msg_en += f"Status: {status_en}\n"
     
     msg_hi = f"\n🔴 *मुख्य सर्वर चेतावनी* 🔴\n"
-    msg_hi += f"पैकेट: `{packet_id}`\n"
     msg_hi += f"स्थान: `{location}`\n"
-    msg_hi += "स्थिति: विसंगति पाई गई! एंबुलेंस का मार्ग बदला जा रहा है।\n"
+    msg_hi += f"स्थिति: {status_hi}\n"
     
     msg_mr = f"\n⚠️ *मुख्य सर्व्हर इशारा* ⚠️\n"
-    msg_mr += f"पॅकेट: `{packet_id}`\n"
     msg_mr += f"ठिकाण: `{location}`\n"
-    msg_mr += "स्थिती: विसंगती आढळली! रुग्णवाहिकेचा मार्ग बदलत आहे.\n"
+    msg_mr += f"स्थिती: {status_mr}\n"
     
     return msg_en + msg_hi + msg_mr
 
@@ -64,20 +75,25 @@ async def send_telegram_alert(message: str) -> bool:
 
 async def process_and_alert(data: Dict[str, Any]):
     """Analyzes telemetry data and triggers alerts if anomaly thresholds are crossed."""
-    # Assuming Pair 2 Logic Engine has flagged an anomaly in the data
     metrics = data.get("metrics", {})
     flood_index = metrics.get("flood_index", 0.0)
+    voltage = metrics.get("grid_voltage", 220.0)
     location = data.get("sensor_location", "UNKNOWN")
     
-    # Anomaly condition triggering translation and dispatch
+    anomaly_type = None
     if flood_index > 0.8:
+        anomaly_type = "FLOOD"
+    elif voltage < 150.0:
+        anomaly_type = "POWER"
+        
+    if anomaly_type:
         from hash_ledger import HashLedger
         ledger = HashLedger()
         
         # Generate the LLM message
-        message = format_alert_message(data)
+        message = format_alert_message(data, anomaly_type)
         
-        # Save to DB so frontend can fetch it (instead of frontend generating it)
+        # Save to DB so frontend can fetch it
         ledger.record_alert(location, message)
         
         # Dispatch to actual Telegram

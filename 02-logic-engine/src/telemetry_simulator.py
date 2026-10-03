@@ -37,22 +37,34 @@ def generate_telemetry_packet(tick: int) -> dict:
     flood_index = max(0.0, math.sin(tick * 0.05) * 0.3 + random.uniform(0.0, 0.2))
     
     # Inject a random anomaly spike occasionally
-    if random.random() > 0.95:
-        flood_index += 0.7  # Trigger the >0.8 threshold
+    is_flood = False
+    is_power_failure = False
+    
+    rand_val = random.random()
+    if rand_val > 0.96:
+        flood_index += 0.7  # Trigger flood
+        is_flood = True
+    elif rand_val < 0.04:
+        voltage = random.uniform(0.0, 50.0) # Total power grid failure
+        is_power_failure = True
     
     # Simulate Route Congestion (percentage 0-100)
     congestion = int(max(10, min(95, 40 + (math.cos(tick * 0.05) * 30) + random.uniform(-10, 10))))
+    
+    # Network mode fallback
+    network = "lora_radio_mesh" if (tick > 0 and (tick % 20 < 5)) else "satellite_api"
 
     return {
         "packet_id": f"SYN-{random.randint(1000, 9999)}",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "sensor_location": location,
+        "network_mode": network,
         "metrics": {
             "grid_voltage": round(voltage, 2),
             "flood_index": round(flood_index, 2),
             "route_congestion": congestion
         },
-        "status": "critical" if flood_index > 0.8 else "nominal"
+        "status": "critical" if (is_flood or is_power_failure) else "nominal"
     }
 
 def sign_packet(payload: bytes) -> str:
