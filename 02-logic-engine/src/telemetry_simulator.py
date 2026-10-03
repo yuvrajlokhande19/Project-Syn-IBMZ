@@ -9,7 +9,7 @@ import asyncio
 from datetime import datetime, timezone
 
 SECRET_KEY = b"mainframe_secret_key"
-MAINFRAME_URL = "http://127.0.0.1:8000/api/telemetry/ingest"
+MAINFRAME_URL = "http://148.100.112.151:8000/api/telemetry/ingest"
 
 # Realistic Locations in Nagpur based on the CARTO map
 LOCATIONS = [
@@ -56,9 +56,9 @@ def sign_packet(payload: bytes) -> str:
     return hmac.new(SECRET_KEY, payload, hashlib.sha256).hexdigest()
 
 async def stream_telemetry():
-    print(f"🚀 Starting Pair 2 Logic Engine: Telemetry Simulator")
-    print(f"📡 Target Mainframe: {MAINFRAME_URL}")
-    print(f"🔑 Using HMAC-SHA256 Edge Signing")
+    print(f"Starting Pair 2 Logic Engine: Telemetry Simulator")
+    print(f"Target Mainframe: {MAINFRAME_URL}")
+    print(f"Using HMAC-SHA256 Edge Signing")
     print("-" * 50)
     
     tick = 0
@@ -81,16 +81,16 @@ async def stream_telemetry():
                 response = await client.post(MAINFRAME_URL, content=payload_bytes, headers=headers)
                 
                 if response.status_code == 200:
-                    status_msg = "✅ ACCEPTED"
+                    status_msg = "[ACCEPTED]"
                 elif response.status_code == 401:
-                    status_msg = "❌ REJECTED (HMAC Fail)"
+                    status_msg = "[REJECTED (HMAC Fail)]"
                 else:
-                    status_msg = f"⚠️ ERROR {response.status_code}"
+                    status_msg = f"[ERROR {response.status_code}]"
                     
                 print(f"[{packet['timestamp']}] {status_msg} | {packet['sensor_location']} | Flood: {packet['metrics']['flood_index']}")
                 
             except httpx.RequestError as e:
-                print(f"🚨 Connection failed: Is the Mainframe running on port 8000? ({e})")
+                print(f"[FAILED] Connection failed: Is the Mainframe running on port 8000? ({e})")
             
             tick += 1
             await asyncio.sleep(2)  # Stream interval
@@ -99,4 +99,4 @@ if __name__ == "__main__":
     try:
         asyncio.run(stream_telemetry())
     except KeyboardInterrupt:
-        print("\n🛑 Telemetry Simulator Stopped.")
+        print("\nTelemetry Simulator Stopped.")
