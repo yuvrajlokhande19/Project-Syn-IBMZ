@@ -1,7 +1,33 @@
 import logging
+import requests
+import json
+import os
 from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
+
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImMzYzc5ZGUzNjEyNjRiMzA5ODM3NjQ5NzVlYjQzZTY1IiwiaCI6Im11cm11cjY0In0=")
+
+def generate_llm_dispatch(prompt: str) -> str:
+    """Uses OpenRouter AI to generate a real dynamic dispatch message."""
+    try:
+        response = requests.post(
+            url="https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "meta-llama/llama-3-8b-instruct:free",
+                "messages": [{"role": "user", "content": prompt}]
+            },
+            timeout=5
+        )
+        if response.status_code == 200:
+            return response.json()["choices"][0]["message"]["content"]
+    except Exception as e:
+        logger.error(f"OpenRouter Error: {e}")
+    return ""
 
 def format_alert_message(data: Dict[str, Any], anomaly_type: str, safe_route: str = "") -> str:
     """Formats telemetry data into a Telegram-friendly alert message in English, Hindi, and Marathi."""
@@ -19,41 +45,31 @@ def format_alert_message(data: Dict[str, Any], anomaly_type: str, safe_route: st
     net_flag = "📡 SATELLITE API" if network != "LORA_RADIO_MESH" else "📻 LORA RADIO MESH (SOVEREIGN MODE)"
     intel_string = f"\nEdge AI CCTV: {cctv} | O-Negative Blood: {blood} units"
     
+    # Generate the dynamic LLM message
+    llm_prompt = f"Write a VERY short (3 sentences max) emergency dispatch alert for {anomaly_type} at {location}. Include: {safe_route}. Write it in English, Hindi, and Marathi."
+    # We won't block the queue with a slow LLM call unless it's a real anomaly
+    llm_text = generate_llm_dispatch(llm_prompt) if anomaly_type != "NOMINAL" else ""
+    
     if anomaly_type == "FLOOD":
         status_en = f"Critical flooding detected! Rerouting ambulances via: {safe_route}"
-        status_hi = f"गंभीर बाढ़! एंबुलेंस का नया मार्ग: {safe_route}"
-        status_mr = f"गंभीर पूर! रुग्णवाहिकेचा नवीन मार्ग: {safe_route}"
     elif anomaly_type == "POWER_FAILURE":
         status_en = f"Power Grid Failure! ICU transitioning to backup generators."
-        status_hi = f"पावर ग्रिड फेल! आईसीयू बैकअप जनरेटर पर जा रहा है।"
-        status_mr = f"वीज पुरवठा खंडित! आयसीयू जनरेटरवर हलवत आहे."
     elif anomaly_type == "EARTHQUAKE":
         status_en = f"STRUCTURAL DAMAGE (EARTHQUAKE)! Immediate Fleet Reroute."
-        status_hi = f"भूकंप से क्षति! तुरंत फ्लीट को डायवर्ट करें।"
-        status_mr = f"भूकंपामुळे नुकसान! रुग्णवाहिकांना तत्काळ दुसरा मार्ग द्या."
     elif anomaly_type == "ORGAN_TRANSPLANT":
         status_en = f"HEART MATCH FOUND. GREEN CORRIDOR INITIATED. Auto-Insurance Claim Filed."
-        status_hi = f"हृदय मैच मिला। ग्रीन कॉरिडोर लागू। बीमा दावा स्वतः दर्ज।"
-        status_mr = f"हृदय जुळले. ग्रीन कॉरिडॉर सुरू. विमा दावा आपोआप दाखल."
     else:
         status_en = "General Anomaly."
-        status_hi = "सामान्य विसंगति।"
-        status_mr = "सामान्य विसंगती."
 
-    msg_en = f"🚨 *PROJECT SYN MAINFRAME ALERT* 🚨\n"
-    msg_en += f"Network: `{net_flag}`\n"
-    msg_en += f"Location: `{location}`{weather_info}{intel_string}\n"
-    msg_en += f"Status: {status_en}\n"
+    msg = f"🚨 *PROJECT SYN MAINFRAME ALERT* 🚨\n"
+    msg += f"Network: `{net_flag}`\n"
+    msg += f"Location: `{location}`{weather_info}{intel_string}\n"
+    msg += f"System Status: {status_en}\n"
     
-    msg_hi = f"\n🔴 *मुख्य सर्वर चेतावनी* 🔴\n"
-    msg_hi += f"स्थान: `{location}`{weather_info}{intel_string}\n"
-    msg_hi += f"स्थिति: {status_hi}\n"
+    if llm_text:
+        msg += f"\n---\n🤖 *AI DISPATCH INSTRUCTIONS*:\n{llm_text}\n"
     
-    msg_mr = f"\n⚠️ *मुख्य सर्व्हर इशारा* ⚠️\n"
-    msg_mr += f"ठिकाण: `{location}`{weather_info}{intel_string}\n"
-    msg_mr += f"स्थिती: {status_mr}\n"
-    
-    return msg_en + msg_hi + msg_mr
+    return msg
 
 def dispatch_alert(raw_message: str):
     logger.info(f"Telegram alert dispatched: \n{raw_message}")

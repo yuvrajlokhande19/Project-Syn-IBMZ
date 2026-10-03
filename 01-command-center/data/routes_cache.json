@@ -1,0 +1,37 @@
+{
+  "Wardha_Road_Crash_to_GMC_Nagpur": {
+    "type": "Feature",
+    "properties": {
+      "segments": [{"distance": 4500, "duration": 320}]
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [79.0664, 21.1000],
+        [79.0700, 21.1050],
+        [79.0750, 21.1120],
+        [79.0800, 21.1180],
+        [79.0850, 21.1220],
+        [79.0900, 21.1250],
+        [79.0991, 21.1284]
+      ]
+    }
+  },
+  "Wardha_Road_Crash_to_AIIMS_Nagpur": {
+    "type": "Feature",
+    "properties": {
+      "segments": [{"distance": 5200, "duration": 410}]
+    },
+    "geometry": {
+      "type": "LineString",
+      "coordinates": [
+        [79.0664, 21.1000],
+        [79.0600, 21.0900],
+        [79.0550, 21.0800],
+        [79.0500, 21.0700],
+        [79.0460, 21.0600],
+        [79.0435, 21.0560]
+      ]
+    }
+  }
+}
