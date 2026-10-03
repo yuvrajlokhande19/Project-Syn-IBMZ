@@ -3,217 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYN Command Center | System s390x</title>
+    <title>SYN Command Center | Nothing OS Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'dot': ['DotGothic16', 'sans-serif'],
+                        'mono': ['Space Mono', 'monospace'],
+                    },
+                    colors: {
+                        'nothing-bg': '#121212',
+                        'nothing-red': '#e53935',
+                        'nothing-gray': '#2a2a2a'
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         body {
-            background-color: #0d1117;
-            color: #c9d1d9;
-            font-family: 'Courier New', Courier, monospace;
-            overflow: hidden;
+            background-color: #1a1a1a;
+            background-image: radial-gradient(#333 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #eaeaea;
+            overflow-x: hidden;
         }
-        /* Stitch design */
+        
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
         .stitch-border {
-            border: 2px dashed #30363d;
-            padding: 20px;
-            border-radius: 8px;
-            background: rgba(22, 27, 34, 0.8);
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
         }
-        .neon-text {
-            color: #58a6ff;
-            text-shadow: 0 0 5px rgba(88, 166, 255, 0.5);
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+
+        /* Map Tweaks */
+        #map {
+            height: 100%;
+            width: 100%;
+            border-radius: 12px;
+            z-index: 1;
         }
-        .cyber-btn {
-            background-color: #238636;
+        
+        .leaflet-container {
+            background: #1a1a1a;
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* UI Elements */
+        .btn-nothing {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            border: 1px solid #2ea043;
             transition: all 0.3s ease;
         }
-        .cyber-btn:hover {
-            background-color: #2ea043;
-            box-shadow: 0 0 10px rgba(46, 160, 67, 0.8);
+        .btn-nothing:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
         }
-        .cyber-btn-red {
-            background-color: #da3633;
-            color: white;
-            border: 1px solid #f85149;
+        .btn-danger {
+            background: rgba(229, 57, 53, 0.1);
+            border: 1px dashed #e53935;
+            color: #e53935;
             transition: all 0.3s ease;
         }
-        .cyber-btn-red:hover {
-            background-color: #f85149;
-            box-shadow: 0 0 10px rgba(248, 81, 73, 0.8);
+        .btn-danger:hover {
+            background: #e53935;
+            color: white;
+            box-shadow: 0 0 15px rgba(229, 57, 53, 0.6);
+        }
+
+        .pulse-dot {
+            height: 10px;
+            width: 10px;
+            background-color: #4caf50;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px #4caf50;
+            animation: pulse-green 2s infinite;
+        }
+        .pulse-dot.alert {
+            background-color: #e53935;
+            box-shadow: 0 0 8px #e53935;
             animation: pulse-red 1s infinite;
         }
+
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(76, 175, 80, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+        }
         @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(248, 81, 73, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0); }
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(229, 57, 53, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(229, 57, 53, 0); }
         }
-        .map-container {
-            position: relative;
-            height: 400px;
-            width: 100%;
-            background-image: linear-gradient(#161b22 1px, transparent 1px),
-                              linear-gradient(90deg, #161b22 1px, transparent 1px);
-            background-size: 20px 20px;
-            background-color: #0d1117;
-            border: 1px solid #30363d;
-        }
-        .hospital-node {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            background-color: #58a6ff;
+
+        .hospital-icon {
+            background-color: white;
+            border: 2px solid #e53935;
+            color: #e53935;
             border-radius: 50%;
-            box-shadow: 0 0 8px #58a6ff;
-            transition: all 0.5s ease;
-        }
-        .hospital-node.danger {
-            background-color: #f85149;
-            box-shadow: 0 0 12px #f85149;
-        }
-        .log-screen {
-            font-size: 0.85rem;
-            color: #3fb950;
-            background: black;
-            border: 1px solid #30363d;
-            height: 200px;
-            overflow-y: auto;
-            padding: 10px;
-        }
-        .typing {
-            overflow: hidden;
-            border-right: .15em solid orange;
-            white-space: nowrap;
-            margin: 0 auto;
-            letter-spacing: .15em;
-            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+            text-align: center;
+            line-height: 24px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 0 10px rgba(229, 57, 53, 0.5);
         }
     </style>
 </head>
-<body class="p-6 h-screen flex flex-col gap-6">
+<body class="h-screen w-screen p-4 md:p-6 flex flex-col font-mono">
 
-    <header class="flex justify-between items-center border-b border-gray-700 pb-4">
-        <div>
-            <h1 class="text-3xl font-bold neon-text tracking-widest">SYN_COMMAND_CENTER</h1>
-            <p class="text-xs text-gray-400 mt-1">MAIN_FRAME: IBM LinuxONE s390x | STATUS: <span id="sys-status" class="text-green-500">OPTIMAL</span></p>
+    <!-- Header -->
+    <header class="glass-panel px-6 py-4 mb-6 flex justify-between items-center z-10 relative">
+        <div class="flex items-center gap-4">
+            <h1 class="text-3xl md:text-4xl font-dot tracking-widest uppercase">SYN Command<span class="text-nothing-red">_</span>Center</h1>
+            <div class="hidden md:block ml-4 px-3 py-1 stitch-border text-xs text-gray-400">
+                S390X // SOVEREIGNTY MODE
+            </div>
         </div>
-        <div class="flex gap-4">
-            <button class="cyber-btn px-4 py-2 rounded font-bold uppercase text-sm">Deploy Sovereignty Mode</button>
-            <button id="attack-btn" class="cyber-btn-red px-4 py-2 rounded font-bold uppercase text-sm">Simulate Attack</button>
+        <div class="flex items-center gap-6">
+            <div class="text-right">
+                <p class="text-xs text-gray-400 font-dot tracking-widest">SYSTEM STATUS</p>
+                <p id="sys-status-text" class="text-sm font-bold text-green-400 flex items-center justify-end gap-2">
+                    <span id="sys-status-dot" class="pulse-dot"></span> SECURE
+                </p>
+            </div>
         </div>
     </header>
 
-    <main class="flex-1 grid grid-cols-3 gap-6">
+    <!-- Main Grid -->
+    <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10 overflow-hidden">
         
-        <!-- Left Panel: Map & Telemetry -->
-        <div class="col-span-2 flex flex-col gap-6">
-            <div class="stitch-border flex-1">
-                <h2 class="text-lg font-bold mb-4 neon-text border-b border-gray-700 pb-2">NAGPUR CITY GRID <span class="text-xs text-gray-500 float-right">LIVE</span></h2>
-                <div class="map-container rounded overflow-hidden" id="city-map">
-                    <!-- Dynamic points will be injected here -->
+        <!-- Left Panel: Stats & Controls -->
+        <div class="lg:col-span-3 flex flex-col gap-6 h-full overflow-y-auto pb-4 pr-2">
+            
+            <div class="glass-panel p-5">
+                <h2 class="font-dot text-xl tracking-widest border-b border-white/10 pb-2 mb-4 text-gray-300">TELEMETRY_</h2>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-400">Grid Voltage</span>
+                        <span class="font-bold font-dot text-lg" id="val-voltage">220.4 V</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-400">Flood Index</span>
+                        <span class="font-bold font-dot text-lg" id="val-flood">0.12</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-400">Route Congestion</span>
+                        <span class="font-bold font-dot text-lg text-yellow-400" id="val-congestion">45%</span>
+                    </div>
+                    <div class="w-full bg-gray-800 h-1 mt-2">
+                        <div class="bg-white h-1 w-2/3"></div>
+                    </div>
                 </div>
+            </div>
+
+            <div class="glass-panel p-5 flex-1 flex flex-col">
+                <h2 class="font-dot text-xl tracking-widest border-b border-white/10 pb-2 mb-4 text-gray-300">CPACF_LEDGER</h2>
+                <div id="ledger-logs" class="flex-1 overflow-y-auto text-xs space-y-2 stitch-border p-3 bg-black/20">
+                    <div class="text-gray-500">[SYS] Ledger initialized...</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Center Panel: Map -->
+        <div class="lg:col-span-6 glass-panel p-2 relative h-[50vh] lg:h-full">
+            <div class="absolute top-4 left-4 z-20 pointer-events-none">
+                <h3 class="font-dot text-2xl drop-shadow-md text-white">NAGPUR_CITY</h3>
+                <p class="text-xs text-gray-300 bg-black/50 px-2 py-1 rounded inline-block mt-1 backdrop-blur-sm">LAT: 21.1458 | LNG: 79.0882</p>
             </div>
             
-            <div class="grid grid-cols-3 gap-4">
-                <div class="stitch-border text-center">
-                    <p class="text-xs text-gray-400">GRID VOLTAGE</p>
-                    <p class="text-2xl font-bold text-blue-400" id="metric-voltage">220.4V</p>
-                </div>
-                <div class="stitch-border text-center">
-                    <p class="text-xs text-gray-400">FLOOD INDEX</p>
-                    <p class="text-2xl font-bold text-green-400" id="metric-flood">0.12</p>
-                </div>
-                <div class="stitch-border text-center">
-                    <p class="text-xs text-gray-400">ROUTE CONGESTION</p>
-                    <p class="text-2xl font-bold text-yellow-400" id="metric-congestion">45%</p>
+            <div id="attack-overlay" class="hidden absolute inset-0 z-30 bg-nothing-red/20 backdrop-blur-sm flex items-center justify-center rounded-xl border border-nothing-red">
+                <div class="bg-black/80 px-8 py-6 stitch-border border-nothing-red text-center">
+                    <h2 class="font-dot text-4xl text-nothing-red mb-2 animate-pulse">HMAC_AUTH_FAILED</h2>
+                    <p class="text-white text-sm">MALICIOUS PAYLOAD INTERCEPTED.</p>
                 </div>
             </div>
+
+            <div id="map" class="rounded-xl filter grayscale contrast-125"></div>
         </div>
 
-        <!-- Right Panel: Ledger & AI -->
-        <div class="col-span-1 flex flex-col gap-6">
-            <div class="stitch-border h-1/2 flex flex-col">
-                <h2 class="text-lg font-bold mb-2 text-green-400 border-b border-gray-700 pb-2">CPACF HASH LEDGER</h2>
-                <div class="log-screen flex-1" id="ledger-logs">
-                    <div>[SYS] Ledger initialized...</div>
+        <!-- Right Panel: Triggers & AI -->
+        <div class="lg:col-span-3 flex flex-col gap-6 h-full overflow-y-auto pb-4 pl-2">
+            
+            <div class="glass-panel p-5">
+                <h2 class="font-dot text-xl tracking-widest border-b border-white/10 pb-2 mb-4 text-gray-300">EMERGENCY_TRIGGERS</h2>
+                <div class="space-y-3">
+                    <button class="w-full btn-nothing py-3 px-4 font-dot tracking-widest text-sm flex justify-between items-center group">
+                        DISPATCH AMBULANCE
+                        <span class="opacity-50 group-hover:opacity-100">→</span>
+                    </button>
+                    <button class="w-full btn-nothing py-3 px-4 font-dot tracking-widest text-sm flex justify-between items-center group">
+                        TOGGLE SOVEREIGNTY
+                        <span class="opacity-50 group-hover:opacity-100">→</span>
+                    </button>
+                    <button id="attack-btn" class="w-full btn-danger py-3 px-4 font-dot tracking-widest text-sm flex justify-between items-center">
+                        SIMULATE ATTACK
+                        <span>⚠️</span>
+                    </button>
                 </div>
             </div>
 
-            <div class="stitch-border h-1/2 flex flex-col">
-                <h2 class="text-lg font-bold mb-2 text-purple-400 border-b border-gray-700 pb-2">SNAP ML INFERENCE</h2>
-                <div class="flex-1 text-sm text-gray-300 relative">
-                    <div id="ml-status">
-                        > Model: Isolation Forest<br>
-                        > Location: Edge Device<br>
-                        > Status: Awaiting Anomalies...
-                    </div>
-                    <div id="attack-overlay" class="hidden absolute inset-0 bg-red-900/80 flex items-center justify-center border-2 border-red-500 rounded">
-                        <p class="text-white font-bold text-xl animate-pulse text-center">HMAC AUTHENTICATION FAILED<br><span class="text-sm">INJECTION BLOCKED</span></p>
+            <div class="glass-panel p-5 flex-1">
+                <h2 class="font-dot text-xl tracking-widest border-b border-white/10 pb-2 mb-4 text-gray-300">AI_INFERENCE</h2>
+                <div class="stitch-border p-4 bg-black/20 text-sm">
+                    <p class="text-gray-400 mb-2">> MODEL: Snap ML (Isolation Forest)</p>
+                    <p class="text-gray-400 mb-2">> LLM: Phi-3 Big-Endian</p>
+                    <p class="text-gray-400 mb-4">> LOC: Edge s390x Server</p>
+                    <div id="ai-status-text" class="text-green-400 font-bold type-writer">
+                        Waiting for anomalies...
                     </div>
                 </div>
             </div>
+
         </div>
-
     </main>
 
     <script>
-        // Simulate Map Points
-        const map = document.getElementById('city-map');
-        const hospitals = [];
-        for(let i=0; i<8; i++) {
-            const node = document.createElement('div');
-            node.className = 'hospital-node';
-            node.style.top = Math.random() * 80 + 10 + '%';
-            node.style.left = Math.random() * 80 + 10 + '%';
-            map.appendChild(node);
-            hospitals.push(node);
-        }
+        // Initialize Map (Centered on Nagpur)
+        const map = L.map('map', {
+            zoomControl: false,
+            attributionControl: false
+        }).setView([21.1458, 79.0882], 13);
+        
+        // Use CARTO Dark Basemap with API Key
+        const cartoUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?api_key=cb1_3nqq_1_a586e19e0c11eefc021be78b';
+        L.tileLayer(cartoUrl, {
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
 
-        // Simulate Live Data & Hashes
+        // Custom Hospital Icon
+        const hospitalIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: "<div class='hospital-icon'>H</div>",
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+        });
+
+        // Hospital Coordinates in Nagpur
+        const hospitals = [
+            [21.1418, 79.0822], // GMC
+            [21.1550, 79.0900], // Mayo
+            [21.1250, 79.0500], // AIIMS
+            [21.1350, 79.1000], // Lata Mangeshkar
+            [21.1600, 79.0700]  // Wockhardt
+        ];
+
+        const markers = [];
+        hospitals.forEach(coords => {
+            const marker = L.marker(coords, {icon: hospitalIcon}).addTo(map);
+            markers.push(marker);
+        });
+
+        // Simulated Telemetry & Ledger
         const ledger = document.getElementById('ledger-logs');
         setInterval(() => {
-            const hash = Array.from({length: 40}, () => Math.floor(Math.random()*16).toString(16)).join('');
+            // Generate Random SHA-256 Mock
+            const hash = Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
             const entry = document.createElement('div');
-            entry.innerText = `[OK] VERIFIED: ${hash}`;
+            entry.className = 'text-green-400/80 font-mono break-all';
+            entry.innerText = `[OK] ${hash.substring(0,32)}...`;
+            
             ledger.appendChild(entry);
+            if(ledger.childElementCount > 10) ledger.removeChild(ledger.firstChild);
             ledger.scrollTop = ledger.scrollHeight;
             
-            // Move nodes slightly to simulate dynamic data
-            hospitals.forEach(node => {
-                if(!node.classList.contains('danger')) {
-                    const top = parseFloat(node.style.top);
-                    const left = parseFloat(node.style.left);
-                    node.style.top = (top + (Math.random() * 2 - 1)) + '%';
-                    node.style.left = (left + (Math.random() * 2 - 1)) + '%';
-                }
-            });
+            // Fluctuate stats slightly
+            document.getElementById('val-voltage').innerText = (215 + Math.random() * 10).toFixed(1) + ' V';
+            document.getElementById('val-congestion').innerText = Math.floor(40 + Math.random() * 20) + '%';
             
-            // Fluctuate metrics
-            document.getElementById('metric-voltage').innerText = (215 + Math.random() * 10).toFixed(1) + 'V';
-            
-        }, 2000);
+        }, 1500);
 
         // Cyber Attack Simulation
         document.getElementById('attack-btn').addEventListener('click', () => {
+            // UI Changes
             document.getElementById('attack-overlay').classList.remove('hidden');
-            document.getElementById('sys-status').innerText = 'COMPROMISED - SHIELD ACTIVE';
-            document.getElementById('sys-status').className = 'text-red-500 font-bold blink';
-            hospitals[Math.floor(Math.random() * hospitals.length)].classList.add('danger');
+            document.getElementById('sys-status-text').className = 'text-sm font-bold text-nothing-red flex items-center justify-end gap-2';
+            document.getElementById('sys-status-dot').className = 'pulse-dot alert';
+            document.getElementById('sys-status-text').innerHTML = '<span id="sys-status-dot" class="pulse-dot alert"></span> BREACHED';
             
+            // Ledger Alert
             const entry = document.createElement('div');
-            entry.className = 'text-red-500 font-bold';
+            entry.className = 'text-nothing-red font-bold';
             entry.innerText = `[CRITICAL] INVALID HMAC DETECTED. DROPPING PACKET.`;
             ledger.appendChild(entry);
             ledger.scrollTop = ledger.scrollHeight;
+
+            // AI Status Alert
+            document.getElementById('ai-status-text').className = 'text-nothing-red font-bold';
+            document.getElementById('ai-status-text').innerText = 'Anomaly Detected! Rerouting ambulances...';
             
+            // Map Visuals - Flash map red
+            document.getElementById('map').style.filter = "grayscale(100%) sepia(100%) hue-rotate(300deg) saturate(500%) contrast(150%)";
+
+            // Reset after 4 seconds
             setTimeout(() => {
                 document.getElementById('attack-overlay').classList.add('hidden');
-                document.getElementById('sys-status').innerText = 'OPTIMAL';
-                document.getElementById('sys-status').className = 'text-green-500';
-                hospitals.forEach(n => n.classList.remove('danger'));
-            }, 5000);
+                document.getElementById('sys-status-text').className = 'text-sm font-bold text-green-400 flex items-center justify-end gap-2';
+                document.getElementById('sys-status-text').innerHTML = '<span id="sys-status-dot" class="pulse-dot"></span> SECURE';
+                document.getElementById('ai-status-text').className = 'text-green-400 font-bold';
+                document.getElementById('ai-status-text').innerText = 'Waiting for anomalies...';
+                document.getElementById('map').style.filter = "grayscale(100%) contrast(125%)";
+            }, 4000);
         });
     </script>
 </body>
