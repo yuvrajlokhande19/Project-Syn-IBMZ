@@ -3,8 +3,11 @@ import hashlib
 import hmac
 import logging
 from fastapi import FastAPI, HTTPException, Request, Depends
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
+import os
 
 from queue_worker import worker_task, QUEUE
 
@@ -27,6 +30,17 @@ async def lifespan(app: FastAPI):
         pass
 
 app = FastAPI(lifespan=lifespan, title="Project Syn - Mainframe Core Telemetry API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+frontend_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../01-command-center")
+app.mount("/ui", StaticFiles(directory=frontend_path, html=True), name="ui")
 
 class Metrics(BaseModel):
     grid_voltage: float

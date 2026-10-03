@@ -303,8 +303,8 @@
             if (isAttacked) return;
 
             try {
-                // Fetch through the local SSH Tunnel to bypass IBM Firewall
-                const res = await fetch('http://127.0.0.1:8000/api/telemetry/live');
+                // Fetch relative from the Mainframe Cloud API
+                const res = await fetch('/api/telemetry/live');
                 const json = await res.json();
                 
                 if (json.live_stream && json.live_stream.length > 0) {
