@@ -6,10 +6,14 @@ import random
 import math
 import httpx
 import asyncio
+import os
+from dotenv import load_dotenv
 from datetime import datetime, timezone
 
-SECRET_KEY = b"mainframe_secret_key"
-MAINFRAME_URL = "http://127.0.0.1:8000/api/telemetry/ingest"
+load_dotenv()
+
+SECRET_KEY = os.getenv("MAINFRAME_SECRET_KEY", "fallback_secret_key").encode('utf-8')
+MAINFRAME_URL = os.getenv("MAINFRAME_URL", "http://127.0.0.1:8000/api/telemetry/ingest")
 
 # Realistic Locations in Nagpur based on the CARTO map
 LOCATIONS = [

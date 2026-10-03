@@ -7,8 +7,12 @@ import hmac
 import hashlib
 import json
 import contextlib
+import os
+from dotenv import load_dotenv
 
-SECRET_KEY = b"mainframe_secret_key"
+load_dotenv()
+
+SECRET_KEY = os.getenv("MAINFRAME_SECRET_KEY", "fallback_secret_key").encode('utf-8')
 
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
