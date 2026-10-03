@@ -70,12 +70,40 @@
             <!-- Map Section -->
             <div class="glass-panel rounded-xl overflow-hidden relative flex-1 neon-border">
                 <div id="map"></div>
+                
+                <!-- NEW: EDGE AI CCTV CAMERA OVERLAY -->
+                <div class="absolute top-4 left-4 glass-panel p-2 rounded border border-[#00f3ff]/50 z-[400] w-56 bg-black/70 backdrop-blur-md shadow-[0_0_15px_#00f3ff55]">
+                    <div class="flex justify-between items-center mb-1 border-b border-[#00f3ff]/30 pb-1">
+                        <span class="text-[10px] text-[#00f3ff] font-bold tracking-widest">EDGE AI: CCTV-04</span>
+                        <span class="h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
+                    </div>
+                    <div id="cctv-feed" class="h-24 bg-gray-900 border border-gray-700 flex flex-col items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30"></div>
+                        <span id="cctv-status" class="text-gray-500 text-[10px] font-mono z-10">ANALYZING TRAFFIC...</span>
+                        
+                        <!-- Bounding Box (Hidden by Default) -->
+                        <div id="cctv-bounding-box" class="hidden absolute border border-red-500 w-16 h-16 top-4 left-1/2 -translate-x-1/2 shadow-[0_0_10px_#ef4444] z-10 transition-all duration-300">
+                            <span id="cctv-alert-text" class="absolute -top-4 left-0 text-[8px] bg-red-500 text-white px-1 whitespace-nowrap">FLOOD DETECTED</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="absolute top-4 right-4 glass-panel p-3 rounded border border-white/20 z-[400]">
                     <div class="text-xs text-[#00f3ff] mb-1 font-bold">IBM SNAP ML ANALYSIS</div>
                     <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Grid Volt:</span> <span id="val-voltage" class="text-white font-bold">-- V</span></div>
                     <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Flood Idx:</span> <span id="val-flood" class="text-white font-bold">--</span></div>
                     <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Traffic:</span> <span id="val-congestion" class="text-white font-bold">--%</span></div>
                 </div>
+
+                <!-- SOVEREIGN RADIO TERMINAL (Hidden by Default) -->
+                <div id="radio-terminal" class="hidden absolute bottom-4 right-4 glass-panel p-2 rounded border border-yellow-500/50 z-[400] w-64 bg-black/80 font-mono text-[9px] h-32 overflow-hidden flex flex-col shadow-[0_0_15px_#eab30855]">
+                    <div class="text-yellow-400 font-bold mb-1 border-b border-yellow-500/30 pb-1">📻 LORA RADIO SNIFFER</div>
+                    <div id="radio-logs" class="text-green-500 flex-1 overflow-y-auto space-y-1">
+                        <div>> TUNING 915 MHz...</div>
+                        <div>> AWAITING MESH PAYLOADS...</div>
+                    </div>
+                </div>
+
                 <div class="absolute bottom-4 left-4 glass-panel p-3 rounded border border-white/20 z-[400]">
                     <div class="text-xs text-[#00f3ff] mb-1 font-bold">IBM Z EXECUTION</div>
                     <div class="flex justify-between gap-8 text-sm"><span class="text-gray-400">Architecture:</span> <span class="text-white font-bold">s390x</span></div>
@@ -164,6 +192,30 @@
             marker.bindPopup(`<b class="text-black">${loc.name}</b>`);
             markers.push(marker);
         });
+
+        // CIVILIAN TAXI & AMBULANCE SWARM (Simulated Live)
+        const taxiIcon = L.divIcon({ className: 'custom-div-icon', html: "<div class='h-2 w-2 bg-yellow-400 rounded-full shadow-[0_0_8px_#facc15]'></div>", iconSize: [8, 8], iconAnchor: [4, 4] });
+        const ambIcon = L.divIcon({ className: 'custom-div-icon', html: "<div class='h-2 w-2 bg-red-500 rounded-full shadow-[0_0_8px_#ef4444]'></div>", iconSize: [8, 8], iconAnchor: [4, 4] });
+        const swarm = [];
+        
+        for (let i = 0; i < 40; i++) {
+            const isTaxi = i > 10;
+            const center = locations[Math.floor(Math.random() * locations.length)].coords;
+            const lat = center[0] + (Math.random() - 0.5) * 0.08;
+            const lng = center[1] + (Math.random() - 0.5) * 0.08;
+            const m = L.marker([lat, lng], {icon: isTaxi ? taxiIcon : ambIcon}).addTo(map);
+            swarm.push({ marker: m, lat: lat, lng: lng, isTaxi: isTaxi, state: "IDLE" });
+        }
+
+        // Swarm Patrolling Animation
+        setInterval(() => {
+            if (isAttacked) return;
+            swarm.forEach(unit => {
+                unit.lat += (Math.random() - 0.5) * 0.001;
+                unit.lng += (Math.random() - 0.5) * 0.001;
+                unit.marker.setLatLng([unit.lat, unit.lng]);
+            });
+        }, 1500);
 
         // --- CHART.JS INIT ---
         const ctx = document.getElementById('telemetryChart').getContext('2d');
@@ -268,11 +320,32 @@
             document.getElementById('sys-status').className = "px-6 py-2 rounded border border-red-500 text-red-500 flex items-center gap-2 bg-red-500/10";
             document.getElementById('sys-status').firstElementChild.className = "h-3 w-3 rounded-full bg-red-500 animate-ping";
             
+            // EDGE AI CCTV ACTIVATION
+            const cctvBox = document.getElementById('cctv-bounding-box');
+            if(cctvBox) {
+                cctvBox.classList.remove('hidden');
+                document.getElementById('cctv-status').innerText = "CRITICAL TARGET LOCKED";
+            }
+
+            // TAXI EMERGENCY DRAFT
+            const draftedTaxiIcon = L.divIcon({ className: 'custom-div-icon', html: "<div class='h-2 w-2 bg-orange-500 rounded-full shadow-[0_0_10px_#f97316] animate-ping'></div>", iconSize: [8, 8], iconAnchor: [4, 4] });
+            swarm.forEach(unit => {
+                if(unit.isTaxi) unit.marker.setIcon(draftedTaxiIcon);
+            });
+            
             setTimeout(() => {
-                document.querySelector('.neon-border-red').classList.remove('neon-border-red');
+                document.querySelector('.neon-border-red')?.classList.remove('neon-border-red');
                 document.getElementById('sys-status-text').innerText = "SYSTEM NOMINAL";
                 document.getElementById('sys-status').className = "px-6 py-2 rounded border border-[#00f3ff] text-[#00f3ff] flex items-center gap-2 bg-[#00f3ff]/10";
                 document.getElementById('sys-status').firstElementChild.className = "h-3 w-3 rounded-full bg-[#00f3ff] animate-ping";
+                
+                if(cctvBox) {
+                    cctvBox.classList.add('hidden');
+                    document.getElementById('cctv-status').innerText = "ANALYZING TRAFFIC...";
+                }
+                swarm.forEach(unit => {
+                    if(unit.isTaxi) unit.marker.setIcon(taxiIcon);
+                });
             }, 8000);
         }
 
@@ -300,6 +373,32 @@
                 
                 // Update text
                 document.getElementById('active-features').innerText = conf.features;
+
+                // Toggle Radio Terminal
+                const radioTerm = document.getElementById('radio-terminal');
+                const cctvPanel = document.getElementById('cctv-panel');
+                if(modeId === 'mode-sovereign') {
+                    if(radioTerm) radioTerm.classList.remove('hidden');
+                    if(cctvPanel) cctvPanel.classList.add('opacity-30', 'grayscale');
+                    
+                    // Simulate Radio Hex Dumps
+                    const logs = document.getElementById('radio-logs');
+                    if(logs && !window.radioInterval) {
+                        window.radioInterval = setInterval(() => {
+                            const hex = Array.from({length: 8}, () => Math.floor(Math.random()*256).toString(16).padStart(2, '0')).join('');
+                            const dbm = -Math.floor(Math.random()*40 + 70);
+                            logs.innerHTML += `<div>[${dbm}dBm] RX: ${hex}</div>`;
+                            if(logs.childElementCount > 6) logs.removeChild(logs.firstChild);
+                        }, 1000);
+                    }
+                } else {
+                    if(radioTerm) radioTerm.classList.add('hidden');
+                    if(cctvPanel) cctvPanel.classList.remove('opacity-30', 'grayscale');
+                    if(window.radioInterval) {
+                        clearInterval(window.radioInterval);
+                        window.radioInterval = null;
+                    }
+                }
             });
         });
 
