@@ -5,4 +5,4 @@ echo =========================================================
 
 pip install httpx
 
-python src\telemetry_simulator.py
+python -u src\telemetry_simulator.py

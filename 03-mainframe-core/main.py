@@ -1,32 +1,25 @@
 import asyncio
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from queue_worker import start_queue_worker, get_telemetry_queue, stop_queue_worker
+from hash_ledger import HashLedger
 import hmac
 import hashlib
-from fastapi import FastAPI, HTTPException, Request, Depends
-from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-from typing import Dict, Any
+import json
+import contextlib
 
-from queue_worker import start_queue_worker, stop_queue_worker, get_telemetry_queue
-
-# In a real system, this would be stored securely (e.g., AWS Secrets Manager, HashiCorp Vault)
 SECRET_KEY = b"mainframe_secret_key"
 
-def verify_hmac(body: bytes, signature: str) -> bool:
-    if not signature:
-        return False
-    expected_signature = hmac.new(SECRET_KEY, body, hashlib.sha256).hexdigest()
-    return hmac.compare_digest(expected_signature, signature)
-
-@asynccontextmanager
+@contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Start the background queue worker
+    # init db
+    HashLedger()
     worker_task = asyncio.create_task(start_queue_worker())
     yield
-    # Shutdown: Stop the background queue worker
     await stop_queue_worker()
-    await worker_task
+    worker_task.cancel()
 
-app = FastAPI(title="Mainframe Core API", lifespan=lifespan)
+app = FastAPI(title="Project Syn Mainframe Core", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -40,19 +33,22 @@ app.add_middleware(
 async def ingest_telemetry(request: Request):
     body = await request.body()
     signature = request.headers.get("X-Signature")
+    if not signature:
+        raise HTTPException(status_code=400, detail="Missing signature")
     
-    if not verify_hmac(body, signature):
+    expected_signature = hmac.new(SECRET_KEY, body, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(expected_signature, signature):
         raise HTTPException(status_code=401, detail="Invalid HMAC signature")
-        
+    
     try:
-        data = await request.json()
-    except Exception:
+        data = json.loads(body.decode("utf-8"))
+    except json.JSONDecodeError:
         raise HTTPException(status_code=400, detail="Invalid JSON payload")
-
+    
     queue = get_telemetry_queue()
     try:
         queue.put_nowait(data)
     except asyncio.QueueFull:
         raise HTTPException(status_code=503, detail="Queue is full, try again later")
-        
+    
     return {"status": "success", "message": "Telemetry accepted for processing"}
