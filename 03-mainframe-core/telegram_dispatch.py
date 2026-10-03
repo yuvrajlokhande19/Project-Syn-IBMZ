@@ -6,9 +6,9 @@ from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
 
-# Fetch credentials from environment variables
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
+# Fetch credentials from environment variables (with fallbacks to Synth City config)
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8691301021:AAE0hJe2nU_LqUDnj-HK6NMd037QIYwJtmc")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "8889864487")
 
 def format_alert_message(data: Dict[str, Any]) -> str:
     """Formats telemetry data into a Telegram-friendly alert message in English, Hindi, and Marathi."""
