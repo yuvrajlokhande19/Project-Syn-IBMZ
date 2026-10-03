@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  mainframe-core:
+    build:
+      context: ./03-mainframe-core
+      dockerfile: Dockerfile
+    container_name: syn_mainframe_core
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./03-mainframe-core/ledger.db:/app/ledger.db
+    restart: unless-stopped
+    environment:
+      - TELEGRAM_BOT_TOKEN=8691301021:AAE0hJe2nU_LqUDnj-HK6NMd037QIYwJtmc
+      - TELEGRAM_CHAT_ID=8889864487
