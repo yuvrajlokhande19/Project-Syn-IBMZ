@@ -69,3 +69,14 @@ Before generating, proposing, or modifying any code in this repository, you **MU
 3. **0:40 - Disaster Event:** Flood index rises. Snap ML detects ward depletion anomaly. Deterministic engine recalculates ambulance corridor.
 4. **1:00 - Sovereignty Failover:** Disconnect Wi-Fi. Cloud AI drops. Local Big-Endian Phi-3 on IBM LinuxONE s390x takes over, dispatching Marathi brief to Telegram.
 5. **1:20 - Close:** System survived cyberattack and total internet blackout on an IBM mainframe.
+
+
+## 🚨 MANDATORY TASK PROGRESSION SYSTEM 🚨
+After identifying the user's pair (Pair 1, Pair 2, or Pair 3), YOU MUST READ the corresponding instructions in:
+- Master Prompt/Pair 1 Frontend/AI_AGENT_INSTRUCTIONS.md
+- Master Prompt/Pair 2 Logic/AI_AGENT_INSTRUCTIONS.md
+- Master Prompt/Pair 3 Mainframe/AI_AGENT_INSTRUCTIONS.md
+
+**DO NOT WRITE ANY CODE UNTIL YOU HAVE READ THE AI_AGENT_INSTRUCTIONS.md AND THE TASK FILES (Task_1, Task_2, etc.) FOR YOUR DESIGNATED PAIR.**
+
+You must prompt the user for API keys (e.g., Telegram Bot Token, Mapbox/Leaflet config) before executing Tasks that require them.
