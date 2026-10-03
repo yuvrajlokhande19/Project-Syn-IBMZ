@@ -93,6 +93,12 @@
         </div>
     </main>
 
+    <!-- CYBER ATTACK TERMINAL OVERLAY -->
+    <div id="terminal-overlay" class="fixed inset-0 bg-black/90 z-[1000] hidden flex flex-col p-10 font-mono">
+        <div class="text-red-500 font-bold text-2xl mb-4 blink">>>> SYSTEM BREACH DETECTED: HMAC SIGNATURE INVALID <<<</div>
+        <div id="terminal-output" class="text-green-500 text-sm overflow-y-auto flex-1 whitespace-pre-wrap"></div>
+    </div>
+
     <script src="config.js"></script>
     <script>
         // --- MAPBOX / LEAFLET INIT ---
@@ -237,11 +243,34 @@
             document.getElementById('sys-status-text').innerText = "HMAC SIGNATURE BREACHED";
             document.getElementById('sys-status').className = "px-6 py-2 rounded border border-red-500 text-red-500 flex items-center gap-2 bg-red-500/20 shadow-[0_0_20px_#ff003c]";
             
-            ledger.innerHTML = `<div class="text-red-500 font-bold text-xl text-center mt-10 animate-pulse">⚠️ CONNECTION SEVERED ⚠️<br/>INVALID BIG-ENDIAN HASH</div>`;
+            // Show Terminal Overlay
+            const overlay = document.getElementById('terminal-overlay');
+            const termOut = document.getElementById('terminal-output');
+            overlay.classList.remove('hidden');
             
-            setTimeout(() => {
-                location.reload();
-            }, 5000);
+            let lines = 0;
+            const hackInterval = setInterval(() => {
+                const hex = Array.from({length: 16}, () => Math.floor(Math.random()*256).toString(16).padStart(2, '0')).join(' ');
+                const nonce = Math.random().toString(36).substring(2, 10);
+                const isRejected = Math.random() > 0.3;
+                
+                let line = `[${new Date().toISOString()}] INBOUND PACKET: ${hex} | NONCE: ${nonce} `;
+                if (isRejected) {
+                    line += `\n<span class="text-red-500">ERROR: HMAC-SHA256 VERIFICATION FAILED. PACKET DROPPED. (BIG-ENDIAN MISMATCH)</span>\n`;
+                } else {
+                    line += `\n<span class="text-yellow-500">WARNING: UNAUTHORIZED PORT SCAN DETECTED</span>\n`;
+                }
+                
+                termOut.innerHTML += line;
+                termOut.scrollTop = termOut.scrollHeight;
+                lines++;
+                
+                if (lines > 60) {
+                    clearInterval(hackInterval);
+                    termOut.innerHTML += `\n<span class="text-red-500 font-bold text-xl">>>> CONNECTION SEVERED. MAINFRAME LOCKDOWN INITIATED. <<<</span>`;
+                    setTimeout(() => location.reload(), 3000);
+                }
+            }, 50); // extremely fast scrolling
         });
     </script>
 </body>
