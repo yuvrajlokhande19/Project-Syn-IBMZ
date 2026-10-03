@@ -58,6 +58,8 @@ def format_alert_message(data: Dict[str, Any], anomaly_type: str, safe_route: st
         status_en = f"STRUCTURAL DAMAGE (EARTHQUAKE)! Immediate Fleet Reroute."
     elif anomaly_type == "ORGAN_TRANSPLANT":
         status_en = f"HEART MATCH FOUND. GREEN CORRIDOR INITIATED. Auto-Insurance Claim Filed."
+    elif anomaly_type == "RESOURCE_DEFICIT":
+        status_en = f"CRITICAL BLOOD SHORTAGE. IoT Radio Broadcast Sent. Civilian Swarm Driver assigned."
     else:
         status_en = "General Anomaly."
 

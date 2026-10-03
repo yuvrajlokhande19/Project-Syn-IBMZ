@@ -59,6 +59,7 @@ def generate_telemetry_packet(tick: int) -> dict:
     is_power_failure = False
     is_earthquake = False
     is_organ_transport = False
+    is_resource_deficit = False
     
     # CCTV & Supply Chain Defaults
     cctv_status = "CLEAR"
@@ -93,6 +94,13 @@ def generate_telemetry_packet(tick: int) -> dict:
         cctv_status = "GREEN_CORRIDOR_ACTIVE"
         ai_confidence = 0.99
         is_organ_transport = True
+    elif rand_val > 0.84 and rand_val <= 0.88:
+        # Public Hospital Resource Deficit (Blood/IoT Radio Share)
+        blood_o_neg = 0  # Critical depletion
+        cctv_status = "HOSPITAL_OVERFLOW"
+        ai_confidence = 0.96
+        is_resource_deficit = True
+        # Triggers radio broadcast for crowdsourced driver
     else:
         # Simulate Route Congestion normally
         congestion = int(max(10, min(95, 40 + (math.cos(tick * 0.05) * 30) + random.uniform(-10, 10))))
@@ -110,6 +118,9 @@ def generate_telemetry_packet(tick: int) -> dict:
     if is_organ_transport:
         supply_chain_data["organ_match"] = "HEART_VIABLE"
         supply_chain_data["insurance_claim"] = "AUTO_FILED_APPROVED"
+    if is_resource_deficit:
+        supply_chain_data["iot_radio_broadcast"] = "URGENT_BLOOD_REQ"
+        supply_chain_data["assigned_driver"] = f"TAXI-SWARM-{random.randint(100,999)}"
 
     return {
         "packet_id": f"SYN-{random.randint(1000, 9999)}",
@@ -130,7 +141,7 @@ def generate_telemetry_packet(tick: int) -> dict:
                 "confidence": ai_confidence
             }
         },
-        "status": "critical" if (is_flood or is_power_failure or is_earthquake or is_organ_transport) else "nominal"
+        "status": "critical" if (is_flood or is_power_failure or is_earthquake or is_organ_transport or is_resource_deficit) else "nominal"
     }
 
 def sign_packet(payload: bytes) -> str:

@@ -152,9 +152,14 @@
                 </div>
                 
                 <h3 class="text-green-500 font-bold tracking-widest mt-4 mb-2 text-xs border-t border-green-500/30 pt-2">HOSPITAL SUPPLY CHAIN</h3>
-                <button id="trigger-green-corridor" class="w-full bg-green-900/40 border border-green-500 text-green-400 hover:bg-green-500 hover:text-white rounded py-1 transition-all text-[10px] tracking-widest">
-                    [ INITIATE ORGAN TRANSPLANT (GREEN CORRIDOR) ]
-                </button>
+                <div class="grid grid-cols-1 gap-2">
+                    <button id="trigger-green-corridor" class="w-full bg-green-900/40 border border-green-500 text-green-400 hover:bg-green-500 hover:text-white rounded py-1 transition-all text-[10px] tracking-widest">
+                        [ INITIATE ORGAN TRANSPLANT (GREEN CORRIDOR) ]
+                    </button>
+                    <button id="trigger-blood-share" class="w-full bg-yellow-900/40 border border-yellow-500 text-yellow-400 hover:bg-yellow-500 hover:text-white rounded py-1 transition-all text-[10px] tracking-widest">
+                        [ IOT RADIO: BLOOD DEFICIT BROADCAST ]
+                    </button>
+                </div>
                 
                 <!-- Legacy catch-all for existing JS logic -->
                 <button id="attack-btn" class="hidden">SIMULATE CYBER ATTACK</button>
@@ -516,6 +521,53 @@
                 </div>
                 <div class="text-xs text-gray-300 border-l-2 border-[#00f3ff] pl-2 space-y-1">
                     <pre class="font-mono whitespace-pre-wrap">🚨 PROJECT SYN MAINFRAME ALERT 🚨\nLocation: GMC_Nagpur\nEdge AI CCTV: GREEN_CORRIDOR_ACTIVE | O-Negative Blood: VERIFIED\nStatus: HEART MATCH FOUND. GREEN CORRIDOR INITIATED. Auto-Insurance Claim Filed.</pre>
+                </div>
+            `;
+
+            setTimeout(() => {
+                location.reload();
+            }, 8000);
+        });
+
+        // IoT BLOOD SHARE PROTOCOL
+        document.getElementById('trigger-blood-share').addEventListener('click', () => {
+            isAttacked = true;
+            document.body.style.backgroundColor = "#1a1a00";
+            
+            const panels = document.querySelectorAll('.glass-panel');
+            panels.forEach(p => {
+                p.classList.remove('neon-border', 'neon-border-red', 'border-green-500');
+                p.classList.add('border-yellow-500', 'shadow-[0_0_15px_#eab308]');
+            });
+
+            document.getElementById('sys-status-text').innerText = "IoT RADIO: BLOOD SHARE ACTIVE";
+            document.getElementById('sys-status').className = "px-6 py-2 rounded border border-yellow-500 text-yellow-500 flex items-center gap-2 bg-yellow-500/20 shadow-[0_0_20px_#eab308]";
+            document.getElementById('sys-status').firstElementChild.className = "h-3 w-3 rounded-full bg-yellow-500 animate-ping";
+            
+            const cctvBox = document.getElementById('cctv-bounding-box');
+            if(cctvBox) {
+                cctvBox.classList.remove('hidden');
+                document.getElementById('cctv-status').innerText = "RADIO BROADCAST SENT";
+                cctvBox.className = "absolute border-2 border-yellow-500 w-16 h-16 top-4 left-1/2 -translate-x-1/2 shadow-[0_0_10px_#eab308] z-10";
+                document.getElementById('cctv-alert-text').innerText = "BLOOD DEFICIT";
+                document.getElementById('cctv-alert-text').className = "absolute -top-4 left-0 text-[8px] bg-yellow-500 text-white px-1 whitespace-nowrap";
+            }
+
+            // TAXI DRAFT FOR BLOOD TRANSPORT
+            const bloodTaxiIcon = L.divIcon({ className: 'custom-div-icon', html: "<div class='h-2 w-2 bg-yellow-300 rounded-full shadow-[0_0_10px_#fde047] animate-ping'></div>", iconSize: [8, 8], iconAnchor: [4, 4] });
+            swarm.forEach(unit => {
+                if(unit.isTaxi) unit.marker.setIcon(bloodTaxiIcon);
+            });
+            
+            // LLM Log Injection
+            const time = new Date().toLocaleTimeString();
+            document.getElementById('llm-logs').innerHTML = `
+                <div class="text-yellow-400 border border-yellow-500/30 p-2 rounded bg-yellow-900/20 mb-2 shadow-[0_0_10px_#eab308]">
+                    <span class="font-bold tracking-widest">[${time}] CRITICAL BLOOD SHORTAGE DETECTED</span><br/>
+                    <span class="text-white text-xs">Initiating OpenRouter Llama-3 Trilingual Dispatch...</span>
+                </div>
+                <div class="text-xs text-gray-300 border-l-2 border-[#00f3ff] pl-2 space-y-1">
+                    <pre class="font-mono whitespace-pre-wrap">🚨 PROJECT SYN MAINFRAME ALERT 🚨\nLocation: Mayo_Hospital\nEdge AI CCTV: HOSPITAL_OVERFLOW | O-Negative Blood: 0 units\nStatus: CRITICAL BLOOD SHORTAGE. IoT Radio Broadcast Sent. Civilian Swarm Driver assigned.</pre>
                 </div>
             `;
 
