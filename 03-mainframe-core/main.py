@@ -74,6 +74,17 @@ async def get_live_telemetry():
                     "data": json.loads(row["payload"])
                 })
                 
-        return {"status": "success", "live_stream": latest_data}
+            # Fetch latest alert
+            cursor.execute("SELECT timestamp, location, message FROM alerts ORDER BY id DESC LIMIT 1")
+            alert_row = cursor.fetchone()
+            latest_alert = None
+            if alert_row:
+                latest_alert = {
+                    "timestamp": alert_row["timestamp"],
+                    "location": alert_row["location"],
+                    "message": alert_row["message"]
+                }
+                
+        return {"status": "success", "live_stream": latest_data, "latest_alert": latest_alert}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -149,6 +149,7 @@
         const llmLogs = document.getElementById('llm-logs');
         let isAttacked = false;
         let lastHash = "";
+        let lastAlertTime = "";
 
         setInterval(async () => {
             if (isAttacked) return;
@@ -184,9 +185,10 @@
                     telemetryChart.data.datasets[1].data.push(data.metrics.grid_voltage);
                     telemetryChart.update();
 
-                    // Snap ML Anomaly Detection Logic
-                    if (data.metrics.flood_index > 0.8) {
-                        triggerAnomaly(data.sensor_location);
+                    // Check for Real Backend Alerts
+                    if (json.latest_alert && json.latest_alert.timestamp !== lastAlertTime) {
+                        lastAlertTime = json.latest_alert.timestamp;
+                        triggerAnomaly(json.latest_alert);
                     }
                 }
             } catch (err) {
@@ -194,17 +196,15 @@
             }
         }, 1500);
 
-        function triggerAnomaly(location) {
-            const time = new Date().toLocaleTimeString();
+        function triggerAnomaly(alertData) {
+            const time = new Date(alertData.timestamp).toLocaleTimeString();
             llmLogs.innerHTML = `
                 <div class="text-red-400 border border-red-500/30 p-2 rounded bg-red-900/20 mb-2 shadow-[0_0_10px_#ff003c]">
                     <span class="font-bold tracking-widest">[${time}] SNAP ML DETECTED ANOMALY</span><br/>
                     <span class="text-white text-xs">Generating Trilingual Dispatch...</span>
                 </div>
                 <div class="text-xs text-gray-300 border-l-2 border-[#00f3ff] pl-2 space-y-1">
-                    <p><b>EN:</b> Critical flooding at ${location}. Rerouting ambulances via Wardha Road.</p>
-                    <p><b>HI:</b> ${location} में गंभीर बाढ़। वर्धा रोड के रास्ते एंबुलेंस का मार्ग बदला जा रहा है।</p>
-                    <p><b>MR:</b> ${location} मध्ये गंभीर पूर. वर्धा रोडवरून रुग्णवाहिका वळवत आहे.</p>
+                    <pre class="font-mono whitespace-pre-wrap">${alertData.message}</pre>
                 </div>
             `;
             

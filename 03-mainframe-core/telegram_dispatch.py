@@ -63,8 +63,18 @@ async def process_and_alert(data: Dict[str, Any]):
     # Assuming Pair 2 Logic Engine has flagged an anomaly in the data
     metrics = data.get("metrics", {})
     flood_index = metrics.get("flood_index", 0.0)
+    location = data.get("sensor_location", "UNKNOWN")
     
     # Anomaly condition triggering translation and dispatch
     if flood_index > 0.8:
+        from hash_ledger import HashLedger
+        ledger = HashLedger()
+        
+        # Generate the LLM message
         message = format_alert_message(data)
+        
+        # Save to DB so frontend can fetch it (instead of frontend generating it)
+        ledger.record_alert(location, message)
+        
+        # Dispatch to actual Telegram
         await send_telegram_alert(message)

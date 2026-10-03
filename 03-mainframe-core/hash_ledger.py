@@ -27,6 +27,14 @@ class HashLedger:
                     hash TEXT NOT NULL
                 )
             ''')
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS alerts (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    timestamp TEXT NOT NULL,
+                    location TEXT NOT NULL,
+                    message TEXT NOT NULL
+                )
+            ''')
             # Insert genesis block if empty
             cursor.execute("SELECT COUNT(*) FROM telemetry_ledger")
             if cursor.fetchone()[0] == 0:
@@ -66,3 +74,14 @@ class HashLedger:
             conn.commit()
             
         return current_hash
+
+    def record_alert(self, location: str, message: str):
+        timestamp = datetime.utcnow().isoformat()
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                INSERT INTO alerts (timestamp, location, message)
+                VALUES (?, ?, ?)
+            ''', (timestamp, location, message))
+            conn.commit()
+
