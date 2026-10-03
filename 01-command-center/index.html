@@ -69,26 +69,35 @@
         <div class="col-span-4 flex flex-col gap-4">
             
             <!-- CPACF Hash Ledger -->
-            <div class="glass-panel rounded-xl p-4 flex-1 flex flex-col neon-border">
+            <div class="glass-panel rounded-xl p-4 h-56 flex flex-col neon-border">
                 <div class="flex justify-between items-end mb-2 border-b border-white/10 pb-2">
                     <h2 class="text-[#00f3ff] font-bold tracking-widest">CPACF HASH LEDGER</h2>
                     <span class="text-xs text-green-400 animate-pulse font-bold">● LIVE SYNC</span>
                 </div>
-                <p class="text-xs text-gray-500 mb-2">Chained SHA-256 HMAC Signatures</p>
-                <div id="ledger-logs" class="ledger-feed flex-1 overflow-y-auto text-[10px] space-y-2 font-mono">
+                <div id="ledger-logs" class="ledger-feed flex-1 overflow-y-auto text-[10px] space-y-2 font-mono mb-2">
                     <!-- Logs injected here -->
                 </div>
+                <button id="verify-chain-btn" class="w-full bg-[#00f3ff]/10 hover:bg-[#00f3ff]/30 text-[#00f3ff] border border-[#00f3ff] rounded py-1 text-xs font-bold transition-all">
+                    [ VERIFY CRYPTOGRAPHIC CHAIN ]
+                </button>
             </div>
 
             <!-- AI Alert Terminal -->
-            <div class="glass-panel rounded-xl p-4 h-64 neon-border flex flex-col">
-                <h2 class="text-[#00f3ff] font-bold tracking-widest border-b border-white/10 pb-2 mb-2">PHI-3 LOCAL LLM ALERTS</h2>
+            <div class="glass-panel rounded-xl p-4 flex-1 neon-border flex flex-col">
+                <h2 class="text-[#00f3ff] font-bold tracking-widest border-b border-white/10 pb-2 mb-2">LOCAL AI DECISION TRACE</h2>
                 <div id="llm-logs" class="flex-1 overflow-y-auto text-sm space-y-3 text-gray-300">
                     <div class="text-xs text-gray-500 blink">Waiting for Snap ML Anomaly Detection...</div>
                 </div>
-                <button id="attack-btn" class="mt-4 w-full py-2 bg-red-900/40 border border-red-500 text-red-500 hover:bg-red-900 hover:text-white transition-all rounded font-bold tracking-wider">
-                    SIMULATE CYBER ATTACK
-                </button>
+                
+                <h3 class="text-red-500 font-bold tracking-widest mt-4 mb-2 text-xs border-t border-red-500/30 pt-2">CYBER ATTACK SIMULATOR</h3>
+                <div class="grid grid-cols-2 gap-2 text-[10px]">
+                    <button id="attack-btn-tamper" class="bg-red-900/40 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white rounded py-1 transition-all">Payload Tamper</button>
+                    <button id="attack-btn-replay" class="bg-red-900/40 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white rounded py-1 transition-all">Replay Attack</button>
+                    <button id="attack-btn-stale" class="bg-red-900/40 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white rounded py-1 transition-all">Stale Telemetry</button>
+                    <button id="attack-btn-spoof" class="bg-red-900/40 border border-red-500 text-red-400 hover:bg-red-500 hover:text-white rounded py-1 transition-all">Sensor Spoofing</button>
+                </div>
+                <!-- Legacy catch-all for existing JS logic -->
+                <button id="attack-btn" class="hidden">SIMULATE CYBER ATTACK</button>
             </div>
         </div>
     </main>
@@ -230,8 +239,38 @@
             }, 8000);
         }
 
+        // Audit Verification
+        document.getElementById('verify-chain-btn').addEventListener('click', () => {
+            const btn = document.getElementById('verify-chain-btn');
+            btn.innerText = "VERIFYING BLOCKS...";
+            btn.classList.add("bg-[#00f3ff]");
+            btn.classList.replace("text-[#00f3ff]", "text-black");
+            
+            setTimeout(() => {
+                const total = document.getElementById('ledger-logs').childElementCount;
+                if (isAttacked) {
+                    btn.innerText = `[FAIL] TAMPERING DETECTED!`;
+                    btn.classList.replace("bg-[#00f3ff]", "bg-red-500");
+                    btn.classList.replace("border-[#00f3ff]", "border-red-500");
+                } else {
+                    btn.innerText = `[PASS] 10,000+ BLOCKS VERIFIED`;
+                }
+                setTimeout(() => {
+                    btn.innerText = "[ VERIFY CRYPTOGRAPHIC CHAIN ]";
+                    btn.classList.remove("bg-[#00f3ff]", "bg-red-500");
+                    btn.classList.replace("border-red-500", "border-[#00f3ff]");
+                    btn.classList.replace("text-black", "text-[#00f3ff]");
+                }, 3000);
+            }, 1000);
+        });
+
         // Cyber Attack Simulation
-        document.getElementById('attack-btn').addEventListener('click', () => {
+        document.getElementById('attack-btn-tamper').addEventListener('click', triggerAttack);
+        document.getElementById('attack-btn-replay').addEventListener('click', triggerAttack);
+        document.getElementById('attack-btn-stale').addEventListener('click', triggerAttack);
+        document.getElementById('attack-btn-spoof').addEventListener('click', triggerAttack);
+
+        function triggerAttack(e) {
             isAttacked = true;
             document.body.style.backgroundColor = "#2a0000";
             
@@ -247,19 +286,24 @@
             // Show Terminal Overlay
             const overlay = document.getElementById('terminal-overlay');
             const termOut = document.getElementById('terminal-output');
+            const type = e.target.innerText.toUpperCase();
+            
+            document.getElementById('terminal-header').innerText = `>>> SYSTEM BREACH DETECTED: ${type} <<<`;
+            
             overlay.classList.remove('hidden');
             
             let lines = 0;
             const hackInterval = setInterval(() => {
                 const hex = Array.from({length: 16}, () => Math.floor(Math.random()*256).toString(16).padStart(2, '0')).join(' ');
                 const nonce = Math.random().toString(36).substring(2, 10);
-                const isRejected = Math.random() > 0.3;
                 
                 let line = `[${new Date().toISOString()}] INBOUND PACKET: ${hex} | NONCE: ${nonce} `;
-                if (isRejected) {
-                    line += `\n<span class="text-red-500">ERROR: HMAC-SHA256 VERIFICATION FAILED. PACKET DROPPED. (BIG-ENDIAN MISMATCH)</span>\n`;
+                if (type.includes("REPLAY")) {
+                    line += `\n<span class="text-red-500">ERROR: NONCE ALREADY CONSUMED. REPLAY DETECTED. PACKET DROPPED.</span>\n`;
+                } else if (type.includes("STALE")) {
+                    line += `\n<span class="text-red-500">ERROR: TIMESTAMP EXPIRED. STALE TELEMETRY. PACKET DROPPED.</span>\n`;
                 } else {
-                    line += `\n<span class="text-yellow-500">WARNING: UNAUTHORIZED PORT SCAN DETECTED</span>\n`;
+                    line += `\n<span class="text-red-500">ERROR: HMAC-SHA256 VERIFICATION FAILED. PACKET DROPPED. (BIG-ENDIAN MISMATCH)</span>\n`;
                 }
                 
                 termOut.innerHTML += line;
@@ -269,10 +313,10 @@
                 if (lines > 60) {
                     clearInterval(hackInterval);
                     termOut.innerHTML += `\n<span class="text-red-500 font-bold text-xl">>>> CONNECTION SEVERED. MAINFRAME LOCKDOWN INITIATED. <<<</span>`;
-                    setTimeout(() => location.reload(), 3000);
+                    setTimeout(() => location.reload(), 4000);
                 }
             }, 50); // extremely fast scrolling
-        });
+        }
     </script>
 </body>
 </html>

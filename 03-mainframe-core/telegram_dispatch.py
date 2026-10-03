@@ -78,13 +78,26 @@ async def process_and_alert(data: Dict[str, Any]):
     metrics = data.get("metrics", {})
     flood_index = metrics.get("flood_index", 0.0)
     voltage = metrics.get("grid_voltage", 220.0)
+    congestion = metrics.get("route_congestion", 50)
     location = data.get("sensor_location", "UNKNOWN")
     
     anomaly_type = None
+    # CROSS-SENSOR CORROBORATION
+    # True Flood: High flood index + High congestion + Slight voltage instability
     if flood_index > 0.8:
-        anomaly_type = "FLOOD"
+        if congestion > 80 and voltage < 215.0:
+            anomaly_type = "FLOOD"
+        else:
+            logger.info(f"SINGLE SENSOR ANOMALY REJECTED: Flood sensor spiked at {location}, but traffic/power normal.")
+            return
+            
+    # True Power Failure: Voltage < 150 + Congestion increases due to dead lights
     elif voltage < 150.0:
-        anomaly_type = "POWER"
+        if congestion > 60:
+            anomaly_type = "POWER"
+        else:
+            logger.info(f"SINGLE SENSOR ANOMALY REJECTED: Voltage spike at {location}, but city traffic stable.")
+            return
         
     if anomaly_type:
         from hash_ledger import HashLedger

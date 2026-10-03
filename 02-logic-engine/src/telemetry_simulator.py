@@ -43,13 +43,16 @@ def generate_telemetry_packet(tick: int) -> dict:
     rand_val = random.random()
     if rand_val > 0.96:
         flood_index += 0.7  # Trigger flood
+        congestion = 95     # Roads flooded, congestion spikes
+        voltage -= 10.0     # Transformers strain under water
         is_flood = True
     elif rand_val < 0.04:
         voltage = random.uniform(0.0, 50.0) # Total power grid failure
+        congestion = 85     # Traffic lights dead, congestion spikes
         is_power_failure = True
-    
-    # Simulate Route Congestion (percentage 0-100)
-    congestion = int(max(10, min(95, 40 + (math.cos(tick * 0.05) * 30) + random.uniform(-10, 10))))
+    else:
+        # Simulate Route Congestion (percentage 0-100) normally
+        congestion = int(max(10, min(95, 40 + (math.cos(tick * 0.05) * 30) + random.uniform(-10, 10))))
     
     # Network mode fallback
     network = "lora_radio_mesh" if (tick > 0 and (tick % 20 < 5)) else "satellite_api"
@@ -57,6 +60,8 @@ def generate_telemetry_packet(tick: int) -> dict:
     return {
         "packet_id": f"SYN-{random.randint(1000, 9999)}",
         "timestamp": datetime.now(timezone.utc).isoformat(),
+        "unix_timestamp": time.time(),
+        "nonce": os.urandom(8).hex(),
         "sensor_location": location,
         "network_mode": network,
         "metrics": {

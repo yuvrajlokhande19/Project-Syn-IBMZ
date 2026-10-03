@@ -33,6 +33,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+import time
+
+# Rolling cache for replay protection
+SEEN_NONCES = set()
+
 @app.post("/api/telemetry/ingest")
 async def ingest_telemetry(request: Request):
     body = await request.body()
@@ -40,14 +45,33 @@ async def ingest_telemetry(request: Request):
     if not signature:
         raise HTTPException(status_code=400, detail="Missing signature")
     
+    # 1. Cryptographic Authentication (HMAC)
     expected_signature = hmac.new(SECRET_KEY, body, hashlib.sha256).hexdigest()
     if not hmac.compare_digest(expected_signature, signature):
-        raise HTTPException(status_code=401, detail="Invalid HMAC signature")
+        raise HTTPException(status_code=401, detail="SECURITY BREACH: Invalid HMAC signature. Payload Tampering Detected.")
     
     try:
         data = json.loads(body.decode("utf-8"))
     except json.JSONDecodeError:
         raise HTTPException(status_code=400, detail="Invalid JSON payload")
+        
+    # 2. Replay Attack Protection (Nonce)
+    nonce = data.get("nonce")
+    if not nonce:
+        raise HTTPException(status_code=400, detail="SECURITY BREACH: Missing Nonce.")
+    if nonce in SEEN_NONCES:
+        raise HTTPException(status_code=401, detail="SECURITY BREACH: Replay Attack Detected. Nonce already consumed.")
+    SEEN_NONCES.add(nonce)
+    
+    # Keep cache manageable
+    if len(SEEN_NONCES) > 10000:
+        SEEN_NONCES.clear()
+        
+    # 3. Stale Telemetry Protection (Timestamp)
+    packet_time = data.get("unix_timestamp", 0)
+    current_time = time.time()
+    if abs(current_time - packet_time) > 15:
+        raise HTTPException(status_code=401, detail="SECURITY BREACH: Stale Telemetry. Potential Replay/Delay Attack.")
     
     queue = get_telemetry_queue()
     try:
@@ -55,7 +79,7 @@ async def ingest_telemetry(request: Request):
     except asyncio.QueueFull:
         raise HTTPException(status_code=503, detail="Queue is full, try again later")
     
-    return {"status": "success", "message": "Telemetry accepted for processing"}
+    return {"status": "success", "message": "Telemetry verified and accepted"}
 
 import sqlite3
 
