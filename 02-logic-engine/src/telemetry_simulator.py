@@ -57,19 +57,37 @@ def generate_telemetry_packet(tick: int) -> dict:
     # Inject a random anomaly spike occasionally
     is_flood = False
     is_power_failure = False
+    is_earthquake = False
+    
+    # CCTV & Supply Chain Defaults
+    cctv_status = "CLEAR"
+    ai_confidence = 0.99
+    blood_o_neg = random.randint(50, 200)
+    diesel_fuel = random.randint(1000, 5000)
     
     rand_val = random.random()
     if rand_val > 0.96:
         flood_index += 0.7  # Trigger flood
         congestion = 95     # Roads flooded, congestion spikes
         voltage -= 10.0     # Transformers strain under water
+        cctv_status = "ROAD_SUBMERGED"
+        ai_confidence = 0.94
         is_flood = True
     elif rand_val < 0.04:
         voltage = random.uniform(0.0, 50.0) # Total power grid failure
         congestion = 85     # Traffic lights dead, congestion spikes
+        cctv_status = "BLACKOUT_DETECTED"
         is_power_failure = True
+    elif rand_val > 0.92 and rand_val <= 0.96:
+        # Earthquake Scenario
+        voltage = 0.0
+        congestion = 100
+        blood_o_neg -= random.randint(20, 50)  # Mass casualties
+        cctv_status = "STRUCTURAL_DAMAGE"
+        ai_confidence = 0.98
+        is_earthquake = True
     else:
-        # Simulate Route Congestion (percentage 0-100) normally
+        # Simulate Route Congestion normally
         congestion = int(max(10, min(95, 40 + (math.cos(tick * 0.05) * 30) + random.uniform(-10, 10))))
     
     # Network mode fallback
@@ -89,9 +107,17 @@ def generate_telemetry_packet(tick: int) -> dict:
             "flood_index": round(flood_index, 2),
             "route_congestion": congestion,
             "temperature": weather["temperature"],
-            "windspeed": weather["windspeed"]
+            "windspeed": weather["windspeed"],
+            "supply_chain": {
+                "blood_units_o_neg": blood_o_neg,
+                "diesel_fuel_liters": diesel_fuel
+            },
+            "cctv_intel": {
+                "status": cctv_status,
+                "confidence": ai_confidence
+            }
         },
-        "status": "critical" if (is_flood or is_power_failure) else "nominal"
+        "status": "critical" if (is_flood or is_power_failure or is_earthquake) else "nominal"
     }
 
 def sign_packet(payload: bytes) -> str:
