@@ -1,3 +1,11 @@
+
+
+---
+### 🌐 LIVE REFERENCE DEMO
+**Dashboard Preview:** [https://yuvrajlokhande19.github.io/Project-Syn-IBMZ/01-command-center/index.html](https://yuvrajlokhande19.github.io/Project-Syn-IBMZ/01-command-center/index.html)
+*(Use this as the visual baseline for Pair 1 frontend tasks)*
+---
+
 # 🖥️ 01-command-center | Pair 1 Territory (Frontend Team)
 ### *Military Command Center Dashboard | React + TailwindCSS*
 

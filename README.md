@@ -1,3 +1,11 @@
+
+
+---
+### 🌐 LIVE REFERENCE DEMO
+**Dashboard Preview:** [https://yuvrajlokhande19.github.io/Project-Syn-IBMZ/01-command-center/index.html](https://yuvrajlokhande19.github.io/Project-Syn-IBMZ/01-command-center/index.html)
+*(Use this as the visual baseline for Pair 1 frontend tasks)*
+---
+
 # 🛡️ Project Syn: Trustworthy AI for Critical Infrastructure
 ### *IBM Z Datathon 2026 | Track: Real-Time AI for Critical Decisions (Tech for Good)*
 

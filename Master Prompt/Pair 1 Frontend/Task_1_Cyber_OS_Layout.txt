@@ -1,2 +1,4 @@
+Reference Demo URL: https://yuvrajlokhande19.github.io/Project-Syn-IBMZ/01-command-center/index.html
+
 Assignee: Member 1
 Create the base 'Cyber OS' grey/dark-mode React application. Set up Tailwind configuration. Use an aesthetic that looks like an enterprise command center. Do not integrate APIs yet.
