@@ -1,0 +1,2 @@
+Assignee: Member 2
+Integrate Leaflet.js or an absolute positioned CSS grid. Create randomized map points representing hospitals and infrastructure. Map points should pulse dynamically based on incoming JSON state.

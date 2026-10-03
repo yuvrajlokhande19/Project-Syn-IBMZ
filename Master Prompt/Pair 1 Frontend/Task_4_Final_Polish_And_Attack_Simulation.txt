@@ -1,0 +1,2 @@
+Assignee: Member 1 & 2
+Implement the Red 'Simulate Cyber Attack' button. Ensure it flashes the screen red and displays 'HMAC AUTHENTICATION FAILED'. Deploy the reference UI to GitHub Pages.

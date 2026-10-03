@@ -1,0 +1,2 @@
+Assignee: Member 5 & 6
+Set up the `s390x_Miniconda_Setup.md`. Write the local LLM fallback (Big-Endian Phi-3) code.

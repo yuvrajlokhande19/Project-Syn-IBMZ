@@ -1,0 +1,2 @@
+Assignee: Member 6
+Implement `asyncio.Queue` to buffer writes. Create the tamper-evident HMAC-SHA256 SQLite ledger.

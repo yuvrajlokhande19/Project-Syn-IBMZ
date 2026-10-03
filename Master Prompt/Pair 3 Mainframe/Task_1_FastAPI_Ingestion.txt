@@ -1,0 +1,2 @@
+Assignee: Member 5
+Build `main.py` using FastAPI. Implement the `/api/telemetry/ingest` endpoint. Validate the HMAC signature from Pair 2's data.

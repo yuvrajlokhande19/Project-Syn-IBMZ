@@ -1,0 +1,2 @@
+Assignee: Member 3
+Write a Python script using pandas/numpy to simulate realistic hospital data. Use sine waves for grid voltage and slow-moving averages for flood indices. Do not use basic random.

@@ -1,0 +1,90 @@
+=============================================================================
+PROJECT SYN - MASTER EXECUTION DOCUMENT
+=============================================================================
+EVENT: Hack2Skill IBM Z Datathon (Oct 17-18, 2026)
+TEAM: 6 Members (Divided into 3 isolated pairs)
+OBJECTIVE: Build an enterprise-grade, air-gapped disaster triage engine that 
+survives cyberattacks and cloud outages to win a global finalist spot.
+
+-----------------------------------------------------------------------------
+1. THE WINNING STRATEGY (WHY THIS BEATS 450+ TEAMS)
+-----------------------------------------------------------------------------
+Most teams build fragile AI chatbots. We are building a mathematically 
+bounded resilience engine. Our winning narrative is NOT "look at our AI." 
+Our winning narrative is "watch us try to break our system, and watch the 
+IBM Mainframe survive it."
+
+The architecture relies on 3 "Modes of Sovereignty":
+- CONNECTED: Normal operations with Cloud AI and Telegram.
+- SOVEREIGN: Internet dies; system fails over to a local AI on IBM s390x.
+- DEGRADED: Local AI crashes; system falls back to hard-coded algorithms.
+
+-----------------------------------------------------------------------------
+2. THE ARCHITECTURE (THE 3 PILLARS)
+-----------------------------------------------------------------------------
+PILLAR 1: Trusted Telemetry (The Firewall)
+Fake hospital sensors generate data and sign it with a secret HMAC key. If a 
+hacker modifies the data, the signature breaks, and our backend drops it 
+before the AI even sees it.
+
+PILLAR 2: Safety-Bounded Composite AI
+- Snap ML (Random Forest): Runs natively on s390x to detect anomalies.
+- Deterministic Logic: A hard-coded algorithm makes the life-or-death 
+  ambulance routing decision (NOT the AI).
+- Big-Endian Phi-3 LLM: Translates the final decision into Hindi/Marathi. 
+  It acts only as a translator, never a decision-maker.
+
+PILLAR 3: Tamper-Evident Audit Chain
+Every accepted payload and decision is chained via HMAC-SHA256 into an SQLite 
+database, simulating IBM Z's native CPACF cryptographic hardware acceleration.
+
+-----------------------------------------------------------------------------
+3. TEAM ISOLATION & REPOSITORY RULES
+-----------------------------------------------------------------------------
+The GitHub repository (Project-Syn-IBMZ) is locked. No one pushes directly 
+to the 'main' branch. All work requires a Pull Request (PR).
+
+PAIR 1 (Frontend UI) -> Folder: /01-command-center
+Task: Build the React/Tailwind dashboard with the Red Attack Button.
+Rule: Reads JSON data only. Never touches Python or the database.
+
+PAIR 2 (Logic Engine) -> Folder: /02-logic-engine
+Task: Write Python scripts to generate fake hospital data and sign it with 
+HMAC. Train the Snap ML anomaly model.
+Rule: Never touches the UI. Delivers .pkl/.pmml models to Pair 3.
+
+PAIR 3 (Mainframe Core - YUVRAJ & PERSON 6) -> Folder: /03-mainframe-core
+Task: Build the FastAPI server on the LinuxONE s390x VM. Ingest data, verify 
+HMAC signatures, write to SQLite, and manage the AI failover.
+Rule: The only pair that touches the live IBM Z server.
+
+-----------------------------------------------------------------------------
+4. THE CANONICAL DATA CONTRACT
+-----------------------------------------------------------------------------
+This is the only way the 3 pairs communicate. Pair 2 generates this, Pair 3 
+validates it, and Pair 1 displays it:
+
+{
+  "packet_id": "SYN-9942",
+  "timestamp": "2026-10-03T18:58:28Z",
+  "sensor_location": "Nagpur_Central_ICU",
+  "metrics": {
+    "grid_voltage": 218.5,
+    "flood_index": 0.12,
+    "route_congestion": 45
+  },
+  "nonce": "8f4e2a",
+  "hmac_signature": "a8b3f9d2c1..." 
+}
+
+-----------------------------------------------------------------------------
+5. THE 90-SECOND WINNING DEMO SEQUENCE (FOR OCT 17)
+-----------------------------------------------------------------------------
+0:00 - Show normal dashboard. Telemetry is flowing.
+0:20 - Click "Simulate Cyber Attack". Dashboard flashes RED: "HMAC FAILED".
+0:40 - Simulate a flood. Snap ML detects the anomaly. Deterministic logic reroutes.
+1:00 - Physically disable laptop Wi-Fi. Show Cloud AI drop. Show Local IBM Z AI 
+       instantly take over and output a Marathi Telegram dispatch.
+1:20 - Close pitch: "AegisCore/Syn survived a cyberattack and a total cloud 
+       blackout. That is the power of IBM LinuxONE."
+=============================================================================

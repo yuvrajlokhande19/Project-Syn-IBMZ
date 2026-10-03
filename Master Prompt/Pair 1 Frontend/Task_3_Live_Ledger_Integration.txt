@@ -1,0 +1,2 @@
+Assignee: Member 1 & 2
+Connect to the Pair 3 FastAPI endpoints. Display the incoming SHA-256 hashes in a scrolling terminal-style text window. Show CPU Energy Saved metrics.

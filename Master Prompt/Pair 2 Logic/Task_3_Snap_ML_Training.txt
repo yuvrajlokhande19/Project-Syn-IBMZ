@@ -1,0 +1,2 @@
+Assignee: Member 3 & 4
+Use IBM Snap ML (or Scikit-Learn fallback) to train an Isolation Forest / Random Forest on the telemetry to detect anomalies. Export to `.pkl` or `.pmml`.
