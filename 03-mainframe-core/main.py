@@ -2,6 +2,7 @@ import asyncio
 import hmac
 import hashlib
 from fastapi import FastAPI, HTTPException, Request, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from typing import Dict, Any
 
@@ -26,6 +27,14 @@ async def lifespan(app: FastAPI):
     await worker_task
 
 app = FastAPI(title="Mainframe Core API", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/api/telemetry/ingest")
 async def ingest_telemetry(request: Request):
