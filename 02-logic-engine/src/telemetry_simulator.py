@@ -96,6 +96,7 @@ def generate_telemetry_packet(tick: int) -> dict:
         is_organ_transport = True
     elif rand_val > 0.84 and rand_val <= 0.88:
         # Public Hospital Resource Deficit (Blood/IoT Radio Share)
+        congestion = 50
         blood_o_neg = 0  # Critical depletion
         cctv_status = "HOSPITAL_OVERFLOW"
         ai_confidence = 0.96
