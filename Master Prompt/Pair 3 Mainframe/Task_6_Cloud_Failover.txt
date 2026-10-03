@@ -1,0 +1,2 @@
+﻿# TASK 6: LINUXONE CLOUD FAILOVER
+The frontend is now being hosted natively on http://148.100.112.151/. Update the queue_worker.py to ensure telemetry is strictly prioritized by bandwidth when the satellite link fails, optimizing for local s390x execution.

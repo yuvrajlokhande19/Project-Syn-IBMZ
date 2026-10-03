@@ -1,0 +1,2 @@
+﻿# TASK 6: RESPONSIVE GLASSMORPHISM
+Ensure the new light-silver glassmorphism dashboard is fully responsive for mobile devices. The judges may view this on their phones or tablets.

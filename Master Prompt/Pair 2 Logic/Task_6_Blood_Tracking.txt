@@ -1,0 +1,2 @@
+﻿# TASK 6: DECENTRALIZED BLOOD TRACKING
+Expand the IoT Blood Sharing protocol in 	elemetry_simulator.py. Add a mechanism to verify that the crowdsourced driver has successfully picked up the blood units.
