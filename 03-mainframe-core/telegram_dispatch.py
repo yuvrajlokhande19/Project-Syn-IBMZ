@@ -1,46 +1,70 @@
 import logging
 import asyncio
+import os
+import httpx
 from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
 
-# Stub configuration
-TELEGRAM_BOT_TOKEN = "stub_bot_token"
-TELEGRAM_CHAT_ID = "stub_chat_id"
+# Fetch credentials from environment variables
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 
 def format_alert_message(data: Dict[str, Any]) -> str:
-    """Formats telemetry data into a Telegram-friendly alert message."""
-    device_id = data.get("device_id", "Unknown Device")
-    status = data.get("status", "Unknown Status")
+    """Formats telemetry data into a Telegram-friendly alert message in English, Hindi, and Marathi."""
+    packet_id = data.get("packet_id", "UNKNOWN-ID")
+    location = data.get("sensor_location", "Unknown Location")
     
-    msg = f"🚨 *Mainframe Core Alert* 🚨\n\n"
-    msg += f"Device: `{device_id}`\n"
-    msg += f"Status: `{status}`\n"
+    # In a real s390x environment, a local Big-Endian LLM (like Phi-3) would dynamically translate this.
+    # For this task, we format the deterministic output in 3 languages.
     
-    if "metrics" in data:
-        msg += "\n*Metrics:*\n"
-        for k, v in data.get("metrics", {}).items():
-            msg += f"• {k}: {v}\n"
-            
-    return msg
+    msg_en = f"🚨 *MAINFRAME ALERT* 🚨\n"
+    msg_en += f"Packet: `{packet_id}`\n"
+    msg_en += f"Location: `{location}`\n"
+    msg_en += "Status: Anomaly Detected! Rerouting ambulances.\n"
+    
+    msg_hi = f"\n🔴 *मुख्य सर्वर चेतावनी* 🔴\n"
+    msg_hi += f"पैकेट: `{packet_id}`\n"
+    msg_hi += f"स्थान: `{location}`\n"
+    msg_hi += "स्थिति: विसंगति पाई गई! एंबुलेंस का मार्ग बदला जा रहा है।\n"
+    
+    msg_mr = f"\n⚠️ *मुख्य सर्व्हर इशारा* ⚠️\n"
+    msg_mr += f"पॅकेट: `{packet_id}`\n"
+    msg_mr += f"ठिकाण: `{location}`\n"
+    msg_mr += "स्थिती: विसंगती आढळली! रुग्णवाहिकेचा मार्ग बदलत आहे.\n"
+    
+    return msg_en + msg_hi + msg_mr
 
 async def send_telegram_alert(message: str) -> bool:
-    """Stub function to send a message via Telegram Bot API."""
-    # In a real implementation, this would use aiohttp or httpx to POST to 
-    # https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage
-    logger.info(f"Simulating Telegram alert dispatch to chat {TELEGRAM_CHAT_ID}")
-    logger.debug(f"Message content:\n{message}")
+    """Sends a message via Telegram Bot API using httpx."""
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        logger.warning("Telegram credentials missing. Skipping alert dispatch.")
+        return False
+        
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    payload = {
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": message,
+        "parse_mode": "Markdown"
+    }
     
-    # Simulate network delay
-    await asyncio.sleep(0.1)
-    
-    return True
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.post(url, json=payload)
+            response.raise_for_status()
+            logger.info("Telegram alert sent successfully.")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to send Telegram alert: {e}")
+            return False
 
 async def process_and_alert(data: Dict[str, Any]):
-    """Analyzes telemetry data and triggers alerts if necessary."""
-    # Example condition: send alert if status is 'error' or 'critical'
-    status = data.get("status", "").lower()
+    """Analyzes telemetry data and triggers alerts if anomaly thresholds are crossed."""
+    # Assuming Pair 2 Logic Engine has flagged an anomaly in the data
+    metrics = data.get("metrics", {})
+    flood_index = metrics.get("flood_index", 0.0)
     
-    if status in ("error", "critical"):
+    # Anomaly condition triggering translation and dispatch
+    if flood_index > 0.8:
         message = format_alert_message(data)
         await send_telegram_alert(message)
