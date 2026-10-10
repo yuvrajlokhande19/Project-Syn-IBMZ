@@ -1,5 +1,4 @@
 #!/bin/bash
-export PATH="$PATH:/home/linux1/.local/bin"
 echo "[1/5] Stopping stale processes..."
 screen -X -S api quit 2>/dev/null || true
 screen -X -S sim quit 2>/dev/null || true
@@ -12,12 +11,12 @@ pkill -f 'ssh.*localhost.run' 2>/dev/null || true
 sleep 2
 
 echo "[2/5] Starting FastAPI Mainframe Core on 0.0.0.0:8000..."
-screen -dmS api bash -c 'export PATH="$PATH:/home/linux1/.local/bin" && cd /home/linux1/Project-Syn-IBMZ/03-mainframe-core && uvicorn main:app --host 0.0.0.0 --port 8000 > /home/linux1/api.log 2>&1'
+screen -dmS api bash -c '/usr/bin/python3 -m uvicorn main:app --app-dir /home/linux1/Project-Syn-IBMZ/03-mainframe-core --host 0.0.0.0 --port 8000 > /home/linux1/api.log 2>&1'
 sleep 3
 
 echo "[3/5] Starting Edge Telemetry Simulator..."
-screen -dmS sim bash -c 'export PATH="$PATH:/home/linux1/.local/bin" && cd /home/linux1/Project-Syn-IBMZ && python3 02-logic-engine/telemetry_simulator.py > /home/linux1/sim.log 2>&1'
-sleep 1
+screen -dmS sim bash -c 'cd /home/linux1/Project-Syn-IBMZ && /usr/bin/python3 02-logic-engine/telemetry_simulator.py > /home/linux1/sim.log 2>&1'
+sleep 2
 
 echo "[4/5] Starting Public Tunnels (Pinggy and Localhost.run)..."
 > /home/linux1/pinggy.log
