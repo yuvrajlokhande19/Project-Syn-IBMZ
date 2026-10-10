@@ -5,6 +5,8 @@ __pycache__/
 .Python
 env/
 venv/
+venv2/
+scratch/
 .venv/
 ENV/
 node_modules/
