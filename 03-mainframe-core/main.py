@@ -612,27 +612,17 @@ async def chat_with_incident_commander(req: AIChatRequest):
             f"Zero-Trust CPACF Gate: Active (0.24ms HMAC verification)."
         )
         provider_used = "IBM LinuxONE s390x Local Engine (Air-Gapped)"
-    elif current_mode == "openrouter":
-        text, model = generate_openrouter_cascade(system_prompt)
-        if text:
-            resp_text = text
-            provider_used = f"OpenRouter Multi-Cloud ({model})"
-    elif current_mode == "google":
-        text, model = generate_gemini_cascade(system_prompt)
-        if text:
-            resp_text = text
-            provider_used = f"Google Gemini ({model})"
     else:
-        # Default Auto-Failover: Gemini -> OpenRouter -> Local
-        text, model = generate_gemini_cascade(system_prompt)
-        if text:
-            resp_text = text
-            provider_used = f"Google Gemini ({model})"
+        # Dashboard Assistant directly leverages OpenRouter Llama 3.3 70B as primary AI engine!
+        text_or, model_or = generate_openrouter_cascade(system_prompt)
+        if text_or:
+            resp_text = text_or
+            provider_used = f"OpenRouter AI Assistant ({model_or})"
         else:
-            text_or, model_or = generate_openrouter_cascade(system_prompt)
-            if text_or:
-                resp_text = text_or
-                provider_used = f"OpenRouter ({model_or})"
+            text_gem, model_gem = generate_gemini_cascade(system_prompt)
+            if text_gem:
+                resp_text = text_gem
+                provider_used = f"Google Gemini Failover ({model_gem})"
 
     if not resp_text:
         resp_text = (
@@ -643,6 +633,7 @@ async def chat_with_incident_commander(req: AIChatRequest):
         )
         provider_used = "IBM LinuxONE s390x Local Fallback"
 
+
     elapsed_ms = round((time.time() - start_t) * 1000, 2)
     return {
         "status": "success",
@@ -652,6 +643,20 @@ async def chat_with_incident_commander(req: AIChatRequest):
         "mode": current_mode,
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     }
+
+
+# -----------------------------------------------------------------------------
+# OpenRouteService (ORS) & OSRM Real Road Corridor Endpoint
+# -----------------------------------------------------------------------------
+from routing_algorithm import fetch_live_road_corridor
+
+@app.get("/api/routing/corridor")
+async def get_routing_corridor(origin: str = "GMC_Nagpur", destination: str = "AIIMS_Nagpur"):
+    """
+    Calculates turn-by-turn road network coordinates connecting hospital nodes
+    using OpenRouteService (ORS) / OpenStreetMap OSRM with deterministic fallback.
+    """
+    return fetch_live_road_corridor(origin, destination)
 
 
 # -----------------------------------------------------------------------------

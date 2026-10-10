@@ -459,9 +459,11 @@
                         <span>ACTIVE CORRIDOR: <strong class="text-white" id="gis-corridor-name">Wardha Road Elevated Expressway</strong></span>
                         <span class="text-zinc-600">|</span>
                         <span>TRAUMA DESTINATION: <strong class="text-emerald-400">AIIMS Nagpur (Apex Center)</strong></span>
+                        <span class="text-zinc-600">|</span>
+                        <span>METRICS: <strong class="text-amber-400" id="gis-corridor-metrics">16.03 km · 18.5 min</strong></span>
                     </div>
                     <div>
-                        <span>ROUTING LOGIC: <strong class="text-sky-400 font-bold">DIJKSTRA DETERMINISTIC GRAPH</strong></span>
+                        <span>ROUTING LOGIC: <strong class="text-sky-400 font-bold" id="gis-routing-engine">OPENROUTESERVICE / OSRM ROAD ENGINE</strong></span>
                     </div>
                 </div>
             </div>
@@ -811,10 +813,10 @@
                 <div class="flex items-center gap-2.5">
                     <span class="text-xl">🤖</span>
                     <div>
-                        <h2 class="text-sm font-bold text-white uppercase tracking-wider">AEGISCORE AI INCIDENT COMMANDER</h2>
+                        <h2 class="text-sm font-bold text-white uppercase tracking-wider">OPENROUTER AI ASSISTANT // LLAMA 3.3 70B</h2>
                         <div class="text-[10px] text-zinc-400 font-mono flex items-center gap-2">
-                            <span>ACTIVE MODEL:</span>
-                            <span id="chat-model-badge" class="px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800 font-semibold">Google Gemini 3.8 Flash (High TPM)</span>
+                            <span>ENGINE:</span>
+                            <span id="chat-model-badge" class="px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800 font-semibold">OpenRouter Llama 3.3 70B</span>
                             <span class="text-emerald-400">● ONLINE</span>
                         </div>
                     </div>
@@ -847,8 +849,8 @@
                 <div class="flex items-start gap-2.5">
                     <div class="h-7 w-7 rounded-full bg-indigo-950 border border-indigo-700 flex items-center justify-center text-xs flex-shrink-0">🤖</div>
                     <div class="p-3 rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-200 max-w-[85%] leading-relaxed space-y-1">
-                        <div class="text-[10px] text-indigo-400 font-mono font-bold">AI INCIDENT COMMANDER · LINUXONE s390x</div>
-                        <p>Welcome to AegisCore Command. I provide operational intelligence for the Nagpur Emergency Grid. You can query hospital blood supplies, active flood corridors, blocked cyberattacks, or request tactical briefs in <strong>English, Hindi, or Marathi</strong>.</p>
+                        <div class="text-[10px] text-indigo-400 font-mono font-bold">OPENROUTER AI ASSISTANT · LLAMA 3.3 70B · LINUXONE s390x</div>
+                        <p>Welcome to AegisCore Command. I am your <strong>OpenRouter Multi-Cloud AI Assistant</strong> powered by Meta Llama 3.3 70B. I provide real-time operational intelligence across the Nagpur Emergency Grid, CPACF cryptographic audits, and OpenRouteService hospital corridors. You can query me in <strong>English, Hindi, or Marathi</strong>.</p>
                     </div>
                 </div>
             </div>
@@ -1114,11 +1116,35 @@
             m.bindPopup(`<div class="font-mono text-xs p-1"><strong>${h.name}</strong><br><span class="text-emerald-500">Node Online</span></div>`);
         });
 
-        const activeRouteCoords = [
+        let activeRouteCoords = [
             [21.1000, 79.0664], [21.1050, 79.0700], [21.1120, 79.0750], 
             [21.1180, 79.0800], [21.1220, 79.0850], [21.1250, 79.0900], [21.1284, 79.0991]
         ];
-        const routeLine = L.polyline(activeRouteCoords, { color: '#0ea5e9', weight: 4, dashArray: '6, 6' }).addTo(map);
+        let routeLine = L.polyline(activeRouteCoords, { color: '#0ea5e9', weight: 4, dashArray: '6, 6' }).addTo(map);
+
+        // Real-Time Road Corridor Fetcher (OpenRouteService / OSRM / Native Graph)
+        async function loadRoadCorridor(origin = "GMC_Nagpur", destination = "AIIMS_Nagpur", isGreen = false) {
+            try {
+                const res = await fetch(`/api/routing/corridor?origin=${origin}&destination=${destination}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.coordinates && data.coordinates.length > 0) {
+                        map.removeLayer(routeLine);
+                        const lineColor = isGreen ? '#10b981' : '#0ea5e9';
+                        const lineWeight = isGreen ? 6 : 4;
+                        routeLine = L.polyline(data.coordinates, { color: lineColor, weight: lineWeight, opacity: 0.95 }).addTo(map);
+                        
+                        const metricsEl = document.getElementById('gis-corridor-metrics');
+                        const engineEl = document.getElementById('gis-routing-engine');
+                        if (metricsEl) metricsEl.innerText = `${data.distance_km} km · ${data.duration_min} min`;
+                        if (engineEl) engineEl.innerText = data.engine.toUpperCase();
+                    }
+                }
+            } catch (e) {
+                console.log('Road corridor sync notice:', e);
+            }
+        }
+        loadRoadCorridor("GMC_Nagpur", "AIIMS_Nagpur", false);
 
         // 4. Telemetry Graph (Chart.js)
         const ctx = document.getElementById('overviewTelemetryChart').getContext('2d');
@@ -1365,7 +1391,7 @@
 
         // 12. Green Corridor & Blood Triggers
         document.getElementById('btn-corridor-action').addEventListener('click', () => {
-            routeLine.setStyle({ color: '#10b981', weight: 6 });
+            loadRoadCorridor("GMC_Nagpur", "AIIMS_Nagpur", true);
             document.getElementById('briefing-en').innerHTML = `<span class="text-[10px] text-emerald-400 font-bold">[EN] GREEN CORRIDOR ACTIVE</span><p class="text-xs text-zinc-300">Wardha Road Expressway preemption locked green for donor transport.</p>`;
             document.getElementById('briefing-hi').innerHTML = `<span class="text-[10px] text-emerald-400 font-bold">[HI] ग्रीन कॉरिडोर सक्रिय</span><p class="text-xs text-zinc-300 font-sans">अंगदान परिवहन के लिए वर्धा एक्सप्रेसवे सिग्नल ग्रीन किए गए।</p>`;
             document.getElementById('briefing-mr').innerHTML = `<span class="text-[10px] text-emerald-400 font-bold">[MR] ग्रीन कॉरिडोअर सुरू</span><p class="text-xs text-zinc-300 font-sans">अवयव वाहतुकीसाठी वर्धा महामार्ग सिग्नल पूर्णपणे मोकळे करण्यात आले आहेत.</p>`;
