@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AEGISCORE // IBM LinuxONE Disaster Operations & Resilience Center</title>
+    <title>PROJECT SYN // IBM LinuxONE Disaster Operations & Resilience Center</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Modern Enterprise Typography -->
@@ -132,7 +132,7 @@
                 </div>
                 <div>
                     <div class="flex items-center gap-2.5">
-                        <span class="text-sm font-black tracking-wider text-white uppercase">AEGISCORE // PROJECT SYN</span>
+                        <span class="text-sm font-black tracking-wider text-white uppercase">PROJECT SYN <span class="text-sky-400 font-mono text-xs font-semibold">// AEGIS AI</span></span>
                         <span class="text-[10px] px-2 py-0.5 rounded-full font-mono bg-sky-950/80 text-sky-400 border border-sky-800 font-semibold">
                             LINUXONE s390x
                         </span>
@@ -207,6 +207,9 @@
             </button>
             <button class="nav-tab px-4 py-2 tab-btn-inactive rounded-t transition-all flex items-center gap-2" data-tab="tab-mesh">
                 <span>📻</span> Sub-GHz Radio Mesh
+            </button>
+            <button class="nav-tab px-4 py-2 tab-btn-inactive rounded-t transition-all flex items-center gap-2" data-tab="tab-stock">
+                <span>🏥</span> Critical Stock Sentinel
             </button>
         </nav>
     </header>
@@ -752,6 +755,238 @@
                                 <span>Trauma Paramedic Swarm (Units 1-4)</span>
                                 <span class="text-emerald-400">P2P Mesh Relays Active</span>
                             </div>
+                        </div>
+                    </div>
+                </div>
+        </section>
+        
+        <!-- ==================================================================== -->
+        <!-- TAB 7: AUTONOMOUS HOSPITAL STOCK SENTINEL & TELEGRAM DISPATCH        -->
+        <!-- ==================================================================== -->
+        <section id="tab-stock" class="tab-panel space-y-4 hidden">
+            <!-- Header Banner -->
+            <div class="admin-card p-4">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-3 border-b border-zinc-800">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-rose-400 text-lg">🏥</span>
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider">
+                                AUTONOMOUS HOSPITAL CRITICAL STOCK SENTINEL
+                            </h3>
+                            <span class="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono text-[10px] border border-zinc-700">
+                                TECHNICAL TAXONOMY: SENTINEL-INVENTORY-CORE-v2.4
+                            </span>
+                        </div>
+                        <p class="text-xs text-zinc-400 mt-0.5">
+                            Real-Time Medical Supply Chain Arbitrator · Zero-Trust IoT Blood & Diesel Reorder Protocol
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs font-mono">
+                        <span class="px-2.5 py-1 rounded bg-emerald-950/80 text-emerald-400 border border-emerald-800 flex items-center gap-1.5 font-bold">
+                            <span class="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span>TELEGRAM DISPATCH NODE: 8889864487 [CMO ACTIVE]</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Critical Inventory KPI Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-3 pt-4 font-mono">
+                    <!-- O-Neg Blood -->
+                    <div class="admin-card-subtle p-3.5 space-y-2 border-l-2 border-l-rose-500">
+                        <div class="flex justify-between items-center text-[10px] text-zinc-400 uppercase">
+                            <span>O-Neg Blood Bank</span>
+                            <span id="stock-blood-badge" class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold">OPTIMAL</span>
+                        </div>
+                        <div class="text-2xl font-black text-white" id="stock-blood-val">14 Units</div>
+                        <div class="text-[10px] text-zinc-400">Emergency Min: 10 Units</div>
+                        <button id="btn-trigger-blood-swarm" class="w-full mt-1 px-2 py-1 rounded bg-rose-950 hover:bg-rose-900 text-rose-300 text-[10px] font-sans font-semibold border border-rose-800 transition">
+                            🚨 DRAFT TAXI SWARM
+                        </button>
+                    </div>
+
+                    <!-- Diesel Generator Fuel -->
+                    <div class="admin-card-subtle p-3.5 space-y-2 border-l-2 border-l-amber-500">
+                        <div class="flex justify-between items-center text-[10px] text-zinc-400 uppercase">
+                            <span>Genset Diesel Reserve</span>
+                            <span id="stock-diesel-badge" class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold">OPTIMAL</span>
+                        </div>
+                        <div class="text-2xl font-black text-white" id="stock-diesel-val">3,200 L</div>
+                        <div class="text-[10px] text-zinc-400">Burn Rate: 98 L/h (<span id="stock-diesel-hours">32.6h</span> Left)</div>
+                        <button id="btn-trigger-diesel-reorder" class="w-full mt-1 px-2 py-1 rounded bg-amber-950 hover:bg-amber-900 text-amber-300 text-[10px] font-sans font-semibold border border-amber-800 transition">
+                            ⛽ DISPATCH FUEL TANKER
+                        </button>
+                    </div>
+
+                    <!-- Liquid Medical Oxygen -->
+                    <div class="admin-card-subtle p-3.5 space-y-2 border-l-2 border-l-sky-500">
+                        <div class="flex justify-between items-center text-[10px] text-zinc-400 uppercase">
+                            <span>Medical Oxygen Plant</span>
+                            <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold">55 PSI VAC</span>
+                        </div>
+                        <div class="text-2xl font-black text-white" id="stock-o2-val">84 Cylinders</div>
+                        <div class="text-[10px] text-zinc-400">ICU Reserve: 28.0 Hours Available</div>
+                        <span class="block text-[10px] text-sky-400 font-sans mt-2">Auto Load-Shedding Active</span>
+                    </div>
+
+                    <!-- Trauma Surgical Kits -->
+                    <div class="admin-card-subtle p-3.5 space-y-2 border-l-2 border-l-indigo-500">
+                        <div class="flex justify-between items-center text-[10px] text-zinc-400 uppercase">
+                            <span>Trauma Surgical Kits</span>
+                            <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold">LEVEL-1 READY</span>
+                        </div>
+                        <div class="text-2xl font-black text-white" id="stock-trauma-val">42 Kits</div>
+                        <div class="text-[10px] text-zinc-400">Sterilization: Certified 100%</div>
+                        <span class="block text-[10px] text-indigo-400 font-sans mt-2">Cardiac/Neurosurg Pack</span>
+                    </div>
+
+                    <!-- Critical ICU Antibiotics -->
+                    <div class="admin-card-subtle p-3.5 space-y-2 border-l-2 border-l-teal-500">
+                        <div class="flex justify-between items-center text-[10px] text-zinc-400 uppercase">
+                            <span>Critical Antibiotics</span>
+                            <span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold">STABLE</span>
+                        </div>
+                        <div class="text-2xl font-black text-white" id="stock-meds-val">1,200 Vials</div>
+                        <div class="text-[10px] text-zinc-400">Cold Storage: 4.1°C Compliant</div>
+                        <span class="block text-[10px] text-teal-400 font-sans mt-2">Epi, Norepi, Ceftriaxone</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Role-Based Telegram Telemetry Nodes Panel -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- Active Telegram Dispatch Table -->
+                <div class="admin-card p-4 space-y-3 font-mono text-xs">
+                    <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
+                        <h4 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+                            <span>📱</span> TELEGRAM DISPATCH NODES & RBAC PERMISSIONS
+                        </h4>
+                        <span class="text-[11px] text-zinc-400">1 BOT TOKEN · 5 ROLES</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-zinc-900/90 text-zinc-400 text-[10px] uppercase">
+                                <tr>
+                                    <th class="p-2">Chat ID</th>
+                                    <th class="p-2">Assigned Role</th>
+                                    <th class="p-2">Dispatched Telemetry</th>
+                                    <th class="p-2">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-zinc-800 text-zinc-300">
+                                <tr>
+                                    <td class="p-2 font-bold text-sky-400">8889864487</td>
+                                    <td class="p-2">Disaster Commander (CMO)</td>
+                                    <td class="p-2 text-[10px]">Full Alerts, Evacuations, Ledger, Stock</td>
+                                    <td class="p-2"><span class="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 text-[10px]">ACTIVE</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-bold text-zinc-400">Fleet Swarm</td>
+                                    <td class="p-2">Ambulance Coordinator</td>
+                                    <td class="p-2 text-[10px]">Turn-by-turn road corridors only</td>
+                                    <td class="p-2"><span class="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 text-[10px]">STANDBY</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-bold text-zinc-400">Supply Hub</td>
+                                    <td class="p-2">ICU Logistics Lead</td>
+                                    <td class="p-2 text-[10px]">Blood deficit, diesel &lt; 4h alerts</td>
+                                    <td class="p-2"><span class="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 text-[10px]">STANDBY</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-bold text-zinc-400">Fire Authority</td>
+                                    <td class="p-2">Fire &amp; Grid Dispatcher</td>
+                                    <td class="p-2 text-[10px]">Grid collapse, transformer fire</td>
+                                    <td class="p-2"><span class="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 text-[10px]">STANDBY</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Register Node Form -->
+                    <div class="pt-3 border-t border-zinc-800 space-y-2">
+                        <span class="text-[11px] font-bold text-zinc-300 font-sans uppercase">Register Dynamic Telegram Telemetry Node</span>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            <input id="input-tg-chat-id" type="text" placeholder="Enter Telegram Chat ID..." class="px-3 py-1.5 rounded bg-zinc-950 border border-zinc-800 text-white font-mono text-xs focus:outline-none focus:border-sky-500">
+                            <select id="select-tg-role" class="px-3 py-1.5 rounded bg-zinc-950 border border-zinc-800 text-zinc-200 text-xs focus:outline-none focus:border-sky-500">
+                                <option value="AMBULANCE_DRIVER">Ambulance Fleet Coordinator</option>
+                                <option value="LOGISTICS_LEAD">ICU Supply Logistics Lead</option>
+                                <option value="FIRE_DISPATCH">Fire &amp; Electrical Grid Authority</option>
+                                <option value="WARD_STAFF">Public Ward Medical Staff</option>
+                            </select>
+                            <button id="btn-register-tg-node" class="px-3 py-1.5 rounded bg-sky-900/80 hover:bg-sky-800 text-sky-200 font-sans font-semibold text-xs border border-sky-700 transition">
+                                ➕ ASSIGN &amp; SEND TELEMETRY
+                            </button>
+                        </div>
+                        <div id="tg-node-feedback" class="text-[11px] text-emerald-400 hidden font-mono"></div>
+                    </div>
+                </div>
+
+                <!-- Edge CCTV Metadata Streams & Kiosk Settings -->
+                <div class="space-y-4">
+                    <!-- CCTV Camera Feeds -->
+                    <div class="admin-card p-4 space-y-3 font-mono text-xs">
+                        <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
+                            <h4 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+                                <span>📹</span> EDGE AI CCTV SENSOR METADATA STREAMS
+                            </h4>
+                            <span class="text-[10px] text-emerald-400 font-bold">5/5 FEEDS ONLINE</span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="p-2 rounded bg-zinc-950 border border-zinc-800 flex justify-between items-center">
+                                <div>
+                                    <span class="font-bold text-white">CAM-01: GMC Nagpur Trauma Entrance</span>
+                                    <div class="text-[10px] text-zinc-500">RTSP: 192.168.10.41:554 · AI Inference: 15ms</div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px] font-bold">GREEN_CORRIDOR_ACTIVE</span>
+                            </div>
+                            <div class="p-2 rounded bg-zinc-950 border border-zinc-800 flex justify-between items-center">
+                                <div>
+                                    <span class="font-bold text-white">CAM-02: Sitabuldi Metro Interchange</span>
+                                    <div class="text-[10px] text-zinc-500">RTSP: 192.168.10.42:554 · AI Inference: 18ms</div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800 text-[10px] font-bold">ROAD_CLEAR</span>
+                            </div>
+                            <div class="p-2 rounded bg-zinc-950 border border-zinc-800 flex justify-between items-center">
+                                <div>
+                                    <span class="font-bold text-white">CAM-03: Substation Transformer Bay</span>
+                                    <div class="text-[10px] text-zinc-500">Thermal IR Matrix · AI Inference: 12ms</div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px] font-bold">TEMPERATURE_NOMINAL</span>
+                            </div>
+                            <div class="p-2 rounded bg-zinc-950 border border-zinc-800 flex justify-between items-center">
+                                <div>
+                                    <span class="font-bold text-white">CAM-04: Wardha Road Expressway Flyover</span>
+                                    <div class="text-[10px] text-zinc-500">RTSP: 192.168.10.44:554 · Optical Flow</div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px] font-bold">AMBULANCE_TRANSIT_FREE</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Zero-Touch Kiosk & Display Adaptor -->
+                    <div class="admin-card p-4 space-y-3 font-mono text-xs">
+                        <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
+                            <h4 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+                                <span>🖥️</span> ZERO-TOUCH HEADLESS KIOSK DISPLAY CONTROLLER
+                            </h4>
+                            <span class="text-[10px] text-zinc-400">AUTO-MONITOR ADAPTOR</span>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            <button onclick="setResolutionPreset('4k')" class="p-2 rounded bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 text-center text-zinc-300 text-[11px] font-bold">
+                                📺 4K Wall Display
+                            </button>
+                            <button onclick="setResolutionPreset('1080p')" class="p-2 rounded bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 text-center text-sky-400 text-[11px] font-bold">
+                                🖥️ 1080p FHD Common
+                            </button>
+                            <button onclick="setResolutionPreset('touch')" class="p-2 rounded bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 text-center text-zinc-300 text-[11px] font-bold">
+                                📱 Touchscreen Kiosk
+                            </button>
+                            <button onclick="setResolutionPreset('mobile')" class="p-2 rounded bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 text-center text-zinc-300 text-[11px] font-bold">
+                                📲 Mobile Responder
+                            </button>
+                        </div>
+                        <div class="text-[10px] text-zinc-500 pt-1">
+                            Installed via <code class="text-sky-400">03-mainframe-core/setup_hospital_kiosk.sh</code> · Boots into fullscreen display on HDMI connect with mouse cursor hidden.
                         </div>
                     </div>
                 </div>

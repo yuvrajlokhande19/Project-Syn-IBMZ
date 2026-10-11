@@ -1,0 +1,21 @@
+{
+  "model_name": "ProjectSyn-ClinicalDisasterTriage",
+  "model_type": "RandomForestClassifier",
+  "n_estimators": 100,
+  "accuracy": 1.0,
+  "features": [
+    "icu_bed_occupancy_pct",
+    "oxygen_hours_remaining",
+    "ventilator_utilization_pct",
+    "trauma_surge_index",
+    "blood_o_neg_units",
+    "generator_hours_remaining"
+  ],
+  "action_codes": {
+    "0": "STABLE_MONITOR (Nominal ICU & Ward operations)",
+    "1": "DIVERT_AMBULANCES (Capacity surge; engage Dijkstra corridor diversion)",
+    "2": "EXPEDITE_SUPPLY_CHAIN (Critical O-Neg blood or diesel replenishment alert)",
+    "3": "EVACUATE_WARD_IMMEDIATE (Catastrophic power/oxygen failure; immediate patient airlift)"
+  },
+  "target": "triage_action"
+}

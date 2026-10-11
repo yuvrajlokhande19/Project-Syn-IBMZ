@@ -46,7 +46,7 @@ from hash_ledger import (
     get_ledger_stats
 )
 from queue_worker import worker_task, QUEUE, LIVE_BUFFER
-from telegram_dispatch import get_ai_status, set_ai_provider
+from telegram_dispatch import get_ai_status, set_ai_provider, telegram_bot_listener
 from local_ai_orchestrator import LOCAL_AI_AGENT
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -69,16 +69,18 @@ SOVEREIGNTY_FEATURES = {
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan manager to initialize DB and queue worker."""
+    """Application lifespan manager to initialize DB, queue worker, and interactive Telegram bot."""
     init_ledger_db()
     logger.info("[STARTUP] Initialized CPACF Telemetry Ledger Database.")
     worker = asyncio.create_task(worker_task())
+    tg_bot = asyncio.create_task(telegram_bot_listener())
     yield
-    logger.info("[SHUTDOWN] Cancelling queue worker task...")
+    logger.info("[SHUTDOWN] Cancelling background tasks...")
     worker.cancel()
+    tg_bot.cancel()
     try:
-        await worker
-    except asyncio.CancelledError:
+        await asyncio.gather(worker, tg_bot, return_exceptions=True)
+    except Exception:
         pass
 
 

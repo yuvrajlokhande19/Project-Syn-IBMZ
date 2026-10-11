@@ -75,13 +75,59 @@ def test_metadata():
     assert meta.get('features') == ['grid_voltage', 'flood_index', 'route_congestion']
     assert "backend_compatibility_note" in meta
 
+def test_road_corridors_and_fleet():
+    """Verifies OpenRouteService road corridors cache and road-snapped vehicle swarm."""
+    artifacts_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'artifacts')
+    cache_path = os.path.join(artifacts_dir, 'road_corridors_cache.json')
+    fleet_csv = os.path.join(artifacts_dir, 'ambulance_fleet.csv')
+    fleet_json = os.path.join(artifacts_dir, 'live_fleet_positions.json')
+
+    print("[TEST 8: OpenRouteService Road Corridors Cache]")
+    assert os.path.exists(cache_path), f"Road corridors cache missing at {cache_path}"
+    with open(cache_path, 'r', encoding='utf-8') as f:
+        corridors = json.load(f)
+    print(f"  -> Found {len(corridors)} verified road corridors across Nagpur.")
+    assert len(corridors) >= 10, f"Expected at least 10 corridors, found {len(corridors)}"
+
+    print("[TEST 9: Road-Snapped Vehicle Swarm (40 Vehicles)]")
+    assert os.path.exists(fleet_csv), f"Fleet CSV missing at {fleet_csv}"
+    assert os.path.exists(fleet_json), f"Fleet JSON missing at {fleet_json}"
+    df_fleet = pd.read_csv(fleet_csv)
+    assert len(df_fleet) == 40, f"Expected 40 vehicles, found {len(df_fleet)}"
+    assert "bearing" in df_fleet.columns and "corridor" in df_fleet.columns
+    print(f"  -> Verified 40 vehicles with bearings snapped to authentic road corridors.")
+
+def test_medical_triage_model():
+    """Verifies clinical disaster triage Random Forest model and metadata."""
+    artifacts_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'artifacts')
+    med_model_path = os.path.join(artifacts_dir, 'medical_triage_model.pkl')
+    med_meta_path = os.path.join(artifacts_dir, 'medical_triage_metadata.json')
+
+    print("[TEST 10: Clinical Disaster Triage Model & Metadata]")
+    assert os.path.exists(med_model_path), f"Medical triage model missing at {med_model_path}"
+    assert os.path.exists(med_meta_path), f"Medical metadata missing at {med_meta_path}"
+
+    model = joblib.load(med_model_path)
+    sample_crit = pd.DataFrame([[98.0, 1.2, 95.0, 0.90, 0, 1.5]], columns=[
+        "icu_bed_occupancy_pct", "oxygen_hours_remaining",
+        "ventilator_utilization_pct", "trauma_surge_index",
+        "blood_o_neg_units", "generator_hours_remaining"
+    ])
+    pred = model.predict(sample_crit)[0]
+    print(f"  -> Emergency triage intervention prediction code: {pred} (Action code 1/2/3)")
+    assert pred in (1, 2, 3), f"Expected emergency triage intervention code (1, 2, or 3), got {pred}"
+    print("  -> Clinical triage model inference passed.")
+
 if __name__ == "__main__":
     print("=" * 60)
-    print("PROJECT SYN — PAIR 2 PIPELINE TEST SUITE")
+    print("PROJECT SYN — PAIR 2 PIPELINE TEST SUITE (EXTENDED)")
     print("=" * 60)
     test_dataset()
     test_model_loading_and_inference()
     test_metadata()
+    test_road_corridors_and_fleet()
+    test_medical_triage_model()
     print("=" * 60)
-    print("ALL TESTS PASSED SUCCESSFULLY (7/7)")
+    print("ALL TESTS PASSED SUCCESSFULLY (10/10)")
     print("=" * 60)
+
