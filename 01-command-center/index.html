@@ -222,6 +222,20 @@
         <!-- ==================================================================== -->
         <section id="tab-overview" class="tab-panel space-y-4">
             
+            <!-- Dynamic Emergency Disaster & Evacuation Alert Banner -->
+            <div id="emergency-disaster-banner" class="hidden p-3 rounded-lg border flex items-center justify-between font-mono text-xs">
+                <div class="flex items-center gap-3">
+                    <span id="disaster-banner-icon" class="text-xl animate-pulse">🚨</span>
+                    <div>
+                        <div id="disaster-banner-title" class="font-bold text-white uppercase text-sm">HOSPITAL EVACUATION DIRECTIVE</div>
+                        <div id="disaster-banner-desc" class="text-[11px] text-zinc-300">Automated municipal fire brigade dispatched · Power substation disconnected.</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="disaster-banner-tag" class="px-2.5 py-1 rounded bg-red-950 border border-red-800 text-red-300 font-bold text-[10px]">CRITICAL</span>
+                </div>
+            </div>
+
             <!-- Real-Time Metric Cards Ribbon -->
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
                 <!-- Grid Voltage -->
@@ -754,6 +768,66 @@
                             <div class="p-2 rounded bg-zinc-950 border border-zinc-800 flex justify-between">
                                 <span>Trauma Paramedic Swarm (Units 1-4)</span>
                                 <span class="text-emerald-400">P2P Mesh Relays Active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Tactical Staff Radio Mesh Messenger & Chat Console -->
+                    <div class="col-span-1 md:col-span-2 admin-card p-4 space-y-3 font-mono text-xs mt-3">
+                        <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
+                            <div>
+                                <h4 class="text-sm font-bold text-white uppercase flex items-center gap-2">
+                                    <span>💬</span> OFFLINE SUB-GHz RADIO MESH TERMINAL &amp; STAFF CHAT
+                                </h4>
+                                <p class="text-[11px] text-zinc-400 font-sans">Peer-to-Peer Bidirectional Field Dispatch · Works 100% Air-Gapped Without Internet</p>
+                            </div>
+                            <span class="px-2.5 py-1 rounded bg-sky-950 text-sky-400 border border-sky-800 text-[10px] font-bold">
+                                915.2 MHz DUPLEX · CPACF HMAC-SHA256 SIGNED
+                            </span>
+                        </div>
+
+                        <!-- Live Radio Transmission Log Feed -->
+                        <div id="mesh-chat-feed" class="h-64 overflow-y-auto space-y-2 p-3 rounded bg-zinc-950 border border-zinc-800 font-mono text-xs">
+                            <!-- Injected dynamically -->
+                        </div>
+
+                        <!-- Quick Incident Dispatch Presets -->
+                        <div class="flex flex-wrap gap-2 pt-1">
+                            <span class="text-[10px] text-zinc-400 font-bold uppercase py-0.5">Quick Presets:</span>
+                            <button onclick="setMeshQuickMsg('ICU Ward B low on O-Neg blood, request emergency drone/corridor resupply.')" class="px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 text-[10px]">
+                                🩸 Blood Shortage
+                            </button>
+                            <button onclick="setMeshQuickMsg('Ambulance Alpha-01 en route with severe trauma victim, ETA 8 mins to GMC ICU.')" class="px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 text-[10px]">
+                                🚑 Ambulance Trauma ETA
+                            </button>
+                            <button onclick="setMeshQuickMsg('Wardha Road flyover cleared for emergency ambulance green corridor.')" class="px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 text-[10px]">
+                                🟢 Green Corridor Clear
+                            </button>
+                            <button onclick="setMeshQuickMsg('Hospital Genset #2 fuel stable at 85%, grid backup synchronized.')" class="px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 text-[10px]">
+                                ⚡ Diesel Genset Stable
+                            </button>
+                        </div>
+
+                        <!-- Chat Input Form -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-2 pt-2 border-t border-zinc-800">
+                            <div>
+                                <label class="text-[10px] text-zinc-400 uppercase font-bold block mb-1">Radio Node</label>
+                                <select id="mesh-sender-select" class="w-full px-2.5 py-1.5 rounded bg-zinc-950 border border-zinc-800 text-white text-xs focus:outline-none focus:border-sky-500">
+                                    <option value="Ambulance_Alpha_01|Fleet Paramedic">Ambulance Alpha-01 (Duplex)</option>
+                                    <option value="GMC_Nagpur_Hub|ICU Head Nurse">GMC Nagpur (ICU Lead)</option>
+                                    <option value="AIIMS_Nagpur_Apex|Triage Coordinator">AIIMS Nagpur (Apex Triage)</option>
+                                    <option value="Mayo_Hospital|Disaster Lead">Mayo Hospital (Disaster Lead)</option>
+                                    <option value="Fire_Station_Central|Rescue Captain">Nagpur Fire Dispatch (Rescue 1)</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="text-[10px] text-zinc-400 uppercase font-bold block mb-1">Tactical Emergency Radio Message</label>
+                                <input id="mesh-message-input" type="text" placeholder="Type tactical emergency dispatch..." class="w-full px-3 py-1.5 rounded bg-zinc-950 border border-zinc-800 text-white text-xs focus:outline-none focus:border-sky-500 font-sans">
+                            </div>
+                            <div class="flex items-end">
+                                <button id="btn-send-mesh" class="w-full px-3 py-1.5 rounded bg-emerald-900/80 hover:bg-emerald-800 text-emerald-200 border border-emerald-700 font-semibold text-xs transition flex items-center justify-center gap-1.5">
+                                    <span>📡</span> TRANSMIT OVER MESH
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1453,6 +1527,42 @@
                     telemetryChart.data.datasets[2].data.shift();
                     telemetryChart.data.datasets[2].data.push(m.route_congestion);
                     telemetryChart.update();
+                    // Dynamic Emergency Disaster & Evacuation Banner Controller
+                    const disBanner = document.getElementById('emergency-disaster-banner');
+                    const disIcon = document.getElementById('disaster-banner-icon');
+                    const disTitle = document.getElementById('disaster-banner-title');
+                    const disDesc = document.getElementById('disaster-banner-desc');
+                    const disTag = document.getElementById('disaster-banner-tag');
+
+                    if (disBanner) {
+                        if (m.evacuate_building || m.is_fire_emergency) {
+                            disBanner.className = "p-3 rounded-lg border border-red-700 bg-red-950/80 flex items-center justify-between font-mono text-xs shadow-lg shadow-red-950/50";
+                            disIcon.innerText = "🔥";
+                            disTitle.innerText = "ELECTRICAL FIRE / STRUCTURAL EVACUATION DIRECTIVE";
+                            disDesc.innerText = "Transformer flare detected. Municipal Fire Brigade notified automatically. Hospital Ward Evacuation Initiated.";
+                            disTag.innerText = "CRITICAL EVACUATION";
+                            disTag.className = "px-2.5 py-1 rounded bg-red-900 border border-red-600 text-white font-bold text-[10px] animate-pulse";
+                            disBanner.classList.remove('hidden');
+                        } else if (m.is_earthquake || (m.richter_mag && m.richter_mag > 4.0)) {
+                            disBanner.className = "p-3 rounded-lg border border-amber-600 bg-amber-950/80 flex items-center justify-between font-mono text-xs shadow-lg shadow-amber-950/50";
+                            disIcon.innerText = "⚠️";
+                            disTitle.innerText = `SEISMIC ACTIVITY DETECTED: RICHTER ${m.richter_mag || 5.8}`;
+                            disDesc.innerText = "Deep tectonic vibration sensed across Nagpur metropolitan grid. Emergency Structural Inspection Protocol active.";
+                            disTag.innerText = "SEISMIC ALERT";
+                            disTag.className = "px-2.5 py-1 rounded bg-amber-900 border border-amber-600 text-amber-200 font-bold text-[10px] animate-pulse";
+                            disBanner.classList.remove('hidden');
+                        } else if (m.cctv_status === "GREEN_CORRIDOR_ACTIVE") {
+                            disBanner.className = "p-3 rounded-lg border border-emerald-700 bg-emerald-950/80 flex items-center justify-between font-mono text-xs";
+                            disIcon.innerText = "🟢";
+                            disTitle.innerText = "ORGAN TRANSPLANT GREEN CORRIDOR ENGAGED";
+                            disDesc.innerText = "Wardha Road Flyover & Sitabuldi traffic signals locked green. Direct transit to AIIMS Nagpur.";
+                            disTag.innerText = "ACTIVE CORRIDOR";
+                            disTag.className = "px-2.5 py-1 rounded bg-emerald-900 border border-emerald-600 text-emerald-200 font-bold text-[10px]";
+                            disBanner.classList.remove('hidden');
+                        } else {
+                            disBanner.classList.add('hidden');
+                        }
+                    }
                 }
 
                 if (d.ai_cascade && d.ai_cascade.active_model) {
@@ -1773,6 +1883,114 @@
             });
             closeReportBtn.addEventListener('click', () => reportModal.classList.add('hidden'));
         }
+
+        // 15. Sovereignty Mode & Real Offline Tactical Map Controller
+        let isAirGapped = false;
+        const offlineLayerGroup = L.layerGroup();
+        
+        // Tactical offline vector road connections between Nagpur medical centers
+        const offlineTacticalRoads = [
+            [[21.1284, 79.0991], [21.1528, 79.1001]], // GMC to Mayo
+            [[21.1284, 79.0991], [21.1400, 79.0800]], // GMC to Wockhardt
+            [[21.1400, 79.0800], [21.1250, 79.0550]], // Wockhardt to Lata Mangeshkar
+            [[21.1284, 79.0991], [21.0560, 79.0435]]  // GMC to AIIMS Express Corridor
+        ];
+        offlineTacticalRoads.forEach(pts => {
+            L.polyline(pts, { color: '#38bdf8', weight: 3, opacity: 0.7, dashArray: '6, 6' }).addTo(offlineLayerGroup);
+        });
+
+        async function setSovereigntyMode(mode) {
+            try {
+                await fetch('/api/sovereignty/mode', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mode: mode })
+                });
+            } catch(e) {}
+
+            const bConn = document.getElementById('mode-btn-connected');
+            const bSov = document.getElementById('mode-btn-sovereign');
+            const bDeg = document.getElementById('mode-btn-degraded');
+            if (bConn && bSov && bDeg) {
+                bConn.className = mode === 'connected' ? "px-3 py-1 rounded text-[11px] font-semibold bg-sky-600 text-white shadow transition-all" : "px-3 py-1 rounded text-[11px] text-zinc-400 hover:text-white transition-all";
+                bSov.className = mode === 'sovereign' ? "px-3 py-1 rounded text-[11px] font-semibold bg-amber-600 text-white shadow transition-all" : "px-3 py-1 rounded text-[11px] text-zinc-400 hover:text-white transition-all";
+                bDeg.className = mode === 'degraded' ? "px-3 py-1 rounded text-[11px] font-semibold bg-red-600 text-white shadow transition-all" : "px-3 py-1 rounded text-[11px] text-zinc-400 hover:text-white transition-all";
+            }
+
+            if (mode === 'sovereign' || mode === 'degraded') {
+                isAirGapped = true;
+                if (currentBasemap && map.hasLayer(currentBasemap)) map.removeLayer(currentBasemap);
+                if (!map.hasLayer(offlineLayerGroup)) offlineLayerGroup.addTo(map);
+                const engineEl = document.getElementById('gis-routing-engine');
+                if (engineEl) engineEl.innerText = "AIR-GAPPED OFFLINE VECTOR GRID";
+            } else {
+                isAirGapped = false;
+                if (map.hasLayer(offlineLayerGroup)) map.removeLayer(offlineLayerGroup);
+                if (currentBasemap && !map.hasLayer(currentBasemap)) currentBasemap.addTo(map);
+                const engineEl = document.getElementById('gis-routing-engine');
+                if (engineEl) engineEl.innerText = "OSRM ROAD NETWORK";
+            }
+        }
+
+        document.getElementById('mode-btn-connected')?.addEventListener('click', () => setSovereigntyMode('connected'));
+        document.getElementById('mode-btn-sovereign')?.addEventListener('click', () => setSovereigntyMode('sovereign'));
+        document.getElementById('mode-btn-degraded')?.addEventListener('click', () => setSovereigntyMode('degraded'));
+
+        // 16. Sub-GHz Radio Mesh Messenger Controller
+        async function pollMeshChat() {
+            try {
+                const res = await fetch('/api/mesh/messages');
+                if (!res.ok) return;
+                const d = await res.json();
+                const feed = document.getElementById('mesh-chat-feed');
+                if (!feed || !d.messages) return;
+                feed.innerHTML = d.messages.map(m => `
+                    <div class="p-2 rounded bg-zinc-900/90 border border-zinc-800 space-y-1">
+                        <div class="flex justify-between items-center text-[10px]">
+                            <span class="font-bold text-sky-400">[${m.frequency}] ${m.sender} <span class="text-zinc-500">(${m.role})</span></span>
+                            <span class="text-zinc-500 font-mono">${m.timestamp.slice(11,19)} · RSSI: <span class="text-emerald-400">${m.rssi} dBm</span> · ${m.hops} Hops</span>
+                        </div>
+                        <div class="text-white text-xs font-sans">${m.text}</div>
+                        <div class="text-[9px] text-zinc-500 font-mono">CPACF Signature: <span class="text-sky-500/80">${m.hmac}</span></div>
+                    </div>
+                `).join('');
+            } catch (e) {}
+        }
+
+        async function sendMeshRadioPacket() {
+            const input = document.getElementById('mesh-message-input');
+            const select = document.getElementById('mesh-sender-select');
+            if (!input || !input.value.trim()) return;
+            const text = input.value.trim();
+            const [sender, role] = (select.value || "Ambulance_Alpha_01|Fleet Paramedic").split('|');
+
+            try {
+                const res = await fetch('/api/mesh/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sender, role, text })
+                });
+                if (res.ok) {
+                    input.value = '';
+                    await pollMeshChat();
+                }
+            } catch (e) {}
+        }
+
+        function setMeshQuickMsg(txt) {
+            const input = document.getElementById('mesh-message-input');
+            if (input) {
+                input.value = txt;
+                input.focus();
+            }
+        }
+
+        document.getElementById('btn-send-mesh')?.addEventListener('click', sendMeshRadioPacket);
+        document.getElementById('mesh-message-input')?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendMeshRadioPacket();
+        });
+        setInterval(pollMeshChat, 3500);
+        pollMeshChat();
 
         // Global ESC handler for modals
         window.addEventListener('keydown', (e) => {
