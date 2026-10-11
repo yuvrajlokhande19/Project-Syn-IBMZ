@@ -276,6 +276,8 @@ def generate_local_hospital_intelligence(query: str, extra_metrics: Optional[Dic
     )
 
 
+_GEMINI_COOLDOWN_UNTIL = 0.0
+
 def generate_gemini_cascade(prompt: str) -> Tuple[Optional[str], str]:
     """
     Calls Google Gemini models in an automated cascade:
@@ -283,8 +285,13 @@ def generate_gemini_cascade(prompt: str) -> Tuple[Optional[str], str]:
     to the next model in line!
     Returns (generated_text, model_used).
     """
+    global _GEMINI_COOLDOWN_UNTIL
     if not GEMINI_API_KEY:
         return None, "NO_KEY"
+    
+    import time
+    if time.time() < _GEMINI_COOLDOWN_UNTIL:
+        return None, "GEMINI_QUOTA_COOLDOWN"
 
     AI_STATUS_TRACKER["total_calls"] += 1
 
@@ -301,7 +308,7 @@ def generate_gemini_cascade(prompt: str) -> Tuple[Optional[str], str]:
         }
 
         try:
-            resp = requests.post(url, json=payload, headers={"Content-Type": "application/json"}, timeout=4.0)
+            resp = requests.post(url, json=payload, headers={"Content-Type": "application/json"}, timeout=2.5)
 
             if resp.status_code == 200:
                 data = resp.json()
@@ -316,20 +323,21 @@ def generate_gemini_cascade(prompt: str) -> Tuple[Optional[str], str]:
                     return text, model_name
 
             elif resp.status_code in (429, 503):
-                # Rate limit or high demand spike: auto-switch to next model!
-                logger.warning(f"[GEMINI LIMIT EXCEEDED] Model {model_name} returned {resp.status_code}. Auto-switching to next tier...")
+                # Rate limit or quota exhausted: activate 5-min cooldown so subsequent requests don't lag
+                _GEMINI_COOLDOWN_UNTIL = time.time() + 300.0
+                logger.warning(f"[GEMINI LIMIT EXCEEDED] Model {model_name} returned {resp.status_code}. Setting 5-min cooldown.")
                 now_iso = datetime.now(timezone.utc).isoformat()
                 AI_STATUS_TRACKER["switch_history"].append(
                     f"[{now_iso}] {model_name} limit reached ({resp.status_code}) -> cascading"
                 )
-                continue
+                break
 
             else:
                 logger.debug(f"[GEMINI NOTICE] Model {model_name} returned {resp.status_code}: {resp.text[:80]}")
                 continue
 
         except requests.exceptions.Timeout:
-            logger.warning(f"[GEMINI TIMEOUT] Model {model_name} timed out (>4s). Auto-switching to next tier...")
+            logger.warning(f"[GEMINI TIMEOUT] Model {model_name} timed out. Auto-switching to next tier...")
             continue
         except Exception as e:
             logger.debug(f"[GEMINI EXCEPTION] {model_name}: {e}")
