@@ -141,5 +141,14 @@ Navigate to `http://localhost:8000/ui/` in your browser.
 
 ---
 
+## 👥 Project Syn Team & Contributors
+
+| Contributor | Role & Domain | Primary Modules & Contributions |
+| :--- | :--- | :--- |
+| **Anshika Tripathi** | **Pair 2: Data Logic & ML Engine** | • Synthetic 10k Hospital Dataset Generation (`synthetic_hospital_data_10k.csv`)<br>• Isolation Forest Telemetry Anomaly Detector (`train_ml.py`, `anomaly_model.pkl`)<br>• Feature space matrix calibration & multi-variate sensor consensus |
+| **Yuvraj Lokhande** | **Pair 1 & 3: Mainframe Core & Architecture** | • IBM LinuxONE s390x CPACF Cryptographic Gate (`crypto_gate.py`)<br>• Sequential Chained Hash Ledger & SQLite WAL (`hash_ledger.py`)<br>• FastAPI Gateway & Shock-Absorber Queue (`main.py`, `queue_worker.py`)<br>• Command Center GIS Dashboard & Kiosk Controller (`01-command-center/`) |
+
+---
+
 ## 🔒 Security & Zero-Trust Notice
 *All external API credentials, HMAC secret keys, and Telegram tokens are strictly isolated in server-side `.env` files and never exposed to client-side code, git commits, or browser inspection.*
