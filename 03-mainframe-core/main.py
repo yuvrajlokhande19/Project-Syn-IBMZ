@@ -673,28 +673,26 @@ async def chat_with_incident_commander(req: AIChatRequest):
         f"\nUser Query: {query}"
     )
 
-    from telegram_dispatch import generate_gemini_cascade, generate_openrouter_cascade, AI_STATUS_TRACKER
+    from telegram_dispatch import (
+        generate_gemini_cascade,
+        generate_openrouter_cascade,
+        generate_local_hospital_intelligence,
+        AI_STATUS_TRACKER
+    )
     current_mode = AI_STATUS_TRACKER.get("mode", "auto")
     resp_text = None
     provider_used = "IBM Z s390x Local Engine"
 
     if current_mode == "local" or CURRENT_SOVEREIGNTY_MODE in ("sovereign", "degraded"):
-        # 100% on-premise local response
-        resp_text = (
-            f"[IBM LinuxONE s390x On-Premise Governor]:\n"
-            f"Query acknowledged: \"{query}\". All 5 Nagpur Trauma Centers monitored. "
-            f"Current Grid Status: Sovereign (Sub-GHz Mesh active). "
-            f"GMC Nagpur ICU: 14 units O-Neg blood available, 48h generator diesel reserve. "
-            f"Mayo Hospital: Flood level 0.12, Wardha Road elevated corridor OPEN for emergency transit. "
-            f"Zero-Trust CPACF Gate: Active (0.24ms HMAC verification)."
-        )
-        provider_used = "IBM LinuxONE s390x Local Engine (Air-Gapped)"
+        # 100% on-premise domain-grounded disaster intelligence response
+        resp_text = generate_local_hospital_intelligence(query)
+        provider_used = "IBM LinuxONE s390x Local Intelligence Engine"
     else:
-        # Dashboard Assistant directly leverages OpenRouter Llama 3.3 70B as primary AI engine!
+        # Dashboard Assistant leverages OpenRouter verified free models -> Gemini
         text_or, model_or = generate_openrouter_cascade(system_prompt)
         if text_or:
             resp_text = text_or
-            provider_used = f"OpenRouter AI Assistant ({model_or})"
+            provider_used = f"OpenRouter AI ({model_or})"
         else:
             text_gem, model_gem = generate_gemini_cascade(system_prompt)
             if text_gem:
@@ -702,13 +700,8 @@ async def chat_with_incident_commander(req: AIChatRequest):
                 provider_used = f"Google Gemini Failover ({model_gem})"
 
     if not resp_text:
-        resp_text = (
-            f"[IBM LinuxONE s390x Failover Response]:\n"
-            f"Direct response to: \"{query}\". "
-            f"Nagpur Trauma Centers operational. Zero-Trust CPACF verification status: 100% VALID. "
-            f"Ambulance green corridor active between GMC Nagpur and AIIMS Nagpur."
-        )
-        provider_used = "IBM LinuxONE s390x Local Fallback"
+        resp_text = generate_local_hospital_intelligence(query)
+        provider_used = "IBM LinuxONE s390x Knowledge Failover"
 
 
     elapsed_ms = round((time.time() - start_t) * 1000, 2)
