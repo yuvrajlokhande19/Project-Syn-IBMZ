@@ -19,6 +19,8 @@ import asyncio
 import json
 import hmac
 import hashlib
+import random
+from datetime import datetime, timezone
 import logging
 from contextlib import asynccontextmanager
 from typing import Dict, Any, Optional, List
@@ -312,7 +314,7 @@ async def send_mesh_message(payload: dict):
     if not text:
         raise HTTPException(status_code=400, detail="Message text cannot be empty")
 
-    now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    now_iso = datetime.now(timezone.utc).isoformat()
     msg_hash = hashlib.sha256(f"{sender}:{text}:{now_iso}".encode()).hexdigest()[:16]
 
     entry = {
