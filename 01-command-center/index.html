@@ -216,6 +216,9 @@
             <button class="nav-tab px-4 py-2 tab-btn-inactive rounded-t transition-all flex items-center gap-2" data-tab="tab-stock">
                 <span>🏥</span> Critical Stock Sentinel
             </button>
+            <button class="nav-tab px-4 py-2 tab-btn-inactive rounded-t transition-all flex items-center gap-2" data-tab="tab-terminal">
+                <span>💻</span> LinuxONE CLI &amp; Docker
+            </button>
         </nav>
     </header>
 
@@ -1192,6 +1195,254 @@
             </div>
         </section>
 
+        <!-- ==================================================================== -->
+        <!-- TAB 8: IBM LINUXONE s390x CLOUD CLI & DOCKER CONSOLE                 -->
+        <!-- ==================================================================== -->
+        <section id="tab-terminal" class="tab-panel space-y-4 hidden">
+            <!-- Header Banner -->
+            <div class="admin-card p-4">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-3 border-b border-zinc-800">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sky-400 text-lg">💻</span>
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider">
+                                IBM LINUXONE s390x INTERACTIVE CLOUD TERMINAL &amp; DOCKER ENGINE
+                            </h3>
+                            <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono text-[10px] border border-emerald-800 flex items-center gap-1 font-semibold">
+                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                                HOST: projectsyn (148.100.112.151)
+                            </span>
+                        </div>
+                        <p class="text-xs text-zinc-400 mt-1">
+                            Direct execution interface to Ubuntu 22.04 LTS on IBM Z Mainframe · Docker engine &amp; real-time cyberattack injection harness.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <span id="docker-live-badge" class="px-3 py-1 rounded bg-sky-950 text-sky-300 border border-sky-800 font-mono text-[11px] font-semibold flex items-center gap-1.5">
+                            <span class="h-2 w-2 rounded-full bg-sky-400 animate-pulse"></span>
+                            DOCKER: ACTIVE
+                        </span>
+                        <button id="btn-refresh-docker" class="px-3 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-mono text-xs border border-zinc-700 transition flex items-center gap-1">
+                            🔄 REFRESH
+                        </button>
+                    </div>
+                </div>
+
+                <!-- System Telemetry Quick Stats -->
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2.5 pt-3 text-xs font-mono">
+                    <div class="p-2.5 rounded bg-zinc-950 border border-zinc-800">
+                        <div class="text-[10px] text-zinc-500 uppercase">Architecture</div>
+                        <div class="text-sky-400 font-bold mt-0.5">IBM Z s390x</div>
+                    </div>
+                    <div class="p-2.5 rounded bg-zinc-950 border border-zinc-800">
+                        <div class="text-[10px] text-zinc-500 uppercase">OS Distribution</div>
+                        <div class="text-white font-bold mt-0.5">Ubuntu 22.04 LTS</div>
+                    </div>
+                    <div class="p-2.5 rounded bg-zinc-950 border border-zinc-800">
+                        <div class="text-[10px] text-zinc-500 uppercase">Docker Engine</div>
+                        <div class="text-emerald-400 font-bold mt-0.5" id="cli-docker-ver">v29.1.3</div>
+                    </div>
+                    <div class="p-2.5 rounded bg-zinc-950 border border-zinc-800">
+                        <div class="text-[10px] text-zinc-500 uppercase">Crypto Accelerator</div>
+                        <div class="text-emerald-400 font-bold mt-0.5">CPACF Native</div>
+                    </div>
+                    <div class="p-2.5 rounded bg-zinc-950 border border-zinc-800">
+                        <div class="text-[10px] text-zinc-500 uppercase">RAM Ceiling / Used</div>
+                        <div class="text-amber-400 font-bold mt-0.5">4.0 GB / ~1.1 GB</div>
+                    </div>
+                    <div class="p-2.5 rounded bg-zinc-950 border border-zinc-800">
+                        <div class="text-[10px] text-zinc-500 uppercase">Flash Storage</div>
+                        <div class="text-zinc-300 font-bold mt-0.5">50 GB NVMe</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real Attack Trigger & Load Testing Control Deck -->
+            <div class="admin-card p-4 space-y-3 font-mono">
+                <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
+                    <div class="flex items-center gap-2">
+                        <span class="text-rose-400">⚡</span>
+                        <h4 class="text-xs font-bold text-white uppercase tracking-wider">
+                            REAL-TIME ADVERSARIAL ATTACK &amp; LOAD BURST HARNESS
+                        </h4>
+                        <span class="text-[10px] text-zinc-400">(Triggers live Python attack scripts against CPACF Zero-Trust Gate)</span>
+                    </div>
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-rose-950/80 text-rose-300 border border-rose-800 font-bold">
+                        ZERO-TRUST VERIFICATION
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-2">
+                    <button class="cli-attack-btn p-2.5 rounded bg-zinc-950 hover:bg-rose-950/70 border border-rose-900/60 text-left transition group" data-cmd="python3 02-logic-engine/src/attack_injector.py --attack tamper">
+                        <div class="flex items-center justify-between">
+                            <span class="text-rose-400 font-bold text-xs">🔥 Tampered HMAC</span>
+                            <span class="text-[9px] text-zinc-500 group-hover:text-rose-300">401</span>
+                        </div>
+                        <div class="text-[10px] text-zinc-400 mt-1">Payload altered post-signature</div>
+                    </button>
+
+                    <button class="cli-attack-btn p-2.5 rounded bg-zinc-950 hover:bg-amber-950/70 border border-amber-900/60 text-left transition group" data-cmd="python3 02-logic-engine/src/attack_injector.py --attack replay">
+                        <div class="flex items-center justify-between">
+                            <span class="text-amber-400 font-bold text-xs">🔁 Replay Nonce</span>
+                            <span class="text-[9px] text-zinc-500 group-hover:text-amber-300">401</span>
+                        </div>
+                        <div class="text-[10px] text-zinc-400 mt-1">Duplicate nonce fired twice</div>
+                    </button>
+
+                    <button class="cli-attack-btn p-2.5 rounded bg-zinc-950 hover:bg-purple-950/70 border border-purple-900/60 text-left transition group" data-cmd="python3 02-logic-engine/src/attack_injector.py --attack stale">
+                        <div class="flex items-center justify-between">
+                            <span class="text-purple-400 font-bold text-xs">⏳ Stale Timestamp</span>
+                            <span class="text-[9px] text-zinc-500 group-hover:text-purple-300">401</span>
+                        </div>
+                        <div class="text-[10px] text-zinc-400 mt-1">Timestamp drift &gt; 90 seconds</div>
+                    </button>
+
+                    <button class="cli-attack-btn p-2.5 rounded bg-zinc-950 hover:bg-cyan-950/70 border border-cyan-900/60 text-left transition group" data-cmd="python3 02-logic-engine/src/attack_injector.py --attack spoof">
+                        <div class="flex items-center justify-between">
+                            <span class="text-cyan-400 font-bold text-xs">🌊 Spoofed Physics</span>
+                            <span class="text-[9px] text-zinc-500 group-hover:text-cyan-300">403</span>
+                        </div>
+                        <div class="text-[10px] text-zinc-400 mt-1">Paradox: flood with zero congestion</div>
+                    </button>
+
+                    <button class="cli-attack-btn p-2.5 rounded bg-zinc-950 hover:bg-emerald-950/70 border border-emerald-900/60 text-left transition group" data-cmd="python3 02-logic-engine/src/attack_injector.py --attack baseline">
+                        <div class="flex items-center justify-between">
+                            <span class="text-emerald-400 font-bold text-xs">✅ Baseline Packet</span>
+                            <span class="text-[9px] text-zinc-500 group-hover:text-emerald-300">200 OK</span>
+                        </div>
+                        <div class="text-[10px] text-zinc-400 mt-1">Fresh nonce + valid CPACF HMAC</div>
+                    </button>
+
+                    <button class="cli-attack-btn p-2.5 rounded bg-zinc-950 hover:bg-indigo-950/70 border border-indigo-900/60 text-left transition group" data-cmd="python3 02-logic-engine/src/attack_injector.py --attack all">
+                        <div class="flex items-center justify-between">
+                            <span class="text-indigo-400 font-bold text-xs">💥 Full Matrix Audit</span>
+                            <span class="text-[9px] text-zinc-500 group-hover:text-indigo-300">5 Tests</span>
+                        </div>
+                        <div class="text-[10px] text-zinc-400 mt-1">Runs all 5 attack vectors in batch</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive CLI Terminal Window -->
+            <div class="admin-card overflow-hidden border border-zinc-800 shadow-2xl flex flex-col font-mono text-xs">
+                <!-- Terminal Window Title Bar -->
+                <div class="p-3 bg-[#0a0d14] border-b border-zinc-800 flex flex-wrap justify-between items-center gap-2">
+                    <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1.5">
+                            <span class="h-3 w-3 rounded-full bg-red-500/80 inline-block"></span>
+                            <span class="h-3 w-3 rounded-full bg-yellow-500/80 inline-block"></span>
+                            <span class="h-3 w-3 rounded-full bg-green-500/80 inline-block"></span>
+                        </div>
+                        <span class="text-zinc-400 text-[11px] font-semibold pl-2">
+                            linux1@projectsyn-s390x: ~/Project-Syn-IBMZ (bash)
+                        </span>
+                    </div>
+
+                    <!-- Preset Quick Action Buttons -->
+                    <div class="flex flex-wrap items-center gap-1.5 text-[10px]">
+                        <button class="cli-preset-btn px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-sky-400 border border-zinc-700 transition" data-cmd="docker ps -a">
+                            docker ps
+                        </button>
+                        <button class="cli-preset-btn px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition" data-cmd="docker-compose ps">
+                            docker-compose ps
+                        </button>
+                        <button class="cli-preset-btn px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition" data-cmd="uname -a">
+                            uname -a
+                        </button>
+                        <button class="cli-preset-btn px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition" data-cmd="uptime">
+                            uptime
+                        </button>
+                        <button class="cli-preset-btn px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-emerald-400 border border-zinc-700 transition" data-cmd="free -h">
+                            free -h
+                        </button>
+                        <button class="cli-preset-btn px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition" data-cmd="cat /proc/cpuinfo | head -n 20">
+                            cpuinfo
+                        </button>
+                        <button class="cli-preset-btn px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition" data-cmd="git status">
+                            git status
+                        </button>
+                        <button id="btn-cli-clear" class="px-2 py-0.5 rounded bg-zinc-900 hover:bg-rose-950 text-rose-300 border border-zinc-700 transition">
+                            clear
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Terminal Output Display Pane -->
+                <div id="cli-output" class="p-4 bg-[#05070a] text-zinc-200 h-96 overflow-y-auto leading-relaxed select-text space-y-2 whitespace-pre-wrap font-mono text-[11px] border-b border-zinc-850">================================================================================
+  PROJECT SYN // IBM LINUXONE s390x CLOUD HOST SHELL
+  Hardware: IBM z16 / LinuxONE (s390x Architecture, 64-Bit Big-Endian)
+  CPACF Cryptographic Acceleration: ACTIVE (AES-256-GCM, SHA-256, HMAC)
+  Docker Engine: Docker v29.1.3 + Docker Compose v1.29.2
+================================================================================
+Type any authorized command below or click a quick action above to execute.</div>
+
+                <!-- Interactive Command Input Bar -->
+                <form id="cli-form" class="p-3 bg-[#0a0d14] flex items-center gap-2">
+                    <span class="text-emerald-400 font-bold pl-1 font-mono text-xs select-none">
+                        linux1@projectsyn:~$
+                    </span>
+                    <input id="cli-input" type="text" placeholder="docker ps, free -h, python3 02-logic-engine/src/attack_injector.py --attack tamper..." class="flex-1 bg-transparent border-0 text-white font-mono text-xs focus:outline-none placeholder:text-zinc-600" autocomplete="off" spellcheck="false" required>
+                    <button type="submit" id="cli-submit-btn" class="px-4 py-1.5 rounded bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold font-mono transition flex items-center gap-1">
+                        <span>EXECUTE</span>
+                        <span>↵</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Docker Containers & Microservices Inventory Card -->
+            <div class="admin-card p-4 space-y-3 font-mono text-xs">
+                <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sky-400">🐳</span>
+                        <h4 class="text-xs font-bold text-white uppercase tracking-wider">
+                            DOCKER CONTAINERS &amp; MAINFRAME MICROSERVICES
+                        </h4>
+                    </div>
+                    <div class="text-[10px] text-zinc-400 flex items-center gap-2">
+                        <span>ORCHESTRATION: <strong>docker-compose.yml</strong></span>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-zinc-300">
+                        <thead class="bg-zinc-950/80 text-[10px] uppercase text-zinc-400 border-b border-zinc-800">
+                            <tr>
+                                <th class="p-2.5">Container ID</th>
+                                <th class="p-2.5">Service Name</th>
+                                <th class="p-2.5">Docker Image</th>
+                                <th class="p-2.5">Status</th>
+                                <th class="p-2.5">Port Mapping</th>
+                                <th class="p-2.5 text-right">Quick Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="docker-container-rows" class="divide-y divide-zinc-800/60 text-[11px]">
+                            <tr>
+                                <td class="p-2.5 text-sky-400 font-bold">syn-mainframe</td>
+                                <td class="p-2.5 font-bold text-white">project-syn-api</td>
+                                <td class="p-2.5 text-zinc-400">project-syn-mainframe:latest</td>
+                                <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px] font-bold">ONLINE (0.0.0.0:8000)</span></td>
+                                <td class="p-2.5 text-zinc-400">0.0.0.0:8000-&gt;8000/tcp</td>
+                                <td class="p-2.5 text-right">
+                                    <button class="cli-preset-btn px-2 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-sky-300 border border-zinc-700 text-[10px]" data-cmd="docker logs --tail 30 syn-mainframe">LOGS</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 text-sky-400 font-bold">syn-redis</td>
+                                <td class="p-2.5 font-bold text-white">redis-buffer</td>
+                                <td class="p-2.5 text-zinc-400">redis:alpine (s390x)</td>
+                                <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800 text-[10px] font-bold">STANDBY (6379)</span></td>
+                                <td class="p-2.5 text-zinc-400">127.0.0.1:6379-&gt;6379/tcp</td>
+                                <td class="p-2.5 text-right">
+                                    <button class="cli-preset-btn px-2 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-sky-300 border border-zinc-700 text-[10px]" data-cmd="docker logs --tail 30 syn-redis">LOGS</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- ==================== SYSTEM HEALTH DIAGNOSTIC MODAL ==================== -->
@@ -1247,11 +1498,11 @@
                 <div class="flex items-center gap-2.5">
                     <span class="text-xl">🤖</span>
                     <div>
-                        <h2 class="text-sm font-bold text-white uppercase tracking-wider">OPENROUTER AI ASSISTANT // LLAMA 3.3 70B</h2>
+                        <h2 class="text-sm font-bold text-white uppercase tracking-wider">PROJECT SYN // AI INCIDENT COMMANDER</h2>
                         <div class="text-[10px] text-zinc-400 font-mono flex items-center gap-2">
                             <span>ENGINE:</span>
-                            <span id="chat-model-badge" class="px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800 font-semibold">OpenRouter Llama 3.3 70B</span>
-                            <span id="chat-token-badge" class="px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800 font-semibold">⚡ Tokenizer: ProjectSyn-BPE | Ready</span>
+                            <span id="chat-model-badge" class="px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800 font-semibold">Gemini 2.5 Flash / OpenRouter 70B / s390x Distilled</span>
+                            <span id="chat-token-badge" class="px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800 font-semibold">⚡ Actionable Tasks: Enabled</span>
                             <span class="text-emerald-400">● ONLINE</span>
                         </div>
                     </div>
@@ -1261,19 +1512,25 @@
                 </button>
             </div>
 
-            <!-- Suggestion Quick Chips -->
+            <!-- Suggestion Quick Chips (Actionable Directives) -->
             <div class="p-2.5 bg-zinc-950 border-b border-zinc-850 flex flex-wrap gap-1.5 text-[11px] font-mono">
-                <span class="text-zinc-500 py-0.5 mr-1 text-[10px]">QUICK DIRECTIVES:</span>
-                <button class="chat-chip px-2 py-1 rounded bg-zinc-900 hover:bg-indigo-950/80 text-zinc-300 hover:text-indigo-300 border border-zinc-800 transition" data-prompt="Check critical ICU blood shortages across all Nagpur hospitals">
-                    🩸 Blood Shortage Audit
+                <span class="text-zinc-500 py-0.5 mr-1 text-[10px]">ACTION DIRECTIVES:</span>
+                <button class="chat-chip px-2 py-1 rounded bg-zinc-900 hover:bg-rose-950/80 text-rose-300 border border-zinc-800 transition" data-prompt="Instruct nearest hospital for A+ blood urgently with cold-chain transfer">
+                    🩸 A+ Blood Transfer
                 </button>
-                <button class="chat-chip px-2 py-1 rounded bg-zinc-900 hover:bg-indigo-950/80 text-zinc-300 hover:text-indigo-300 border border-zinc-800 transition" data-prompt="Find fastest ambulance route from GMC Nagpur to AIIMS avoiding Wardha Road flood">
-                    🛣️ Dijkstra Ambulance Route
+                <button class="chat-chip px-2 py-1 rounded bg-zinc-900 hover:bg-sky-950/80 text-sky-300 border border-zinc-800 transition" data-prompt="Send message to ambulance immediately to GMC Nagpur with green corridor preemption">
+                    🚑 Dispatch Ambulance
                 </button>
-                <button class="chat-chip px-2 py-1 rounded bg-zinc-900 hover:bg-indigo-950/80 text-zinc-300 hover:text-indigo-300 border border-zinc-800 transition" data-prompt="Audit the last blocked CPACF cyberattack and explain why HMAC failed">
-                    🛡️ Explain Blocked Attack
+                <button class="chat-chip px-2 py-1 rounded bg-zinc-900 hover:bg-amber-950/80 text-amber-300 border border-zinc-800 transition" data-prompt="Calculate generator diesel fuel burn-time remaining: 3,200 Liters at 98 L/h">
+                    ⚡ Fuel Burn Math
                 </button>
-                <button class="chat-chip px-2 py-1 rounded bg-zinc-900 hover:bg-indigo-950/80 text-zinc-300 hover:text-indigo-300 border border-zinc-800 transition" data-prompt="मराठीत आणीबाणीचा अहवाल तयार करा आणि सुरक्षित मार्ग सांगा">
+                <button class="chat-chip px-2 py-1 rounded bg-zinc-900 hover:bg-red-950/80 text-red-300 border border-zinc-800 transition" data-prompt="Evacuate Mayo Hospital Ward 4 immediately due to flood surge and trip substation breakers">
+                    🚨 Evacuate Ward 4
+                </button>
+                <button class="chat-chip px-2 py-1 rounded bg-zinc-900 hover:bg-indigo-950/80 text-indigo-300 border border-zinc-800 transition" data-prompt="Audit the last blocked CPACF cyberattack and explain why HMAC failed">
+                    🛡️ Audit Cyber Gate
+                </button>
+                <button class="chat-chip px-2 py-1 rounded bg-zinc-900 hover:bg-emerald-950/80 text-emerald-300 border border-zinc-800 transition" data-prompt="मराठीत आणीबाणीचा अहवाल तयार करा आणि रुग्णालयाची स्थिती सांगा">
                     🇮🇳 मराठीत अहवाल
                 </button>
             </div>
@@ -1284,8 +1541,8 @@
                 <div class="flex items-start gap-2.5">
                     <div class="h-7 w-7 rounded-full bg-indigo-950 border border-indigo-700 flex items-center justify-center text-xs flex-shrink-0">🤖</div>
                     <div class="p-3 rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-200 max-w-[85%] leading-relaxed space-y-1">
-                        <div class="text-[10px] text-indigo-400 font-mono font-bold">OPENROUTER AI ASSISTANT · LLAMA 3.3 70B · LINUXONE s390x</div>
-                        <p>Welcome to AegisCore Command. I am your <strong>OpenRouter Multi-Cloud AI Assistant</strong> powered by Meta Llama 3.3 70B. I provide real-time operational intelligence across the Nagpur Emergency Grid, CPACF cryptographic audits, and OpenRouteService hospital corridors. You can query me in <strong>English, Hindi, or Marathi</strong>.</p>
+                        <div class="text-[10px] text-indigo-400 font-mono font-bold">PROJECT SYN // AI INCIDENT COMMANDER · TASK EXECUTOR · LINUXONE s390x</div>
+                        <p>Welcome to <strong>Project Syn Incident Command</strong>. I am your autonomous AI operations officer. I don't just chat—I <strong>execute field actions</strong> (ambulance dispatch, P2P blood allocations, ward evacuations) and solve <strong>tactical math &amp; clinical logic</strong> (fuel burn horizons, oxygen depletion, ischemia windows) in <strong>English, Hindi, and Marathi</strong>. Click any action directive above or give an order below.</p>
                     </div>
                 </div>
             </div>
@@ -2425,6 +2682,129 @@
         });
         setInterval(pollMeshChat, 3500);
         pollMeshChat();
+
+        // 17. LinuxONE Cloud Terminal & Docker Console Controller
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        const cliOutput = document.getElementById('cli-output');
+        const cliForm = document.getElementById('cli-form');
+        const cliInput = document.getElementById('cli-input');
+        const cliClearBtn = document.getElementById('btn-cli-clear');
+        const dockerRows = document.getElementById('docker-container-rows');
+        const dockerBadge = document.getElementById('docker-live-badge');
+        const dockerVerEl = document.getElementById('cli-docker-ver');
+        const refreshDockerBtn = document.getElementById('btn-refresh-docker');
+
+        async function executeCliCommand(cmd) {
+            if (!cmd || !cmd.trim()) return;
+            const command = cmd.trim();
+            if (cliOutput) {
+                cliOutput.innerHTML += `\n<span class="text-emerald-400 font-bold">linux1@projectsyn:~$</span> <span class="text-white">${escapeHtml(command)}</span>\n`;
+                cliOutput.scrollTop = cliOutput.scrollHeight;
+            }
+            if (cliInput) cliInput.value = '';
+
+            try {
+                const res = await fetch('/api/terminal/execute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command: command })
+                });
+                const data = await res.json();
+                if (cliOutput) {
+                    if (res.ok) {
+                        const outText = data.stdout || '';
+                        const errText = data.stderr || '';
+                        let display = '';
+                        if (outText) display += escapeHtml(outText);
+                        if (errText) display += `<span class="text-rose-400">${escapeHtml(errText)}</span>`;
+                        if (!outText && !errText) display += `<span class="text-zinc-500">[Command completed with exit code ${data.exit_code}]</span>`;
+                        display += `\n<span class="text-zinc-500 text-[10px]">↳ Execution: ${data.execution_time_ms}ms · Exit: ${data.exit_code}</span>\n`;
+                        cliOutput.innerHTML += display;
+                    } else {
+                        cliOutput.innerHTML += `<span class="text-rose-400">Error (${res.status}): ${escapeHtml(data.detail || 'Execution failed')}</span>\n`;
+                    }
+                    cliOutput.scrollTop = cliOutput.scrollHeight;
+                }
+            } catch (err) {
+                if (cliOutput) {
+                    cliOutput.innerHTML += `<span class="text-rose-400">Network Error: ${escapeHtml(err.message)}</span>\n`;
+                    cliOutput.scrollTop = cliOutput.scrollHeight;
+                }
+            }
+        }
+
+        async function refreshDockerStatus() {
+            try {
+                const res = await fetch('/api/docker/status');
+                if (!res.ok) return;
+                const d = await res.json();
+                if (dockerVerEl && d.version) {
+                    dockerVerEl.innerText = d.version.split(',')[0] || d.version;
+                }
+                if (dockerBadge) {
+                    if (d.docker_active) {
+                        dockerBadge.className = "px-3 py-1 rounded bg-sky-950 text-sky-300 border border-sky-800 font-mono text-[11px] font-semibold flex items-center gap-1.5";
+                        dockerBadge.innerHTML = '<span class="h-2 w-2 rounded-full bg-sky-400 animate-pulse"></span> DOCKER: ACTIVE';
+                    } else {
+                        dockerBadge.className = "px-3 py-1 rounded bg-zinc-900 text-zinc-400 border border-zinc-700 font-mono text-[11px] font-semibold flex items-center gap-1.5";
+                        dockerBadge.innerHTML = '<span class="h-2 w-2 rounded-full bg-zinc-500"></span> DOCKER: STANDBY';
+                    }
+                }
+                if (dockerRows && d.containers && d.containers.length > 0) {
+                    dockerRows.innerHTML = d.containers.map(c => `
+                        <tr>
+                            <td class="p-2.5 text-sky-400 font-bold">${escapeHtml(c.id)}</td>
+                            <td class="p-2.5 font-bold text-white">${escapeHtml(c.name)}</td>
+                            <td class="p-2.5 text-zinc-400">${escapeHtml(c.image)}</td>
+                            <td class="p-2.5"><span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px] font-bold">${escapeHtml(c.status)}</span></td>
+                            <td class="p-2.5 text-zinc-400">${escapeHtml(c.ports || 'internal')}</td>
+                            <td class="p-2.5 text-right">
+                                <button class="cli-preset-btn px-2 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-sky-300 border border-zinc-700 text-[10px]" data-cmd="docker logs --tail 30 ${escapeHtml(c.id)}">LOGS</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (e) {}
+        }
+
+        // Attach CLI events
+        if (cliForm) {
+            cliForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                executeCliCommand(cliInput.value);
+            });
+        }
+        if (cliClearBtn) {
+            cliClearBtn.addEventListener('click', () => {
+                if (cliOutput) cliOutput.innerHTML = '<span class="text-zinc-500">[Terminal display cleared]</span>\n';
+            });
+        }
+        if (refreshDockerBtn) {
+            refreshDockerBtn.addEventListener('click', refreshDockerStatus);
+        }
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.cli-preset-btn, .cli-attack-btn');
+            if (btn) {
+                const cmd = btn.getAttribute('data-cmd');
+                if (cmd) {
+                    const termTab = document.querySelector('[data-tab="tab-terminal"]');
+                    if (termTab && termTab.classList.contains('tab-btn-inactive')) {
+                        termTab.click();
+                    }
+                    executeCliCommand(cmd);
+                }
+            }
+        });
+        setTimeout(refreshDockerStatus, 1500);
 
         // Global ESC handler for modals
         window.addEventListener('keydown', (e) => {

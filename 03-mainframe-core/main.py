@@ -735,26 +735,15 @@ class AIChatRequest(BaseModel):
 @app.post("/api/ai/chat")
 async def chat_with_incident_commander(req: AIChatRequest):
     """
-    Interactive AI Incident Commander assistant.
-    Arbitrates across Google Gemini (1M token high-TPM tier), OpenRouter Multi-Cloud,
-    and Local s390x Deterministic LLM.
+    Interactive AI Incident Commander assistant with Agentic Task Execution.
+    - Autonomously executes tactical directives (ambulance dispatch, P2P blood allocation, ward evacuation).
+    - Solves clinical and logistics mathematics (generator burn-time, oxygen depletion, ischemia limits).
+    - Multi-cloud AI cascade with distilled on-premise s390x cognitive fallbacks.
     """
     start_t = time.time()
     query = req.message.strip()
     if not query:
         raise HTTPException(status_code=400, detail="Query cannot be empty.")
-
-    system_prompt = (
-        "You are the AegisCore / Project Syn AI Incident Commander running on an IBM LinuxONE s390x mainframe. "
-        "You supervise the Nagpur Metropolitan Emergency Health Grid covering GMC Nagpur (Trauma ICU), "
-        "Mayo Hospital, AIIMS Nagpur, Lata Mangeshkar, and Wockhardt Hospital. "
-        "You assist municipal disaster coordinators, emergency doctors, and ambulance dispatchers. "
-        "You have real-time visibility into grid voltages, flood inundation levels, blood bank reserves, "
-        "diesel generator runtimes, and CPACF-verified cryptographic telemetry. "
-        "Answer questions directly, concisely, and factually. "
-        "If asked in Hindi or Marathi, respond accurately in Hindi or Marathi. "
-        f"\nUser Query: {query}"
-    )
 
     from telegram_dispatch import (
         generate_gemini_cascade,
@@ -762,36 +751,71 @@ async def chat_with_incident_commander(req: AIChatRequest):
         generate_local_hospital_intelligence,
         AI_STATUS_TRACKER
     )
+    from agentic_action_engine import get_agentic_dispatcher
+    from tinyml_engine import get_distilled_engine
+
     current_mode = AI_STATUS_TRACKER.get("mode", "auto")
     resp_text = None
     provider_used = "IBM Z s390x Local Engine"
+    action_executed = None
+    task_telemetry = None
 
-    if current_mode == "local" or CURRENT_SOVEREIGNTY_MODE in ("sovereign", "degraded"):
-        # 100% on-premise domain-grounded disaster intelligence response
-        resp_text = generate_local_hospital_intelligence(query)
-        provider_used = "IBM LinuxONE s390x Local Intelligence Engine"
+    # STEP 1: Autonomous Agentic Tool & Task Execution
+    action_res = get_agentic_dispatcher().parse_and_execute(query)
+    if action_res:
+        resp_text = action_res["response"]
+        provider_used = action_res["provider"]
+        action_executed = action_res.get("action_executed")
+        task_telemetry = action_res.get("task_telemetry")
     else:
-        # Dashboard Assistant leverages OpenRouter verified free models -> Gemini
-        text_or, model_or = generate_openrouter_cascade(system_prompt)
-        if text_or:
-            resp_text = text_or
-            provider_used = f"OpenRouter AI ({model_or})"
+        # STEP 2: Conversational & Operational Query Answering
+        system_prompt = (
+            "You are the Lead Emergency Coordinator & AI Incident Commander for Project Syn on an IBM LinuxONE s390x mainframe. "
+            "You supervise the Nagpur Metropolitan Emergency Health Grid covering GMC Nagpur (Trauma ICU), "
+            "Mayo Hospital, AIIMS Nagpur, Lata Mangeshkar, and Wockhardt Hospital. "
+            "You speak with genuine human empathy, calm authority, and clinical precision to doctors, paramedics, and disaster dispatchers. "
+            "If an operator needs help or gives an instruction, acknowledge the human urgency first, provide clear actionable steps, "
+            "and show step-by-step mathematical reasoning for any hospital bed, fuel, or blood calculations. "
+            "If asked in Hindi or Marathi, respond with culturally fluent, reassuring, and precise Hindi or Marathi. "
+            f"\nUser Query: {query}"
+        )
+
+        if current_mode == "local" or CURRENT_SOVEREIGNTY_MODE in ("sovereign", "degraded"):
+            # Air-gapped Distilled Cognitive Reasoning from 70B models
+            cog = get_distilled_engine().infer_offline_reasoning(query)
+            local_med = generate_local_hospital_intelligence(query)
+            resp_text = (
+                f"🧠 **[IBM LINUXONE s390x DISTILLED COGNITIVE ENGINE — AIR-GAPPED]**\n\n"
+                f"{cog['offline_reasoning']}\n\n"
+                f"📋 **Immediate Action Directive:** {cog['recommended_action']}\n"
+                f"• **Urgency Assessment:** `{cog['urgency_level']}`\n"
+                f"• **Local Grid Context:** {local_med}\n"
+                f"• **Knowledge Distillation Base:** {cog['distilled_model']}\n"
+                f"• **Hardware State:** CPACF Hardware Crypto Active | 100% Zero Internet Dependency"
+            )
+            provider_used = "IBM LinuxONE Distilled Cognitive Core"
         else:
-            text_gem, model_gem = generate_gemini_cascade(system_prompt)
-            if text_gem:
-                resp_text = text_gem
-                provider_used = f"Google Gemini Failover ({model_gem})"
+            text_or, model_or = generate_openrouter_cascade(system_prompt)
+            if text_or:
+                resp_text = text_or
+                provider_used = f"OpenRouter AI ({model_or})"
+            else:
+                text_gem, model_gem = generate_gemini_cascade(system_prompt)
+                if text_gem:
+                    resp_text = text_gem
+                    provider_used = f"Google Gemini Failover ({model_gem})"
 
-    if not resp_text:
-        resp_text = generate_local_hospital_intelligence(query)
-        provider_used = "IBM LinuxONE s390x Knowledge Failover"
-
+        if not resp_text:
+            resp_text = generate_local_hospital_intelligence(query)
+            provider_used = "IBM LinuxONE s390x Knowledge Failover"
 
     elapsed_ms = round((time.time() - start_t) * 1000, 2)
     return {
         "status": "success",
         "response": resp_text,
         "provider": provider_used,
+        "action_executed": action_executed,
+        "task_telemetry": task_telemetry,
         "latency_ms": elapsed_ms,
         "mode": current_mode,
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
@@ -873,20 +897,11 @@ from tokenization_engine import TOKENIZER, stream_tokens_sse
 async def stream_incident_commander(req: AIChatRequest):
     """
     Real-time Token-Streaming AI response via Server-Sent Events (SSE).
-    Delivers sub-word tokens with micro-latency typewriter rendering.
+    Autonomously executes actions and delivers sub-word tokens with micro-latency typewriter rendering.
     """
     query = req.message.strip()
     if not query:
         raise HTTPException(status_code=400, detail="Query cannot be empty.")
-
-    system_prompt = (
-        "You are the AegisCore / Project Syn AI Incident Commander running on an IBM LinuxONE s390x mainframe. "
-        "You supervise the Nagpur Metropolitan Emergency Health Grid covering GMC Nagpur (Trauma ICU), "
-        "Mayo Hospital, AIIMS Nagpur, Lata Mangeshkar, and Wockhardt Hospital. "
-        "Answer questions directly, concisely, and factually. "
-        "If asked in Hindi or Marathi, respond accurately in Hindi or Marathi. "
-        f"\nUser Query: {query}"
-    )
 
     from telegram_dispatch import (
         generate_gemini_cascade,
@@ -894,27 +909,57 @@ async def stream_incident_commander(req: AIChatRequest):
         generate_local_hospital_intelligence,
         AI_STATUS_TRACKER
     )
+    from agentic_action_engine import get_agentic_dispatcher
+    from tinyml_engine import get_distilled_engine
+
     current_mode = AI_STATUS_TRACKER.get("mode", "auto")
     resp_text = None
     provider_used = "IBM Z s390x Local Engine"
 
-    if current_mode == "local" or CURRENT_SOVEREIGNTY_MODE in ("sovereign", "degraded"):
-        resp_text = generate_local_hospital_intelligence(query)
-        provider_used = "IBM LinuxONE s390x Local Intelligence Engine"
+    # Check for actionable tactical directives first
+    action_res = get_agentic_dispatcher().parse_and_execute(query)
+    if action_res:
+        resp_text = action_res["response"]
+        provider_used = action_res["provider"]
     else:
-        text_or, model_or = generate_openrouter_cascade(system_prompt)
-        if text_or:
-            resp_text = text_or
-            provider_used = f"OpenRouter AI ({model_or})"
-        else:
-            text_gem, model_gem = generate_gemini_cascade(system_prompt)
-            if text_gem:
-                resp_text = text_gem
-                provider_used = f"Google Gemini Failover ({model_gem})"
+        system_prompt = (
+            "You are the Lead Emergency Coordinator & AI Incident Commander for Project Syn on an IBM LinuxONE s390x mainframe. "
+            "You supervise the Nagpur Metropolitan Emergency Health Grid covering GMC Nagpur (Trauma ICU), "
+            "Mayo Hospital, AIIMS Nagpur, Lata Mangeshkar, and Wockhardt Hospital. "
+            "You speak with genuine human empathy, calm authority, and clinical precision to doctors, paramedics, and disaster dispatchers. "
+            "If an operator needs help or gives an instruction, acknowledge the human urgency first, provide clear actionable steps, "
+            "and show step-by-step mathematical reasoning for any hospital bed, fuel, or blood calculations. "
+            "If asked in Hindi or Marathi, respond with culturally fluent, reassuring, and precise Hindi or Marathi. "
+            f"\nUser Query: {query}"
+        )
 
-    if not resp_text:
-        resp_text = generate_local_hospital_intelligence(query)
-        provider_used = "IBM LinuxONE s390x Knowledge Failover"
+        if current_mode == "local" or CURRENT_SOVEREIGNTY_MODE in ("sovereign", "degraded"):
+            cog = get_distilled_engine().infer_offline_reasoning(query)
+            local_med = generate_local_hospital_intelligence(query)
+            resp_text = (
+                f"🧠 **[IBM LINUXONE s390x DISTILLED COGNITIVE ENGINE — AIR-GAPPED]**\n\n"
+                f"{cog['offline_reasoning']}\n\n"
+                f"📋 **Immediate Action Directive:** {cog['recommended_action']}\n"
+                f"• **Urgency Assessment:** `{cog['urgency_level']}`\n"
+                f"• **Local Grid Context:** {local_med}\n"
+                f"• **Knowledge Distillation Base:** {cog['distilled_model']}\n"
+                f"• **Hardware State:** CPACF Hardware Crypto Active | 100% Zero Internet Dependency"
+            )
+            provider_used = "IBM LinuxONE Distilled Cognitive Core"
+        else:
+            text_or, model_or = generate_openrouter_cascade(system_prompt)
+            if text_or:
+                resp_text = text_or
+                provider_used = f"OpenRouter AI ({model_or})"
+            else:
+                text_gem, model_gem = generate_gemini_cascade(system_prompt)
+                if text_gem:
+                    resp_text = text_gem
+                    provider_used = f"Google Gemini Failover ({model_gem})"
+
+        if not resp_text:
+            resp_text = generate_local_hospital_intelligence(query)
+            provider_used = "IBM LinuxONE s390x Knowledge Failover"
 
     return StreamingResponse(
         stream_tokens_sse(resp_text, provider_used),
@@ -1008,4 +1053,172 @@ async def toggle_telegram_broadcast(request: Request):
         "broadcast_enabled": result,
         "status_message": "Automated incident broadcasts ACTIVE" if result else "Automated incident broadcasts MUTED"
     }
+
+
+# -----------------------------------------------------------------------------
+# Interactive Linux Cloud Terminal & Docker Execution Endpoints (IBM Z s390x)
+# -----------------------------------------------------------------------------
+import platform
+
+ALLOWED_COMMAND_PREFIXES = (
+    "docker", "docker-compose", "uname", "uptime", "free", "df",
+    "cat /proc", "cat /etc/os-release", "ps", "top", "netstat", "ss",
+    "git status", "git branch", "git log", "ls", "dir", "pwd", "whoami",
+    "python", "python3", "k6", "echo"
+)
+
+DISALLOWED_COMMAND_SUBSTRINGS = (
+    "rm -rf /", "mkfs", "dd if=", ":(){ :|:& };:", "shutdown", "reboot", "init 0"
+)
+
+
+class TerminalExecuteRequest(BaseModel):
+    command: str = Field(..., description="Linux shell command to execute")
+    cwd: Optional[str] = Field(default=None, description="Working directory")
+
+
+@app.post("/api/terminal/execute")
+async def execute_terminal_command(req: TerminalExecuteRequest):
+    """
+    Executes authorized system inspection, Docker management, or attack trigger commands
+    directly on the IBM LinuxONE mainframe instance.
+    """
+    cmd = req.command.strip()
+    if not cmd:
+        raise HTTPException(status_code=400, detail="Command cannot be empty.")
+
+    lower_cmd = cmd.lower()
+    for forbidden in DISALLOWED_COMMAND_SUBSTRINGS:
+        if forbidden in lower_cmd:
+            raise HTTPException(status_code=403, detail=f"Command contains prohibited sequence: '{forbidden}'")
+
+    is_allowed = any(cmd.startswith(prefix) or lower_cmd.startswith(prefix) for prefix in ALLOWED_COMMAND_PREFIXES)
+    if not is_allowed:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Command '{cmd[:25]}' is not authorized. Permitted commands include docker, docker-compose, uname, uptime, free, ps, git, python3 02-logic-engine/src/attack_injector.py, and k6."
+        )
+
+    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    exec_cwd = req.cwd or repo_root
+
+    start_time = time.time()
+    try:
+        proc = await asyncio.wait_for(
+            asyncio.create_subprocess_shell(
+                cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                cwd=exec_cwd
+            ),
+            timeout=30.0
+        )
+        stdout_bytes, stderr_bytes = await asyncio.wait_for(proc.communicate(), timeout=30.0)
+        stdout_str = stdout_bytes.decode("utf-8", errors="replace")
+        stderr_str = stderr_bytes.decode("utf-8", errors="replace")
+        exit_code = proc.returncode
+    except asyncio.TimeoutError:
+        try:
+            proc.kill()
+        except Exception:
+            pass
+        return {
+            "command": cmd,
+            "exit_code": -1,
+            "stdout": "",
+            "stderr": "Command execution timed out after 30.0 seconds.",
+            "execution_time_ms": round((time.time() - start_time) * 1000, 2),
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+    except Exception as exc:
+        return {
+            "command": cmd,
+            "exit_code": -1,
+            "stdout": "",
+            "stderr": f"Execution error: {str(exc)}",
+            "execution_time_ms": round((time.time() - start_time) * 1000, 2),
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+
+    return {
+        "command": cmd,
+        "exit_code": exit_code,
+        "stdout": stdout_str,
+        "stderr": stderr_str,
+        "execution_time_ms": round((time.time() - start_time) * 1000, 2),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "cwd": exec_cwd
+    }
+
+
+@app.get("/api/docker/status")
+async def get_docker_daemon_status():
+    """
+    Returns Docker daemon status, active containers, images, and compose services on LinuxONE s390x.
+    """
+    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    info_out = ""
+    ps_out = ""
+    compose_out = ""
+    docker_active = False
+
+    try:
+        proc = await asyncio.create_subprocess_shell(
+            "docker ps -a --format '{{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}\t{{.Ports}}'",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+        stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=5.0)
+        if proc.returncode == 0:
+            docker_active = True
+            ps_out = stdout.decode("utf-8", errors="replace").strip()
+    except Exception:
+        pass
+
+    try:
+        proc_v = await asyncio.create_subprocess_shell(
+            "docker --version",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+        stdout_v, _ = await asyncio.wait_for(proc_v.communicate(), timeout=3.0)
+        info_out = stdout_v.decode("utf-8", errors="replace").strip()
+    except Exception:
+        info_out = "Docker CLI not detected or non-responsive"
+
+    try:
+        proc_c = await asyncio.create_subprocess_shell(
+            "docker-compose ps",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            cwd=repo_root
+        )
+        stdout_c, _ = await asyncio.wait_for(proc_c.communicate(), timeout=5.0)
+        compose_out = stdout_c.decode("utf-8", errors="replace").strip()
+    except Exception:
+        compose_out = ""
+
+    containers = []
+    if ps_out:
+        for line in ps_out.splitlines():
+            parts = line.split("\t")
+            if len(parts) >= 4:
+                containers.append({
+                    "id": parts[0],
+                    "image": parts[1],
+                    "status": parts[2],
+                    "name": parts[3],
+                    "ports": parts[4] if len(parts) > 4 else ""
+                })
+
+    return {
+        "docker_active": docker_active,
+        "version": info_out,
+        "host_architecture": platform.machine(),
+        "containers": containers,
+        "raw_ps": ps_out,
+        "compose_status": compose_out,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
 
