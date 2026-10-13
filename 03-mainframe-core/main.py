@@ -268,12 +268,21 @@ async def get_telemetry_live():
         "location": latest.get("sensor_location", "GMC_Nagpur")
     }
 
+    db_stats = get_ledger_stats()
     return {
         "status": "nominal" if STATS["rejected_count"] == 0 else "active",
         "live_stream": recent_items[:20],
         "metrics": metrics_payload,
         "latest_metrics": metrics_payload,
         "latest_block": latest_block,
+        "recent_blocks": get_recent_blocks(15),
+        "security_logs": get_security_audit_logs(15),
+        "ledger_stats": db_stats,
+        "stats": {
+            "verified_count": STATS["verified_count"],
+            "rejected_count": STATS["rejected_count"],
+            "total_blocks": db_stats.get("total_blocks", 0)
+        },
         "queue_depth": QUEUE.qsize(),
         "last_hash": get_last_hash(),
         "latest_alert": get_latest_alert(),
