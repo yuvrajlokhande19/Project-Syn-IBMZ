@@ -22,7 +22,7 @@ from typing import Dict, Any, Tuple, Optional, List
 
 logger = logging.getLogger("agentic_action")
 
-# Realistic Nagpur Metropolitan Hospital Stock & Capacity Matrix
+# Realistic 12 Nagpur Metropolitan Hospital Stock, ICU & Logistics Matrix
 HOSPITAL_REGISTRY = {
     "GMC_Nagpur": {
         "name": "GMC Nagpur (Trauma ICU)",
@@ -57,16 +57,16 @@ HOSPITAL_REGISTRY = {
         "icu_beds_occupied": 25,
         "power_status": "235.0V Optimal"
     },
-    "Lata_Mangeshkar_Hospital": {
-        "name": "Lata Mangeshkar Hospital",
-        "coords": [21.1110, 79.0205],
-        "blood_stock": {"A+": 12, "O-": 9, "B+": 16, "AB+": 5, "O+": 22},
-        "diesel_liters": 2100,
-        "diesel_burn_rate_lh": 75.0,
-        "oxygen_cylinders": 48,
-        "icu_beds_total": 25,
-        "icu_beds_occupied": 19,
-        "power_status": "224.0V Stable"
+    "Kingsway_Hospital": {
+        "name": "Kingsway Hospital (Station Road)",
+        "coords": [21.1534, 79.0825],
+        "blood_stock": {"A+": 16, "O-": 11, "B+": 20, "AB+": 7, "O+": 26},
+        "diesel_liters": 2900,
+        "diesel_burn_rate_lh": 88.0,
+        "oxygen_cylinders": 70,
+        "icu_beds_total": 35,
+        "icu_beds_occupied": 22,
+        "power_status": "226.0V Stable"
     },
     "Wockhardt_Hospital": {
         "name": "Wockhardt Cardiac Super Specialty",
@@ -78,6 +78,83 @@ HOSPITAL_REGISTRY = {
         "icu_beds_total": 35,
         "icu_beds_occupied": 21,
         "power_status": "228.0V Stable"
+    },
+    "Lata_Mangeshkar_Hospital": {
+        "name": "Lata Mangeshkar Hospital (Hingna)",
+        "coords": [21.1110, 79.0205],
+        "blood_stock": {"A+": 12, "O-": 9, "B+": 16, "AB+": 5, "O+": 22},
+        "diesel_liters": 2100,
+        "diesel_burn_rate_lh": 75.0,
+        "oxygen_cylinders": 48,
+        "icu_beds_total": 25,
+        "icu_beds_occupied": 19,
+        "power_status": "224.0V Stable"
+    },
+    "Orange_City_Hospital": {
+        "name": "Orange City Hospital & Research Institute",
+        "coords": [21.1158, 79.0612],
+        "blood_stock": {"A+": 14, "O-": 10, "B+": 17, "AB+": 5, "O+": 24},
+        "diesel_liters": 2400,
+        "diesel_burn_rate_lh": 82.0,
+        "oxygen_cylinders": 55,
+        "icu_beds_total": 28,
+        "icu_beds_occupied": 20,
+        "power_status": "222.0V Stable"
+    },
+    "Alexis_Hospital": {
+        "name": "Alexis Multi-Speciality Hospital (Koradi Road)",
+        "coords": [21.1960, 79.0830],
+        "blood_stock": {"A+": 16, "O-": 13, "B+": 19, "AB+": 8, "O+": 30},
+        "diesel_liters": 2600,
+        "diesel_burn_rate_lh": 86.0,
+        "oxygen_cylinders": 60,
+        "icu_beds_total": 30,
+        "icu_beds_occupied": 18,
+        "power_status": "225.0V Stable"
+    },
+    "CARE_Hospital": {
+        "name": "CARE Hospitals (Ramdaspeth)",
+        "coords": [21.1395, 79.0772],
+        "blood_stock": {"A+": 11, "O-": 8, "B+": 14, "AB+": 4, "O+": 20},
+        "diesel_liters": 1900,
+        "diesel_burn_rate_lh": 78.0,
+        "oxygen_cylinders": 40,
+        "icu_beds_total": 24,
+        "icu_beds_occupied": 16,
+        "power_status": "221.0V Stable"
+    },
+    "Crescent_Hospital": {
+        "name": "Crescent Hospital & Heart Centre (Dhantoli)",
+        "coords": [21.1325, 79.0815],
+        "blood_stock": {"A+": 9, "O-": 6, "B+": 11, "AB+": 3, "O+": 16},
+        "diesel_liters": 1600,
+        "diesel_burn_rate_lh": 72.0,
+        "oxygen_cylinders": 35,
+        "icu_beds_total": 20,
+        "icu_beds_occupied": 15,
+        "power_status": "219.0V Stable"
+    },
+    "Sengupta_Hospital": {
+        "name": "Sengupta Hospital & Research Institute",
+        "coords": [21.1510, 79.0520],
+        "blood_stock": {"A+": 8, "O-": 5, "B+": 10, "AB+": 2, "O+": 14},
+        "diesel_liters": 1400,
+        "diesel_burn_rate_lh": 68.0,
+        "oxygen_cylinders": 28,
+        "icu_beds_total": 18,
+        "icu_beds_occupied": 12,
+        "power_status": "223.0V Stable"
+    },
+    "Platina_Heart_Hospital": {
+        "name": "Platina Heart & Multi-Speciality (Sitabuldi)",
+        "coords": [21.1440, 79.0840],
+        "blood_stock": {"A+": 7, "O-": 4, "B+": 9, "AB+": 2, "O+": 12},
+        "diesel_liters": 1200,
+        "diesel_burn_rate_lh": 64.0,
+        "oxygen_cylinders": 25,
+        "icu_beds_total": 16,
+        "icu_beds_occupied": 11,
+        "power_status": "220.0V Stable"
     }
 }
 

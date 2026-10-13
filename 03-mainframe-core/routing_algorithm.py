@@ -4,22 +4,54 @@ import os
 import requests
 from typing import Dict, Any, List, Tuple
 
-# Hospital GPS Coordinates in Nagpur Metropolitan Area [Latitude, Longitude]
+# Expanded 12 Trauma and Community Hospitals in Nagpur Metropolitan Area [Latitude, Longitude]
 HOSPITAL_COORDINATES = {
-    "GMC_Nagpur": [21.1284, 79.0991],
-    "Mayo_Hospital": [21.1528, 79.1001],
-    "AIIMS_Nagpur": [21.0560, 79.0435],
-    "Lata_Mangeshkar_Hospital": [21.1250, 79.0550],
-    "Wockhardt_Hospital": [21.1400, 79.0800]
+    "AIIMS_Nagpur": [21.0645, 79.0270],
+    "GMC_Nagpur": [21.1278, 79.0882],
+    "Mayo_Hospital": [21.1520, 79.0888],
+    "Kingsway_Hospital": [21.1534, 79.0825],
+    "Wockhardt_Hospital": [21.1350, 79.0680],
+    "Lata_Mangeshkar_Hospital": [21.1110, 79.0205],
+    "Orange_City_Hospital": [21.1158, 79.0612],
+    "Alexis_Hospital": [21.1960, 79.0830],
+    "CARE_Hospital": [21.1395, 79.0772],
+    "Crescent_Hospital": [21.1325, 79.0815],
+    "Sengupta_Hospital": [21.1510, 79.0520],
+    "Platina_Heart_Hospital": [21.1440, 79.0840]
 }
 
-# Deterministic offline fallback waypoints (Wardha Road elevated corridor)
-DEFAULT_ROAD_COORDINATES = [
-    [21.1284, 79.0991], [21.1250, 79.0900], [21.1220, 79.0850],
-    [21.1180, 79.0800], [21.1120, 79.0750], [21.1050, 79.0700],
-    [21.1000, 79.0664], [21.0850, 79.0600], [21.0700, 79.0550],
-    [21.0560, 79.0435]
-]
+# Dense 6-Artery Nagpur Metropolitan Road Mesh
+NAGPUR_ROAD_CORRIDORS = {
+    "Wardha_Road_Expressway": [
+        [21.1278, 79.0882], [21.1240, 79.0840], [21.1180, 79.0800],
+        [21.1120, 79.0750], [21.1050, 79.0700], [21.0980, 79.0650],
+        [21.0880, 79.0580], [21.0760, 79.0490], [21.0680, 79.0380],
+        [21.0645, 79.0270]
+    ],
+    "Central_Avenue_Corridor": [
+        [21.1520, 79.0888], [21.1534, 79.0825], [21.1480, 79.0850],
+        [21.1440, 79.0840], [21.1395, 79.0772], [21.1325, 79.0815],
+        [21.1278, 79.0882]
+    ],
+    "Ring_Road_Hingna_Artery": [
+        [21.1278, 79.0882], [21.1250, 79.0780], [21.1200, 79.0700],
+        [21.1158, 79.0612], [21.1130, 79.0450], [21.1110, 79.0205]
+    ],
+    "Amravati_Road_West_Artery": [
+        [21.1440, 79.0840], [21.1420, 79.0720], [21.1350, 79.0680],
+        [21.1450, 79.0590], [21.1510, 79.0520]
+    ],
+    "North_Koradi_Corridor": [
+        [21.1520, 79.0888], [21.1620, 79.0860], [21.1750, 79.0840],
+        [21.1870, 79.0835], [21.1960, 79.0830]
+    ],
+    "Dhantoli_Medical_Link": [
+        [21.1278, 79.0882], [21.1325, 79.0815], [21.1350, 79.0680],
+        [21.1395, 79.0772], [21.1440, 79.0840]
+    ]
+}
+
+DEFAULT_ROAD_COORDINATES = NAGPUR_ROAD_CORRIDORS["Wardha_Road_Expressway"]
 
 
 class NagpurHospitalRouter:
@@ -28,13 +60,20 @@ class NagpurHospitalRouter:
     ambulance corridor when an anomaly (like a flood) is detected.
     """
     def __init__(self):
-        # Weighted Graph representing distance/time between hospital nodes
+        # Dense Weighted Graph representing road connectivity across all 12 Nagpur hospital nodes
         self.graph = {
-            "GMC_Nagpur": {"Mayo_Hospital": 5, "AIIMS_Nagpur": 12, "Wockhardt_Hospital": 7},
-            "Mayo_Hospital": {"GMC_Nagpur": 5, "Wockhardt_Hospital": 4, "Lata_Mangeshkar_Hospital": 15},
-            "AIIMS_Nagpur": {"GMC_Nagpur": 12, "Lata_Mangeshkar_Hospital": 10},
-            "Lata_Mangeshkar_Hospital": {"Mayo_Hospital": 15, "AIIMS_Nagpur": 10, "Wockhardt_Hospital": 8},
-            "Wockhardt_Hospital": {"GMC_Nagpur": 7, "Mayo_Hospital": 4, "Lata_Mangeshkar_Hospital": 8}
+            "AIIMS_Nagpur": {"GMC_Nagpur": 12, "Orange_City_Hospital": 9, "Lata_Mangeshkar_Hospital": 10},
+            "GMC_Nagpur": {"Mayo_Hospital": 5, "AIIMS_Nagpur": 12, "Wockhardt_Hospital": 4, "Crescent_Hospital": 2, "Orange_City_Hospital": 5, "CARE_Hospital": 3},
+            "Mayo_Hospital": {"GMC_Nagpur": 5, "Kingsway_Hospital": 2, "Alexis_Hospital": 8, "Platina_Heart_Hospital": 3},
+            "Kingsway_Hospital": {"Mayo_Hospital": 2, "Platina_Heart_Hospital": 2, "CARE_Hospital": 3},
+            "Wockhardt_Hospital": {"GMC_Nagpur": 4, "CARE_Hospital": 2, "Sengupta_Hospital": 4, "Orange_City_Hospital": 4},
+            "Lata_Mangeshkar_Hospital": {"Orange_City_Hospital": 6, "AIIMS_Nagpur": 10, "Wockhardt_Hospital": 7},
+            "Orange_City_Hospital": {"GMC_Nagpur": 5, "AIIMS_Nagpur": 9, "Lata_Mangeshkar_Hospital": 6, "Wockhardt_Hospital": 4},
+            "Alexis_Hospital": {"Mayo_Hospital": 8, "Kingsway_Hospital": 9},
+            "CARE_Hospital": {"GMC_Nagpur": 3, "Wockhardt_Hospital": 2, "Kingsway_Hospital": 3, "Platina_Heart_Hospital": 2},
+            "Crescent_Hospital": {"GMC_Nagpur": 2, "Wockhardt_Hospital": 3, "Platina_Heart_Hospital": 2},
+            "Sengupta_Hospital": {"Wockhardt_Hospital": 4, "Platina_Heart_Hospital": 3, "Kingsway_Hospital": 4},
+            "Platina_Heart_Hospital": {"Mayo_Hospital": 3, "Kingsway_Hospital": 2, "CARE_Hospital": 2, "Crescent_Hospital": 2}
         }
 
     def update_weights(self, flooded_location: str, penalty: int = 999):

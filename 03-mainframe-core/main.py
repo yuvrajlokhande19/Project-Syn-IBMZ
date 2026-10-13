@@ -836,6 +836,41 @@ async def get_routing_corridor(origin: str = "GMC_Nagpur", destination: str = "A
     return fetch_live_road_corridor(origin, destination)
 
 
+@app.get("/api/routing/mesh")
+async def get_routing_mesh():
+    """
+    Returns the comprehensive 12-hospital network and 6-artery metropolitan road corridors
+    for realistic Leaflet tactical GIS rendering and real-time vehicle patrol animations.
+    """
+    from routing_algorithm import HOSPITAL_COORDINATES, NAGPUR_ROAD_CORRIDORS
+    from agentic_action_engine import HOSPITAL_REGISTRY
+    
+    return {
+        "status": "success",
+        "hospitals": [
+            {
+                "id": k,
+                "name": v["name"],
+                "coords": v["coords"],
+                "icu_total": v["icu_beds_total"],
+                "icu_occupied": v["icu_beds_occupied"],
+                "icu_available": v["icu_beds_total"] - v["icu_beds_occupied"],
+                "blood_stock": v["blood_stock"],
+                "diesel_liters": v["diesel_liters"],
+                "power_status": v["power_status"]
+            }
+            for k, v in HOSPITAL_REGISTRY.items()
+        ],
+        "corridors": NAGPUR_ROAD_CORRIDORS,
+        "active_vehicles": [
+            {"id": "AMB-ALS-01", "name": "ALS Critical Ambulance 01", "type": "AMBULANCE", "corridor": "Wardha_Road_Expressway", "status": "GREEN_CORRIDOR_SIRENS"},
+            {"id": "AMB-ALS-02", "name": "ALS Critical Ambulance 02", "type": "AMBULANCE", "corridor": "Central_Avenue_Corridor", "status": "EMERGENCY_TRANSIT"},
+            {"id": "COURIER-SWARM-04", "name": "Blood Delivery Taxi Relay 04", "type": "BLOOD_RELAY", "corridor": "Ring_Road_Hingna_Artery", "status": "COLD_CHAIN_ACTIVE"},
+            {"id": "MOBILE-ICU-07", "name": "Mobile ICU Disaster Swarm 07", "type": "MOBILE_ICU", "corridor": "North_Koradi_Corridor", "status": "PATROL_READY"}
+        ]
+    }
+
+
 # -----------------------------------------------------------------------------
 # Monthly Incident & Economic / ESG Cost Audit Report
 # -----------------------------------------------------------------------------
@@ -868,11 +903,14 @@ async def get_report_data():
             "head_ledger_hash": ledger_stats.get("last_hash", "GENESIS")
         },
         "hospital_resilience_matrix": [
-            {"node": "GMC Nagpur (Trauma ICU)", "power_status": "230V Nominal", "diesel_hours": 48.0, "blood_o_neg": 14, "triage_score": "LOW"},
-            {"node": "Mayo Hospital (General)", "power_status": "218V Grid Drop", "diesel_hours": 24.5, "blood_o_neg": 6, "triage_score": "ELEVATED"},
-            {"node": "AIIMS Nagpur (Surgical)", "power_status": "235V Nominal", "diesel_hours": 62.0, "blood_o_neg": 22, "triage_score": "OPTIMAL"},
-            {"node": "Lata Mangeshkar Hospital", "power_status": "224V Stable", "diesel_hours": 36.0, "blood_o_neg": 9, "triage_score": "NOMINAL"},
-            {"node": "Wockhardt Cardiac Center", "power_status": "228V Stable", "diesel_hours": 50.0, "blood_o_neg": 12, "triage_score": "OPTIMAL"}
+            {
+                "node": v["name"],
+                "power_status": v["power_status"],
+                "diesel_hours": round(v["diesel_liters"] / 80.0, 1),
+                "blood_o_neg": v["blood_stock"].get("O-", 0),
+                "triage_score": "OPTIMAL" if (v["icu_beds_total"] - v["icu_beds_occupied"]) > 8 else ("ELEVATED" if (v["icu_beds_total"] - v["icu_beds_occupied"]) > 3 else "CRITICAL")
+            }
+            for k, v in HOSPITAL_REGISTRY.items()
         ],
         "financial_esg_costing": {
             "cloud_compute_cost_linuxone": "$0.00 / month (Included in IBM Z Core Capacity)",
@@ -1053,6 +1091,52 @@ async def toggle_telegram_broadcast(request: Request):
         "broadcast_enabled": result,
         "status_message": "Automated incident broadcasts ACTIVE" if result else "Automated incident broadcasts MUTED"
     }
+
+
+class TelegramSendMemberRequest(BaseModel):
+    member_id: str = Field(..., description="Telegram Chat ID of member")
+    message: Optional[str] = Field(default=None, description="Optional custom operational message")
+
+
+@app.get("/api/telegram/team")
+async def get_telegram_team():
+    """
+    Returns the registered team roster (Yuvraj, Ritesh, Nidhi, Anshika, Palak, Bhavya),
+    their assigned operational roles, live delivery statuses, and diagnostic error logs.
+    """
+    from telegram_dispatch import get_telegram_team_roster, TELEGRAM_BOT_USERNAME
+    return {
+        "bot_username": TELEGRAM_BOT_USERNAME,
+        "bot_url": f"https://t.me/{TELEGRAM_BOT_USERNAME.replace('@', '')}",
+        "roster": get_telegram_team_roster()
+    }
+
+
+@app.post("/api/telegram/send-member")
+async def send_to_team_member(req: TelegramSendMemberRequest):
+    """
+    Sends a targeted operational dispatch or test ping to a specific Telegram team member.
+    Records delivery status and returns error diagnostics.
+    """
+    from telegram_dispatch import send_targeted_member_message
+    res = send_targeted_member_message(req.member_id, req.message)
+    return res
+
+
+class TelegramRegisterNodeRequest(BaseModel):
+    chat_id: str = Field(..., description="Telegram chat ID")
+    role: str = Field(..., description="Operational role")
+    name: Optional[str] = Field(default=None, description="Team member name")
+
+
+@app.post("/api/telegram/register-node")
+async def register_telegram_node(req: TelegramRegisterNodeRequest):
+    """
+    Registers or updates an operational Telegram telemetry node and delivers an introductory ping.
+    """
+    from telegram_dispatch import register_or_update_telegram_member
+    res = register_or_update_telegram_member(req.chat_id, req.role, req.name)
+    return res
 
 
 # -----------------------------------------------------------------------------

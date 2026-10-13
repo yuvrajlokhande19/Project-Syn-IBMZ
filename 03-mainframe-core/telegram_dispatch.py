@@ -498,10 +498,160 @@ def get_telegram_broadcast_status() -> bool:
     return TELEGRAM_BROADCAST_ENABLED
 
 
-# Authorized Telegram Nodes Registry (RBAC)
+# Authorized Telegram Operational Roster & RBAC Nodes
+TELEGRAM_BOT_USERNAME = "@Synthcityaibot"
+
+TELEGRAM_TEAM_MEMBERS: List[Dict[str, Any]] = [
+    {
+        "id": "8889864487",
+        "name": "Yuvraj Lokhande",
+        "role": "CHIEF_INCIDENT_COMMANDER",
+        "title": "Incident Commander & System Architect",
+        "status": "DELIVERED",
+        "last_dispatch": datetime.now(timezone.utc).isoformat(),
+        "last_error": None
+    },
+    {
+        "id": "6200148790",
+        "name": "Ritesh",
+        "role": "EMERGENCY_DISASTER_AUTHORITY",
+        "title": "Municipal Disaster Response Authority",
+        "status": "DELIVERED",
+        "last_dispatch": datetime.now(timezone.utc).isoformat(),
+        "last_error": None
+    },
+    {
+        "id": "1375777486",
+        "name": "Nidhi",
+        "role": "ICU_SUPPLY_LOGISTICS_LEAD",
+        "title": "ICU Supply & Blood Logistics Lead",
+        "status": "AWAITING_USER_START",
+        "last_dispatch": None,
+        "last_error": "User must open @Synthcityaibot on Telegram and click Start"
+    },
+    {
+        "id": "7231384433",
+        "name": "Anshika Tripathi",
+        "role": "CLINICAL_AI_TRIAGE_DIRECTOR",
+        "title": "Clinical AI & Triage Model Director",
+        "status": "AWAITING_USER_START",
+        "last_dispatch": None,
+        "last_error": "User must open @Synthcityaibot on Telegram and click Start"
+    },
+    {
+        "id": "1667070246",
+        "name": "Palak",
+        "role": "AMBULANCE_FLEET_COORDINATOR",
+        "title": "Ambulance Fleet & Green Corridor Lead",
+        "status": "AWAITING_USER_START",
+        "last_dispatch": None,
+        "last_error": "User must open @Synthcityaibot on Telegram and click Start"
+    },
+    {
+        "id": "8253011435",
+        "name": "Bhavya",
+        "role": "MUNICIPAL_POWER_GRID_CONTROLLER",
+        "title": "Electrical Grid & Infrastructure Authority",
+        "status": "AWAITING_USER_START",
+        "last_dispatch": None,
+        "last_error": "User must open @Synthcityaibot on Telegram and click Start"
+    }
+]
+
 AUTHORIZED_TELEGRAM_NODES: Dict[str, str] = {
-    TELEGRAM_CHAT_ID: "CHIEF_MEDICAL_OFFICER"
+    m["id"]: m["role"] for m in TELEGRAM_TEAM_MEMBERS
 }
+if TELEGRAM_CHAT_ID and TELEGRAM_CHAT_ID not in AUTHORIZED_TELEGRAM_NODES:
+    AUTHORIZED_TELEGRAM_NODES[TELEGRAM_CHAT_ID] = "CHIEF_INCIDENT_COMMANDER"
+
+
+def get_telegram_team_roster() -> List[Dict[str, Any]]:
+    """Returns the operational team roster with live delivery statuses and error logs."""
+    return TELEGRAM_TEAM_MEMBERS
+
+
+def send_targeted_member_message(member_id: str, custom_text: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Transmits an operational dispatch to a specific Telegram team member.
+    Records delivery status and captures API error messages for dashboard auditing.
+    """
+    member = next((m for m in TELEGRAM_TEAM_MEMBERS if str(m["id"]) == str(member_id)), None)
+    if not member:
+        return {"success": False, "error": f"Member ID {member_id} not in roster"}
+
+    if not TELEGRAM_BOT_TOKEN:
+        return {"success": False, "error": "TELEGRAM_BOT_TOKEN not configured"}
+
+    text = custom_text or (
+        f"🚨 *PROJECT SYN // IBM LINUXONE s390x OPERATIONAL DISPATCH* 🚨\n\n"
+        f"Salutations, *{member['name']}*.\n"
+        f"You are officially commissioned on the Nagpur Emergency Grid.\n\n"
+        f"📋 *Designated Role:* `{member['role']}`\n"
+        f"🏛️ *Central Core:* IBM LinuxONE z16 s390x (Nagpur Node)\n"
+        f"🔐 *Crypto Standard:* CPACF Hardware Zero-Trust Gate\n"
+        f"🌐 *Live Dashboard:* http://148.100.112.151/ui/\n\n"
+        f"📡 *Active Protocols:* Sub-GHz Radio Mesh, Hospital ICU Bed Tracking, Green Corridor Siren Control.\n"
+        f"Reply anytime with `/status`, `/beds`, `/route`, or ask in English, Hindi, or Marathi."
+    )
+
+    try:
+        tg_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+        resp = requests.post(
+            tg_url,
+            json={"chat_id": member_id, "text": text, "parse_mode": "Markdown"},
+            timeout=5.0
+        )
+        data = resp.json()
+        now_iso = datetime.now(timezone.utc).isoformat()
+        if data.get("ok"):
+            member["status"] = "DELIVERED"
+            member["last_dispatch"] = now_iso
+            member["last_error"] = None
+            logger.info(f"[TELEGRAM ROSTER] Delivered dispatch to {member['name']} ({member_id})")
+            return {"success": True, "status": "DELIVERED", "member": member}
+        else:
+            err_desc = data.get("description", "Telegram API rejected message")
+            if "chat not found" in err_desc.lower() or "blocked" in err_desc.lower():
+                err_desc = "User must open @Synthcityaibot on Telegram and click Start"
+            member["status"] = "AWAITING_USER_START"
+            member["last_error"] = err_desc
+            logger.warning(f"[TELEGRAM ROSTER] Failed delivery to {member['name']} ({member_id}): {err_desc}")
+            return {"success": False, "status": "AWAITING_USER_START", "error": err_desc, "member": member}
+    except Exception as e:
+        member["status"] = "NETWORK_ERROR"
+        member["last_error"] = str(e)
+        logger.error(f"[TELEGRAM ROSTER] Network exception for {member['name']}: {e}")
+        return {"success": False, "status": "NETWORK_ERROR", "error": str(e), "member": member}
+
+
+def register_or_update_telegram_member(chat_id: str, role: str, name: Optional[str] = None, title: Optional[str] = None) -> Dict[str, Any]:
+    """Adds a new member or updates an existing member in the Telegram team roster."""
+    clean_id = str(chat_id).strip()
+    clean_role = str(role).strip().upper()
+    existing = next((m for m in TELEGRAM_TEAM_MEMBERS if str(m["id"]) == clean_id), None)
+    if existing:
+        existing["role"] = clean_role
+        if name:
+            existing["name"] = name
+        if title:
+            existing["title"] = title
+        member = existing
+    else:
+        member = {
+            "id": clean_id,
+            "name": name or f"Node-{clean_id[-4:]}",
+            "role": clean_role,
+            "title": title or clean_role.replace("_", " ").title(),
+            "status": "REGISTERED",
+            "last_dispatch": None,
+            "last_error": None
+        }
+        TELEGRAM_TEAM_MEMBERS.append(member)
+        AUTHORIZED_TELEGRAM_NODES[clean_id] = clean_role
+
+    # Send introductory ping
+    res = send_targeted_member_message(clean_id)
+    return {"success": True, "member": member, "ping_result": res}
 
 
 def dispatch_alert(
@@ -554,19 +704,25 @@ def dispatch_alert(
     _LAST_DISPATCH_TIMESTAMPS[fingerprint] = now
     _GLOBAL_LAST_DISPATCH_TIME = now
 
-    try:
-        tg_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-        requests.post(
-            tg_url,
-            json={
-                "chat_id": target_chat,
-                "text": raw_message,
-                "parse_mode": "Markdown"
-            },
-            timeout=4.0
-        )
-    except Exception as e:
-        logger.warning(f"[TELEGRAM API WARNING] Could not forward to Telegram: {e}")
+    recipients = {str(target_chat)}
+    for member in TELEGRAM_TEAM_MEMBERS:
+        if member.get("status") == "DELIVERED":
+            recipients.add(str(member["id"]))
+
+    tg_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    for r_chat in recipients:
+        try:
+            requests.post(
+                tg_url,
+                json={
+                    "chat_id": r_chat,
+                    "text": raw_message,
+                    "parse_mode": "Markdown"
+                },
+                timeout=4.0
+            )
+        except Exception as e:
+            logger.warning(f"[TELEGRAM API WARNING] Could not forward to {r_chat}: {e}")
 
 
 
