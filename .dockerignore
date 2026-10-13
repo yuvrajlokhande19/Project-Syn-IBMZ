@@ -1,0 +1,13 @@
+.git
+.github
+**/*.db
+**/*.db*
+**/*.db-shm
+**/*.db-wal
+**/__pycache__
+**/*.pyc
+venv*
+.env
+*.log
+*.pem
+node_modules
