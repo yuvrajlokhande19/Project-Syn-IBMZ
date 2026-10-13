@@ -861,7 +861,15 @@ async def get_routing_mesh():
             }
             for k, v in HOSPITAL_REGISTRY.items()
         ],
-        "corridors": NAGPUR_ROAD_CORRIDORS,
+        "corridors": {
+            k: {
+                "name": k.replace("_", " "),
+                "coordinates": v,
+                "distance_km": round(len(v) * 1.5, 1),
+                "duration_min": round(len(v) * 1.8, 1)
+            }
+            for k, v in NAGPUR_ROAD_CORRIDORS.items()
+        },
         "active_vehicles": [
             {"id": "AMB-ALS-01", "name": "ALS Critical Ambulance 01", "type": "AMBULANCE", "corridor": "Wardha_Road_Expressway", "status": "GREEN_CORRIDOR_SIRENS"},
             {"id": "AMB-ALS-02", "name": "ALS Critical Ambulance 02", "type": "AMBULANCE", "corridor": "Central_Avenue_Corridor", "status": "EMERGENCY_TRANSIT"},
