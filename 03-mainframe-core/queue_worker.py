@@ -214,8 +214,8 @@ def process_packet(item: Dict[str, Any]):
             network_mode = item.get("network_mode", "satellite_api")
             log_alert(location, anomaly_type, alert_msg, network_mode)
 
-            # Transmit to Telegram and console
-            dispatch_alert(alert_msg)
+            # Transmit to Telegram and console (with semantic deduplication)
+            dispatch_alert(alert_msg, anomaly_type=anomaly_type, location=location)
 
     except Exception as e:
         logger.error(f"[QUEUE WORKER ERROR] Failed to process telemetry packet: {e}", exc_info=True)

@@ -479,7 +479,24 @@ def format_alert_message(
 
 # Alert Cooldown & Deduplication Cache
 _LAST_DISPATCH_TIMESTAMPS: Dict[str, float] = {}
-ALERT_COOLDOWN_SECONDS = 45.0  # Minimum seconds between identical hospital incident alerts
+_GLOBAL_LAST_DISPATCH_TIME: float = 0.0
+ALERT_COOLDOWN_SECONDS = 180.0  # Minimum 3 minutes between identical hospital incidents
+GLOBAL_ALERT_COOLDOWN_SECONDS = 90.0  # Minimum 90 seconds between ANY automated background alert
+TELEGRAM_BROADCAST_ENABLED = True  # Can be toggled on/off by operator via UI or bot command
+
+
+def set_telegram_broadcast_status(enabled: bool) -> bool:
+    """Toggles automated background alert broadcasts to Telegram."""
+    global TELEGRAM_BROADCAST_ENABLED
+    TELEGRAM_BROADCAST_ENABLED = enabled
+    logger.info(f"[TELEGRAM BROADCAST] Enabled: {TELEGRAM_BROADCAST_ENABLED}")
+    return TELEGRAM_BROADCAST_ENABLED
+
+
+def get_telegram_broadcast_status() -> bool:
+    """Returns current broadcast status."""
+    return TELEGRAM_BROADCAST_ENABLED
+
 
 # Authorized Telegram Nodes Registry (RBAC)
 AUTHORIZED_TELEGRAM_NODES: Dict[str, str] = {
@@ -487,11 +504,18 @@ AUTHORIZED_TELEGRAM_NODES: Dict[str, str] = {
 }
 
 
-def dispatch_alert(raw_message: str, force: bool = False, chat_id: Optional[str] = None):
+def dispatch_alert(
+    raw_message: str,
+    force: bool = False,
+    chat_id: Optional[str] = None,
+    anomaly_type: Optional[str] = None,
+    location: Optional[str] = None
+):
     """
     Dispatches alert to console, audit logs, and Telegram.
-    Enforces a 45-second debounce cooldown per incident key to prevent chat spamming.
+    Enforces a strict debounce cooldown and global rate-limiting to prevent chat spamming.
     """
+    global _GLOBAL_LAST_DISPATCH_TIME
     import time
     logger.info(f"[ALERT DISPATCHED]\n{raw_message}")
 
@@ -499,18 +523,36 @@ def dispatch_alert(raw_message: str, force: bool = False, chat_id: Optional[str]
     if not (TELEGRAM_BOT_TOKEN and target_chat):
         return
 
-    # Extract an alert fingerprint (e.g. Target Node + First line)
-    lines = raw_message.split("\n")
-    fingerprint = lines[0] + (lines[2] if len(lines) > 2 else "")
+    if not TELEGRAM_BROADCAST_ENABLED and not force:
+        logger.info("[TELEGRAM] Automated broadcast is currently MUTED by operator.")
+        return
+
     now = time.time()
 
+    # Determine stable semantic fingerprint (independent of live fluctuating sensor numbers)
+    if anomaly_type and location:
+        fingerprint = f"{anomaly_type.strip().upper()}@{location.strip()}"
+    else:
+        lines = [line.strip() for line in raw_message.split("\n") if line.strip()]
+        header = lines[0] if lines else "INCIDENT"
+        node_match = [l for l in lines if "Target Node:" in l]
+        node = node_match[0].split(":")[1].split("|")[0].strip(" `") if node_match else "UNKNOWN"
+        fingerprint = f"{header}@{node}"
+
     if not force:
+        # 1. Global throttle: do not send automated alerts faster than GLOBAL_ALERT_COOLDOWN_SECONDS (90s)
+        if (now - _GLOBAL_LAST_DISPATCH_TIME) < GLOBAL_ALERT_COOLDOWN_SECONDS:
+            logger.info(f"[GLOBAL THROTTLE] Suppressed alert to prevent Telegram spam (last alert was {round(now - _GLOBAL_LAST_DISPATCH_TIME, 1)}s ago, minimum is {GLOBAL_ALERT_COOLDOWN_SECONDS}s).")
+            return
+
+        # 2. Per-incident throttle: do not send identical incident at same location within ALERT_COOLDOWN_SECONDS (180s)
         last_sent = _LAST_DISPATCH_TIMESTAMPS.get(fingerprint, 0.0)
         if (now - last_sent) < ALERT_COOLDOWN_SECONDS:
-            logger.info(f"[DEBOUNCE] Suppressed duplicate alert ({fingerprint[:40]}...) within {ALERT_COOLDOWN_SECONDS}s window.")
+            logger.info(f"[DEBOUNCE] Suppressed duplicate alert ({fingerprint}) within {ALERT_COOLDOWN_SECONDS}s window.")
             return
 
     _LAST_DISPATCH_TIMESTAMPS[fingerprint] = now
+    _GLOBAL_LAST_DISPATCH_TIME = now
 
     try:
         tg_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
@@ -525,6 +567,7 @@ def dispatch_alert(raw_message: str, force: bool = False, chat_id: Optional[str]
         )
     except Exception as e:
         logger.warning(f"[TELEGRAM API WARNING] Could not forward to Telegram: {e}")
+
 
 
 def send_telegram_reply(chat_id: str, text: str):
@@ -602,8 +645,25 @@ async def telegram_bot_listener():
                                 f"• `/stock` - Critical blood, diesel & oxygen levels\n"
                                 f"• `/beds` - Live ICU & Trauma bed availability\n"
                                 f"• `/route` - Safe ambulance corridor routing\n"
-                                f"• `/evacuate` - Building fire & structural status\n\n"
+                                f"• `/evacuate` - Building fire & structural status\n"
+                                f"• `/mute` - Silence automated background broadcasts\n"
+                                f"• `/unmute` - Resume automated background broadcasts\n\n"
                                 f"💬 Or type any natural query in *English*, *Hindi*, or *Marathi*!"
+                            )
+                        elif cmd == "/mute":
+                            set_telegram_broadcast_status(False)
+                            reply = (
+                                f"🔕 *PROJECT SYN BROADCAST MUTED*\n"
+                                f"Automated background disaster alerts are now silenced for Telegram.\n"
+                                f"You can still query `/status`, `/stock`, `/beds`, `/route`, or chat with AI at any time.\n"
+                                f"Type `/unmute` to re-enable automated incident broadcasts."
+                            )
+                        elif cmd == "/unmute":
+                            set_telegram_broadcast_status(True)
+                            reply = (
+                                f"🔔 *PROJECT SYN BROADCAST ACTIVE*\n"
+                                f"Automated background disaster alerts resumed.\n"
+                                f"Smart cooldown: Max 1 alert every 90 seconds, debounced per hospital."
                             )
                         elif cmd == "/status":
                             reply = (

@@ -181,6 +181,11 @@
                     <span id="kiosk-label">KIOSK AUTOPILOT</span>
                 </button>
 
+                <button id="btn-telegram-toggle" class="px-3 py-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition flex items-center gap-1.5 font-sans font-medium text-xs" title="Click to mute/unmute automated background Telegram broadcasts">
+                    <span id="tg-status-dot" class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                    <span id="tg-status-label">TG SENTINEL: ACTIVE (90s)</span>
+                </button>
+
                 <div class="px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 tracking-wider" id="header-clock">
                     --:--:-- UTC
                 </div>
@@ -565,6 +570,126 @@
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- EMBEDDED CYBER WARFARE ADVERSARIAL ATTACK CLI TERMINAL    -->
+            <!-- ========================================================= -->
+            <div class="admin-card p-4 space-y-3 border border-red-900/60 bg-[#080a0f]">
+                <div class="flex flex-wrap justify-between items-center pb-2.5 border-b border-zinc-800 gap-2">
+                    <div class="flex items-center gap-2">
+                        <div class="flex gap-1.5">
+                            <span class="h-2.5 w-2.5 rounded-full bg-red-500 animate-pulse inline-block"></span>
+                            <span class="h-2.5 w-2.5 rounded-full bg-amber-500 inline-block"></span>
+                            <span class="h-2.5 w-2.5 rounded-full bg-emerald-500 inline-block"></span>
+                        </div>
+                        <h4 class="font-mono text-xs font-bold text-white uppercase tracking-wider">
+                            PROJECT SYN // ADVERSARIAL ATTACK CLI (IBM LinuxONE s390x CPACF GATE)
+                        </h4>
+                    </div>
+                    <div class="flex items-center gap-2 font-mono text-[10px]">
+                        <span class="text-zinc-500">GATEWAY:</span>
+                        <span class="px-2 py-0.5 rounded bg-zinc-900 text-sky-400 border border-zinc-800">148.100.112.151:8000</span>
+                        <span class="px-2 py-0.5 rounded bg-red-950 text-red-300 border border-red-800 font-bold">ZERO-TRUST ACTIVE</span>
+                    </div>
+                </div>
+
+                <!-- Quick Command Triggers -->
+                <div class="flex flex-wrap items-center gap-1.5 font-mono text-[11px]">
+                    <span class="text-zinc-500 text-[10px] mr-1">REAL ATTACK PROBES:</span>
+                    <button class="cli-cmd-btn px-2.5 py-1 rounded bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-800 transition" data-cmd="attack --type tamper">
+                        ⚡ attack --type tamper (HMAC 401)
+                    </button>
+                    <button class="cli-cmd-btn px-2.5 py-1 rounded bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-800 transition" data-cmd="attack --type replay">
+                        🔁 attack --type replay (Nonce 401)
+                    </button>
+                    <button class="cli-cmd-btn px-2.5 py-1 rounded bg-purple-950/80 hover:bg-purple-900 text-purple-300 border border-purple-800 transition" data-cmd="attack --type stale">
+                        ⏳ attack --type stale (Drift 401)
+                    </button>
+                    <button class="cli-cmd-btn px-2.5 py-1 rounded bg-sky-950/80 hover:bg-sky-900 text-sky-300 border border-sky-800 transition" data-cmd="attack --type spoof">
+                        🧪 attack --type spoof (Physics 403)
+                    </button>
+                    <button class="cli-cmd-btn px-2.5 py-1 rounded bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-800 transition" data-cmd="attack --type baseline">
+                        🛡️ attack --type baseline (200 OK)
+                    </button>
+                    <button class="cli-cmd-btn px-2 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition" data-cmd="tinyml status">
+                        🧠 tinyml status
+                    </button>
+                    <button class="cli-cmd-btn px-2 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 transition" data-cmd="clear">
+                        🧹 clear
+                    </button>
+                </div>
+
+                <!-- Interactive Terminal Output Screen -->
+                <div id="cli-terminal-window" class="h-60 overflow-y-auto bg-black/95 rounded border border-zinc-800/90 p-3 font-mono text-xs text-zinc-300 space-y-1 select-text shadow-inner">
+                    <div class="text-zinc-500 pb-1 border-b border-zinc-900">
+                        [IBM LinuxONE s390x Big-Endian CPACF Adversarial Console]<br>
+                        Firmware: CPACF hardware SHA-256 enabled · Zero-Trust Nonce Sliding Window: 300s<br>
+                        Type 'help' for available CLI commands, or click any attack trigger above to fire live HTTP adversarial packets.
+                    </div>
+                    <div class="text-emerald-400 font-bold pt-1">● READY. Target: POST /api/telemetry/ingest | Listening for operator commands...</div>
+                </div>
+
+                <!-- Interactive Command Input Form -->
+                <form id="cli-terminal-form" class="flex items-center gap-2 bg-black/90 p-2 rounded border border-zinc-800 font-mono text-xs">
+                    <span class="text-emerald-400 font-bold flex-shrink-0">syn-operator@linuxone-s390x:~$</span>
+                    <input id="cli-terminal-input" type="text" autocomplete="off" spellcheck="false" placeholder="Type 'attack --type tamper', 'attack --type replay', or 'help'..." class="flex-1 bg-transparent border-none outline-none text-zinc-100 placeholder:text-zinc-600">
+                    <button type="submit" class="px-3.5 py-1.5 rounded bg-red-950 hover:bg-red-900 text-red-200 text-[11px] font-bold border border-red-700 transition flex items-center gap-1">
+                        <span>SEND</span>
+                        <span>↵</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- TINYML MICRO-INFERENCE ENGINE CARD (4GB RAM OPTIMIZED)    -->
+            <!-- ========================================================= -->
+            <div class="admin-card p-4 space-y-3 border border-indigo-900/50 bg-[#080d16]">
+                <div class="flex flex-wrap justify-between items-center pb-2.5 border-b border-zinc-800 gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">🧠</span>
+                        <div>
+                            <h4 class="font-mono text-xs font-bold text-white uppercase tracking-wider">
+                                TINYML MICRO-INFERENCE ENGINE (IBM LinuxONE 4GB RAM OPTIMIZED)
+                            </h4>
+                            <p class="text-[11px] text-zinc-400">Low-Footprint Edge Decision Forests & Shannon Entropy Scorer (&lt;15MB RAM)</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 font-mono text-[10px]">
+                        <span class="text-zinc-400">RAM USAGE:</span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-bold border border-emerald-800">12.4 MB (&lt;0.3% of 4GB)</span>
+                        <span class="px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">INT8 QUANTIZED</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs font-mono">
+                    <div class="p-2.5 rounded bg-zinc-950 border border-zinc-800">
+                        <div class="text-[10px] text-zinc-500 uppercase">Latency Benchmark</div>
+                        <div id="tinyml-diag-latency" class="text-emerald-400 font-bold text-sm">0.165 ms (165 µs)</div>
+                        <div class="text-[9px] text-zinc-500">6,000+ inf/sec per s390x core</div>
+                    </div>
+                    <div class="p-2.5 rounded bg-zinc-950 border border-zinc-800">
+                        <div class="text-[10px] text-zinc-500 uppercase">Entropy Intrusion Scoring</div>
+                        <div id="tinyml-diag-cyber" class="text-white font-bold text-sm">Shannon Nonce Scorer</div>
+                        <div class="text-[9px] text-zinc-500">Zero-Trust Replay Shield</div>
+                    </div>
+                    <div class="p-2.5 rounded bg-zinc-950 border border-zinc-800">
+                        <div class="text-[10px] text-zinc-500 uppercase">Physics Consistency</div>
+                        <div id="tinyml-diag-physics" class="text-sky-400 font-bold text-sm">3D Cross-Validation</div>
+                        <div class="text-[9px] text-zinc-500">Flood vs Voltage Plausibility</div>
+                    </div>
+                    <div class="p-2.5 rounded bg-zinc-950 border border-zinc-800">
+                        <div class="text-[10px] text-zinc-500 uppercase">Clinical Triage Horizon</div>
+                        <div id="tinyml-diag-triage" class="text-amber-400 font-bold text-sm">ICU & O2 Saturation</div>
+                        <div class="text-[9px] text-zinc-500">Dynamic Ward Evacuation</div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-1 font-mono text-[11px]">
+                    <button id="btn-eval-tinyml" class="px-3 py-1.5 rounded bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 border border-indigo-700 font-bold transition flex items-center gap-1.5">
+                        <span>⚡</span> RUN REAL-TIME TINYML PREDICT ON TELEMETRY
+                    </button>
                 </div>
             </div>
 
@@ -1126,6 +1251,7 @@
                         <div class="text-[10px] text-zinc-400 font-mono flex items-center gap-2">
                             <span>ENGINE:</span>
                             <span id="chat-model-badge" class="px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800 font-semibold">OpenRouter Llama 3.3 70B</span>
+                            <span id="chat-token-badge" class="px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800 font-semibold">⚡ Tokenizer: ProjectSyn-BPE | Ready</span>
                             <span class="text-emerald-400">● ONLINE</span>
                         </div>
                     </div>
@@ -1633,10 +1759,243 @@
             } catch (e) {}
         }
 
-        document.getElementById('btn-test-tamper').addEventListener('click', () => triggerAttackVector('tamper'));
-        document.getElementById('btn-test-replay').addEventListener('click', () => triggerAttackVector('replay'));
-        document.getElementById('btn-test-stale').addEventListener('click', () => triggerAttackVector('stale'));
-        document.getElementById('btn-test-spoof').addEventListener('click', () => triggerAttackVector('spoof'));
+        // -------------------------------------------------------------
+        // EMBEDDED CYBER WARFARE ADVERSARIAL CLI TERMINAL CONTROLLER
+        // -------------------------------------------------------------
+        const cliWindow = document.getElementById('cli-terminal-window');
+        const cliForm = document.getElementById('cli-terminal-form');
+        const cliInput = document.getElementById('cli-terminal-input');
+
+        function appendCliLog(htmlLine) {
+            if (!cliWindow) return;
+            const lineEl = document.createElement('div');
+            lineEl.innerHTML = htmlLine;
+            cliWindow.appendChild(lineEl);
+            cliWindow.scrollTop = cliWindow.scrollHeight;
+        }
+
+        async function executeCliAttack(attackType) {
+            appendCliLog(`<div class="text-yellow-400 font-bold pt-1">[CLI PROBE] Executing '${attackType.toUpperCase()}' adversarial vector against LinuxONE s390x...</div>`);
+            try {
+                const res = await fetch('/api/attack/execute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ attack_type: attackType })
+                });
+                const data = await res.json();
+                
+                if (data.logs && Array.isArray(data.logs)) {
+                    data.logs.forEach(l => {
+                        let colorClass = "text-zinc-400";
+                        if (l.includes("[SUCCESS]") || l.includes("200")) colorClass = "text-emerald-400";
+                        else if (l.includes("[!]") || l.includes("401") || l.includes("403")) colorClass = "text-red-400 font-semibold";
+                        else if (l.includes("[*]")) colorClass = "text-sky-300";
+                        else if (l.includes("[AUDIT]")) colorClass = "text-amber-300";
+                        appendCliLog(`<div class="${colorClass} pl-2">${l}</div>`);
+                    });
+                }
+
+                const verdictColor = data.status === "BLOCKED" ? "text-red-400 font-bold" : "text-emerald-400 font-bold";
+                appendCliLog(`<div class="${verdictColor}">[VERDICT ${data.code}]: ${data.status} &mdash; ${data.reason}</div>`);
+
+                // Append to security table
+                const secBody = document.getElementById('security-journal-body');
+                if (secBody) {
+                    const row = document.createElement('tr');
+                    const codeColor = data.code === 200 ? "text-emerald-400" : "text-red-400";
+                    row.innerHTML = `
+                        <td class="${codeColor} font-bold">SEC-${Math.floor(Math.random()*9000+1000)}</td>
+                        <td class="text-zinc-400">${new Date().toISOString().split('T')[1].slice(0,8)}</td>
+                        <td class="uppercase font-bold text-white">${attackType}</td>
+                        <td class="text-zinc-300">SYN-${Math.floor(Math.random()*9000+1000)}</td>
+                        <td class="${codeColor} font-bold">${data.code}</td>
+                        <td class="text-zinc-400">${data.reason || 'Verification Result'}</td>
+                    `;
+                    secBody.insertBefore(row, secBody.firstChild);
+                }
+            } catch (err) {
+                appendCliLog(`<div class="text-red-500 font-bold">[CONNECTION ERROR]: Could not reach mainframe gateway (${err.message})</div>`);
+            }
+        }
+
+        async function handleCliCommand(cmdRaw) {
+            const cmd = cmdRaw.trim();
+            if (!cmd) return;
+            appendCliLog(`<div class="text-emerald-300 font-bold pt-1"><span class="text-zinc-500">syn-operator@linuxone-s390x:~$</span> ${cmd}</div>`);
+
+            const parts = cmd.split(' ');
+            const mainCmd = parts[0].toLowerCase();
+
+            if (mainCmd === 'clear') {
+                if (cliWindow) {
+                    cliWindow.innerHTML = `<div class="text-emerald-400 font-bold">● SCREEN CLEARED. LinuxONE CPACF Zero-Trust Gateway ready.</div>`;
+                }
+            } else if (mainCmd === 'help') {
+                appendCliLog(`
+                    <div class="text-zinc-300 pl-2 space-y-0.5">
+                        <div class="text-white font-bold">Available Project Syn Cyber Defense Commands:</div>
+                        <div>• <span class="text-yellow-400">attack --type tamper</span> : Tamper sensor metrics byte (Triggers 401 HMAC Mismatch)</div>
+                        <div>• <span class="text-yellow-400">attack --type replay</span> : Replay identical nonce (Triggers 401 Monotonic Block)</div>
+                        <div>• <span class="text-yellow-400">attack --type stale</span>  : Transmit with 120s clock drift (Triggers 401 Drift Window)</div>
+                        <div>• <span class="text-yellow-400">attack --type spoof</span>  : Inject impossible physics (Triggers 403 Physical Sanity Drop)</div>
+                        <div>• <span class="text-yellow-400">attack --type baseline</span>: Legitimately signed nominal telemetry (200 OK)</div>
+                        <div>• <span class="text-sky-300">tinyml status</span>          : View memory footprint and latency diagnostics of TinyML model</div>
+                        <div>• <span class="text-sky-300">tinyml predict</span>         : Run real-time edge micro-inference on live stream</div>
+                        <div>• <span class="text-emerald-300">telegram toggle</span>       : Mute or unmute continuous background Telegram alerts</div>
+                        <div>• <span class="text-zinc-400">clear</span>                 : Clear terminal window</div>
+                    </div>
+                `);
+            } else if (mainCmd === 'attack') {
+                let type = 'tamper';
+                if (parts.includes('--type') && parts.length > parts.indexOf('--type') + 1) {
+                    type = parts[parts.indexOf('--type') + 1];
+                } else if (parts[1]) {
+                    type = parts[1].replace('--', '');
+                }
+                await executeCliAttack(type);
+            } else if (mainCmd === 'tinyml') {
+                const sub = (parts[1] || 'status').toLowerCase();
+                if (sub === 'status') {
+                    const r = await fetch('/api/tinyml/status').catch(() => null);
+                    if (r && r.ok) {
+                        const d = await r.json();
+                        appendCliLog(`<div class="text-indigo-300 pl-2">[TINYML DIAGNOSTICS]: Model: ${d.model_name} | RAM: ${d.ram_consumption_mb} MB | Latency: ${d.avg_latency_us} µs (${d.avg_latency_ms} ms) | Max FPS: ${d.max_throughput_fps} | Hardware: ${d.hardware_acceleration}</div>`);
+                    } else {
+                        appendCliLog(`<div class="text-red-400 pl-2">Failed to retrieve TinyML diagnostics.</div>`);
+                    }
+                } else if (sub === 'predict') {
+                    await runTinyMLEval();
+                } else {
+                    appendCliLog(`<div class="text-zinc-400 pl-2">Usage: tinyml status | tinyml predict</div>`);
+                }
+            } else if (mainCmd === 'telegram') {
+                await toggleTelegramAlerts();
+            } else {
+                appendCliLog(`<div class="text-red-400 pl-2">Command not recognized: '${cmd}'. Type 'help' for command list.</div>`);
+            }
+        }
+
+        if (cliForm) {
+            cliForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const cmd = cliInput.value;
+                cliInput.value = '';
+                handleCliCommand(cmd);
+            });
+        }
+
+        document.querySelectorAll('.cli-cmd-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const cmd = btn.getAttribute('data-cmd');
+                if (cmd) handleCliCommand(cmd);
+            });
+        });
+
+        // -------------------------------------------------------------
+        // TINYML DIAGNOSTICS RUNNER
+        // -------------------------------------------------------------
+        async function runTinyMLEval() {
+            appendCliLog(`<div class="text-indigo-400 font-bold">[TINYML EVAL] Running INT8 quantized micro-inference on current telemetry stream...</div>`);
+            try {
+                const res = await fetch('/api/tinyml/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nonce: "cli_eval_" + Math.random().toString(16).slice(2),
+                        time_drift: 0.12,
+                        metrics: {
+                            flood_index: 0.08,
+                            grid_voltage: 220.4,
+                            route_congestion: 38,
+                            clinical_triage: {
+                                icu_occupancy_pct: 72.0,
+                                oxygen_hours_remaining: 32.0,
+                                ventilator_utilization_pct: 64.0,
+                                trauma_surge_index: 0.22
+                            }
+                        }
+                    })
+                });
+                const d = await res.json();
+                
+                // Update UI badges
+                const latEl = document.getElementById('tinyml-diag-latency');
+                const cybEl = document.getElementById('tinyml-diag-cyber');
+                const phyEl = document.getElementById('tinyml-diag-physics');
+                const triEl = document.getElementById('tinyml-diag-triage');
+
+                if (latEl) latEl.innerText = `${d.cyber_intrusion.inference_latency_us} µs (<0.2ms)`;
+                if (cybEl) cybEl.innerText = `Threat: ${d.cyber_intrusion.threat_score} (${d.cyber_intrusion.risk_level})`;
+                if (phyEl) phyEl.innerText = d.physical_consistency.verdict;
+                if (triEl) triEl.innerText = `${d.clinical_triage.recommended_action} (${d.clinical_triage.triage_color})`;
+
+                appendCliLog(`<div class="text-emerald-400 pl-2">[TINYML COMPLETE] Latency: ${d.cyber_intrusion.inference_latency_us} µs | Cyber Threat: ${d.cyber_intrusion.risk_level} | Physics: ${d.physical_consistency.verdict} | Clinical: ${d.clinical_triage.recommended_action}</div>`);
+            } catch (err) {
+                appendCliLog(`<div class="text-red-400 pl-2">TinyML evaluation failed: ${err.message}</div>`);
+            }
+        }
+
+        const evalBtn = document.getElementById('btn-eval-tinyml');
+        if (evalBtn) {
+            evalBtn.addEventListener('click', runTinyMLEval);
+        }
+
+        // -------------------------------------------------------------
+        // TELEGRAM ALERT SENTINEL CONTROLLER
+        // -------------------------------------------------------------
+        async function updateTelegramUI() {
+            try {
+                const res = await fetch('/api/telegram/status');
+                if (res.ok) {
+                    const data = await res.json();
+                    const dot = document.getElementById('tg-status-dot');
+                    const label = document.getElementById('tg-status-label');
+                    if (data.broadcast_enabled) {
+                        if (dot) dot.className = "h-2 w-2 rounded-full bg-emerald-400 animate-pulse";
+                        if (label) label.innerText = `TG SENTINEL: ACTIVE (${data.global_cooldown_seconds || 90}s)`;
+                    } else {
+                        if (dot) dot.className = "h-2 w-2 rounded-full bg-zinc-500";
+                        if (label) label.innerText = "TG SENTINEL: MUTED";
+                    }
+                }
+            } catch (e) {}
+        }
+
+        async function toggleTelegramAlerts() {
+            try {
+                const res = await fetch('/api/telegram/toggle', { method: 'POST' });
+                if (res.ok) {
+                    const data = await res.json();
+                    updateTelegramUI();
+                    appendCliLog(`<div class="text-amber-400">[TELEGRAM SENTINEL] ${data.status_message}</div>`);
+                }
+            } catch (err) {
+                appendCliLog(`<div class="text-red-400">Failed to toggle Telegram status: ${err.message}</div>`);
+            }
+        }
+
+        const tgBtn = document.getElementById('btn-telegram-toggle');
+        if (tgBtn) {
+            tgBtn.addEventListener('click', toggleTelegramAlerts);
+        }
+        updateTelegramUI();
+
+        document.getElementById('btn-test-tamper').addEventListener('click', () => {
+            triggerAttackVector('tamper');
+            executeCliAttack('tamper');
+        });
+        document.getElementById('btn-test-replay').addEventListener('click', () => {
+            triggerAttackVector('replay');
+            executeCliAttack('replay');
+        });
+        document.getElementById('btn-test-stale').addEventListener('click', () => {
+            triggerAttackVector('stale');
+            executeCliAttack('stale');
+        });
+        document.getElementById('btn-test-spoof').addEventListener('click', () => {
+            triggerAttackVector('spoof');
+            executeCliAttack('spoof');
+        });
 
         // 8. System Health Modal
         const healthModal = document.getElementById('modal-health-diag');
@@ -1816,33 +2175,108 @@
                 chatMessages.scrollTop = chatMessages.scrollHeight;
 
                 try {
-                    const res = await fetch('/api/ai/chat', {
+                    // Fast Tokenization & Streaming response via Server-Sent Events
+                    const streamRes = await fetch('/api/ai/stream', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ message: q })
                     });
-                    const data = await res.json();
-                    const elLoading = document.getElementById(loadingId);
-                    if (elLoading) elLoading.remove();
 
-                    if (chatModelBadge && data.provider) {
-                        chatModelBadge.innerText = data.provider;
-                    }
+                    if (streamRes.ok && streamRes.headers.get('content-type')?.includes('text/event-stream')) {
+                        const elLoading = document.getElementById(loadingId);
+                        if (elLoading) elLoading.remove();
 
-                    const botBubble = document.createElement('div');
-                    botBubble.className = "flex items-start gap-2.5";
-                    botBubble.innerHTML = `
-                        <div class="h-7 w-7 rounded-full bg-indigo-950 border border-indigo-700 flex items-center justify-center text-xs flex-shrink-0">🤖</div>
-                        <div class="p-3.5 rounded-lg bg-zinc-900/95 border border-zinc-800 text-zinc-200 max-w-[85%] leading-relaxed space-y-2 shadow-lg">
-                            <div class="flex items-center justify-between text-[10px] text-zinc-500 font-mono pb-1 border-b border-zinc-800/80">
-                                <span class="text-indigo-400 font-bold">${data.provider || 'AI COMMANDER'}</span>
-                                <span class="text-emerald-400">${data.latency_ms || 0.4} ms</span>
+                        // Create live bot bubble that will receive tokens
+                        const botBubble = document.createElement('div');
+                        botBubble.className = "flex items-start gap-2.5";
+                        const botTextId = "bot-text-" + Date.now();
+                        const botLatencyId = "bot-lat-" + Date.now();
+                        const botProvId = "bot-prov-" + Date.now();
+                        botBubble.innerHTML = `
+                            <div class="h-7 w-7 rounded-full bg-indigo-950 border border-indigo-700 flex items-center justify-center text-xs flex-shrink-0">🤖</div>
+                            <div class="p-3.5 rounded-lg bg-zinc-900/95 border border-zinc-800 text-zinc-200 max-w-[85%] leading-relaxed space-y-2 shadow-lg w-full">
+                                <div class="flex items-center justify-between text-[10px] text-zinc-500 font-mono pb-1 border-b border-zinc-800/80">
+                                    <span id="${botProvId}" class="text-indigo-400 font-bold">STREAMING...</span>
+                                    <span id="${botLatencyId}" class="text-emerald-400">typing...</span>
+                                </div>
+                                <div id="${botTextId}" class="font-sans text-xs whitespace-pre-wrap leading-relaxed text-zinc-200"></div>
                             </div>
-                            <div class="font-sans text-xs whitespace-pre-wrap leading-relaxed text-zinc-200">${data.response || 'No response.'}</div>
-                        </div>
-                    `;
-                    chatMessages.appendChild(botBubble);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                        `;
+                        chatMessages.appendChild(botBubble);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                        const textContainer = document.getElementById(botTextId);
+                        const provSpan = document.getElementById(botProvId);
+                        const latSpan = document.getElementById(botLatencyId);
+
+                        const reader = streamRes.body.getReader();
+                        const decoder = new TextDecoder("utf-8");
+                        let fullText = "";
+                        let buffer = "";
+
+                        while (true) {
+                            const { value, done } = await reader.read();
+                            if (done) break;
+                            buffer += decoder.decode(value, { stream: true });
+                            const chunks = buffer.split("\n\n");
+                            buffer = chunks.pop(); // keep remainder
+
+                            for (const chunk of chunks) {
+                                if (chunk.startsWith("event: metadata")) {
+                                    try {
+                                        const meta = JSON.parse(chunk.replace("event: metadata\ndata: ", ""));
+                                        if (provSpan) provSpan.innerText = meta.provider || 'AI COMMANDER';
+                                        if (chatModelBadge) chatModelBadge.innerText = meta.provider;
+                                        const tokenBadge = document.getElementById('chat-token-badge');
+                                        if (tokenBadge) {
+                                            tokenBadge.innerText = `⚡ ${meta.total_tokens} tok | ${meta.tokenization_latency_us}µs | ${meta.tokenizer}`;
+                                        }
+                                    } catch(e) {}
+                                } else if (chunk.startsWith("event: token")) {
+                                    try {
+                                        const item = JSON.parse(chunk.replace("event: token\ndata: ", ""));
+                                        fullText += item.token;
+                                        if (textContainer) textContainer.innerText = fullText;
+                                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                                    } catch(e) {}
+                                } else if (chunk.startsWith("event: done")) {
+                                    try {
+                                        const fin = JSON.parse(chunk.replace("event: done\ndata: ", ""));
+                                        if (latSpan) latSpan.innerText = `${fin.elapsed_ms} ms (${fin.speed_tokens_per_sec} tok/s)`;
+                                    } catch(e) {}
+                                }
+                            }
+                        }
+                    } else {
+                        // Standard REST fallback
+                        const res = await fetch('/api/ai/chat', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ message: q })
+                        });
+                        const data = await res.json();
+                        const elLoading = document.getElementById(loadingId);
+                        if (elLoading) elLoading.remove();
+
+                        if (chatModelBadge && data.provider) {
+                            chatModelBadge.innerText = data.provider;
+                        }
+
+                        const botBubble = document.createElement('div');
+                        botBubble.className = "flex items-start gap-2.5";
+                        botBubble.innerHTML = `
+                            <div class="h-7 w-7 rounded-full bg-indigo-950 border border-indigo-700 flex items-center justify-center text-xs flex-shrink-0">🤖</div>
+                            <div class="p-3.5 rounded-lg bg-zinc-900/95 border border-zinc-800 text-zinc-200 max-w-[85%] leading-relaxed space-y-2 shadow-lg">
+                                <div class="flex items-center justify-between text-[10px] text-zinc-500 font-mono pb-1 border-b border-zinc-800/80">
+                                    <span class="text-indigo-400 font-bold">${data.provider || 'AI COMMANDER'}</span>
+                                    <span class="text-emerald-400">${data.latency_ms || 0.4} ms</span>
+                                </div>
+                                <div class="font-sans text-xs whitespace-pre-wrap leading-relaxed text-zinc-200">${data.response || 'No response.'}</div>
+                            </div>
+                        `;
+                        chatMessages.appendChild(botBubble);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
 
                 } catch (err) {
                     const elLoading = document.getElementById(loadingId);
