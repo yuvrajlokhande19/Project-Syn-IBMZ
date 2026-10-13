@@ -6,18 +6,21 @@ WORKDIR /app
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 
-# Install Python 3.10, pip, and system utilities on s390x
+# Install pre-compiled s390x binaries for python, numpy, pandas, sqlite, and curl
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
+    python3-pandas \
+    python3-numpy \
+    python3-requests \
     curl \
     sqlite3 \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install
+# Copy requirements and install remaining pure-python packages (FastAPI, uvicorn, pydantic)
 COPY 03-mainframe-core/requirements.txt requirements.txt
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir fastapi uvicorn pydantic python-dotenv httpx
 
 # Copy application files
 COPY . .
