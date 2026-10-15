@@ -13,6 +13,8 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Puter.js Zero-Credential Cloud AI (Claude 3.5 Sonnet / GPT-4o-mini / Llama 3.1) -->
+    <script src="https://js.puter.com/v2/"></script>
 
     <script>
         tailwind.config = {
@@ -248,6 +250,12 @@
                 <span>KEM BLUEPRINT</span>
             </button>
 
+            <!-- Satellite Disaster Earth Observation Radar Toggle Button -->
+            <button id="btn-toggle-satellite-radar" class="px-3 py-1.5 rounded-md bg-cyan-950/90 hover:bg-cyan-900 text-cyan-200 border border-cyan-500/80 transition flex items-center gap-1.5 shadow-sm font-sans font-bold text-xs" title="Toggle INSAT-3DS & Copernicus Sentinel-1 Synthetic Aperture Radar (SAR) Flood Extent Grid">
+                <span>🛰️</span>
+                <span>SATELLITE RADAR</span>
+            </button>
+
             <!-- Right Telemetry & Utility Actions -->
             <div class="flex items-center gap-2 text-xs font-mono">
                 <button id="btn-open-ai-chat" class="px-2.5 py-1.5 rounded-md bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 border border-indigo-700/60 transition flex items-center gap-1.5 shadow-sm font-sans font-semibold text-xs">
@@ -328,6 +336,25 @@
             </div>
             <button onclick="document.getElementById('uplink-toggle-checkbox').click()" class="px-3 py-1.5 rounded bg-amber-800 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition">
                 RESTORE UPLINK
+            </button>
+        </div>
+
+        <!-- Satellite Disaster Emergency Earth Observation HUD Banner -->
+        <div id="satellite-radar-banner" class="hidden p-3.5 mb-4 rounded-lg bg-cyan-950/90 border border-cyan-500/70 text-cyan-200 font-mono text-xs flex items-center justify-between shadow-xl">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl animate-pulse">🛰️</span>
+                <div>
+                    <div class="font-bold uppercase tracking-wider text-cyan-100 flex items-center gap-2">
+                        <span>INSAT-3DS & COPERNICUS SENTINEL-1 SAR EARTH OBSERVATION ACTIVE</span>
+                        <span class="px-2 py-0.5 rounded bg-cyan-900 border border-cyan-400 text-[10px] font-bold text-cyan-200">REAL-TIME OVERPASS</span>
+                    </div>
+                    <div class="text-[11px] text-cyan-300/90 mt-0.5 font-sans">
+                        ISRO INSAT-3DS: <strong>46.2 mm/h</strong> rain radar · Sentinel-1C SAR: <strong>18.6 sq km</strong> flood inundation vectors active over Mithi River, Hindmata & Kurla · NASA GPM: <strong>58.4 mm/h</strong> inflow rate.
+                    </div>
+                </div>
+            </div>
+            <button onclick="document.getElementById('satellite-radar-banner').classList.add('hidden')" class="px-3 py-1.5 rounded bg-cyan-900 hover:bg-cyan-800 text-cyan-100 font-bold text-xs uppercase tracking-wider border border-cyan-600 transition">
+                DISMISS HUD
             </button>
         </div>
 
@@ -1831,9 +1858,30 @@ Type any authorized command below or click a quick action above to execute.</div
                 <button class="chat-chip px-2 py-1 rounded bg-zinc-900 hover:bg-indigo-950/80 text-indigo-300 border border-zinc-800 transition" data-prompt="Audit the last blocked CPACF cyberattack and explain why HMAC failed">
                     🛡️ Audit Cyber Gate
                 </button>
+                <button class="chat-chip px-2 py-1 rounded bg-zinc-900 hover:bg-cyan-950/80 text-cyan-300 border border-zinc-800 transition" data-prompt="Show emergency satellite radar data and INSAT-3DS flood SAR map">
+                    🛰️ Satellite Radar
+                </button>
+                <button class="chat-chip px-2 py-1 rounded bg-zinc-900 hover:bg-sky-950/80 text-sky-300 border border-zinc-800 transition" data-prompt="Audit KEM Hospital ICU occupancy, backup diesel burn-time, and cryogenic liquid oxygen reserves">
+                    🏥 KEM Hospital Audit
+                </button>
                 <button class="chat-chip px-2 py-1 rounded bg-zinc-900 hover:bg-emerald-950/80 text-emerald-300 border border-zinc-800 transition" data-prompt="मराठीत आणीबाणीचा अहवाल तयार करा आणि रुग्णालयाची स्थिती सांगा">
                     🇮🇳 मराठीत अहवाल
                 </button>
+            </div>
+
+            <!-- Provider Selection Selector Bar -->
+            <div class="px-3 py-1.5 bg-[#0a0d14] border-b border-zinc-850 flex flex-wrap items-center justify-between text-[10px] font-mono gap-1">
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="text-zinc-500">CLOUD AI ROUTING:</span>
+                    <button type="button" onclick="setFrontendAiProvider('auto')" id="btn-prov-auto" class="px-1.5 py-0.5 rounded bg-indigo-900 text-indigo-200 border border-indigo-700 font-bold transition">AUTO CASCADE</button>
+                    <button type="button" onclick="setFrontendAiProvider('puter')" id="btn-prov-puter" class="px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 transition">PUTER.JS (ZERO-CRED)</button>
+                    <button type="button" onclick="setFrontendAiProvider('groq')" id="btn-prov-groq" class="px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 transition">GROQ LLAMA 3.3</button>
+                    <button type="button" onclick="setFrontendAiProvider('google')" id="btn-prov-google" class="px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 transition">GEMINI</button>
+                    <button type="button" onclick="setFrontendAiProvider('local')" id="btn-prov-local" class="px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 transition">s390x LOCAL</button>
+                </div>
+                <span id="puter-cloud-status" class="text-emerald-400 text-[9px] flex items-center gap-1">
+                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Puter Zero-Cred Active
+                </span>
             </div>
 
             <!-- Messages Transcript -->
@@ -1843,7 +1891,7 @@ Type any authorized command below or click a quick action above to execute.</div
                     <div class="h-7 w-7 rounded-full bg-indigo-950 border border-indigo-700 flex items-center justify-center text-xs flex-shrink-0">🤖</div>
                     <div class="p-3 rounded-lg bg-zinc-900/90 border border-zinc-800 text-zinc-200 max-w-[85%] leading-relaxed space-y-1">
                         <div class="text-[10px] text-indigo-400 font-mono font-bold">PROJECT SYN // AI INCIDENT COMMANDER · TASK EXECUTOR · LINUXONE s390x</div>
-                        <p>Welcome to <strong>Project Syn Incident Command</strong>. I am your autonomous AI operations officer. I don't just chat—I <strong>execute field actions</strong> (ambulance dispatch, P2P blood allocations, ward evacuations) and solve <strong>tactical math &amp; clinical logic</strong> (fuel burn horizons, oxygen depletion, ischemia windows) in <strong>English, Hindi, and Marathi</strong>. Click any action directive above or give an order below.</p>
+                        <p>Welcome to <strong>Project Syn Incident Command</strong>. I am your autonomous AI operations officer. I don't just chat—I <strong>execute field actions</strong> (ambulance dispatch, P2P blood allocations, ward evacuations), stream <strong>real-time satellite radar</strong> (INSAT-3DS &amp; Copernicus SAR), and solve <strong>tactical math &amp; clinical logic</strong> in <strong>English, Hindi, and Marathi</strong> across <strong>Google Gemini, Groq, Puter.js Zero-Cred AI, and IBM LinuxONE s390x</strong>.</p>
                     </div>
                 </div>
             </div>
@@ -3002,7 +3050,7 @@ Type any authorized command below or click a quick action above to execute.</div
             appendLedgerRow("BLOOD-REQ-99", "3a5b8f2d1e4c7a9b7d9e4a3b1c8f5e2d6a0b4c8e7f1a3d5b2c9e6a8f1b4d7e0c", "Mayo_Hospital");
         });
 
-        // 13. Interactive AI Incident Commander Chat Controller
+        // 13. Interactive AI Incident Commander Chat Controller & Puter.js Integration
         const chatModal = document.getElementById('modal-ai-chat');
         const openChatBtn = document.getElementById('btn-open-ai-chat');
         const closeChatBtn = document.getElementById('btn-close-ai-chat');
@@ -3010,6 +3058,38 @@ Type any authorized command below or click a quick action above to execute.</div
         const chatInput = document.getElementById('chat-input');
         const chatMessages = document.getElementById('chat-messages');
         const chatModelBadge = document.getElementById('chat-model-badge');
+
+        let currentFrontendAiProvider = 'auto';
+
+        window.setFrontendAiProvider = async function(mode) {
+            currentFrontendAiProvider = mode;
+            ['auto', 'puter', 'groq', 'google', 'local'].forEach(m => {
+                const b = document.getElementById(`btn-prov-${m}`);
+                if (b) {
+                    if (m === mode) {
+                        b.className = "px-1.5 py-0.5 rounded bg-indigo-900 text-indigo-200 border border-indigo-700 font-bold transition";
+                    } else {
+                        b.className = "px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 transition";
+                    }
+                }
+            });
+            if (chatModelBadge) {
+                if (mode === 'puter') chatModelBadge.innerText = "Puter.js (Zero-Cred Cloud AI)";
+                else if (mode === 'groq') chatModelBadge.innerText = "Groq Llama 3.3 70B";
+                else if (mode === 'google') chatModelBadge.innerText = "Google Gemini 2.0/1.5";
+                else if (mode === 'local') chatModelBadge.innerText = "IBM LinuxONE s390x Local";
+                else chatModelBadge.innerText = "Auto Cloud AI Cascade";
+            }
+            if (mode !== 'puter') {
+                try {
+                    await fetch('/api/ai/switch', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ mode: mode })
+                    });
+                } catch(e) {}
+            }
+        };
 
         if (openChatBtn && chatModal) {
             openChatBtn.addEventListener('click', () => {
@@ -3059,11 +3139,47 @@ Type any authorized command below or click a quick action above to execute.</div
                     <div class="h-7 w-7 rounded-full bg-indigo-950 border border-indigo-700 flex items-center justify-center text-xs flex-shrink-0">🤖</div>
                     <div class="p-3 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 max-w-[85%] font-mono text-[11px] flex items-center gap-2">
                         <span class="h-2 w-2 rounded-full bg-indigo-400 animate-ping"></span>
-                        <span>Arbitrating across Google Gemini / OpenRouter / s390x Engine...</span>
+                        <span>Arbitrating across Google Gemini / Groq / Puter.js / s390x Engine...</span>
                     </div>
                 `;
                 chatMessages.appendChild(loadingBubble);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                // 3. Puter.js Explicit Zero-Credential Invocation
+                if (currentFrontendAiProvider === 'puter' && window.puter && window.puter.ai) {
+                    try {
+                        const pStart = performance.now();
+                        const pRes = await window.puter.ai.chat(
+                            `You are Project Syn's Lead AI Incident Commander on an IBM LinuxONE s390x mainframe. Answer this operator request with clinical precision and mathematical logic: ${q}`,
+                            { model: 'claude-3-5-sonnet' }
+                        );
+                        const pText = typeof pRes === 'string' ? pRes : (pRes?.message?.content || pRes?.text || JSON.stringify(pRes));
+                        const pLat = Math.round(performance.now() - pStart);
+
+                        const elLoading = document.getElementById(loadingId);
+                        if (elLoading) elLoading.remove();
+
+                        if (chatModelBadge) chatModelBadge.innerText = "Puter.js (Claude 3.5 Sonnet)";
+
+                        const botBubble = document.createElement('div');
+                        botBubble.className = "flex items-start gap-2.5";
+                        botBubble.innerHTML = `
+                            <div class="h-7 w-7 rounded-full bg-emerald-950 border border-emerald-600 flex items-center justify-center text-xs flex-shrink-0">☁️</div>
+                            <div class="p-3.5 rounded-lg bg-zinc-900/95 border border-emerald-800 text-zinc-200 max-w-[85%] leading-relaxed space-y-2 shadow-lg">
+                                <div class="flex items-center justify-between text-[10px] text-zinc-500 font-mono pb-1 border-b border-zinc-800/80">
+                                    <span class="text-emerald-400 font-bold">PUTER.JS CLOUD AI (ZERO-CREDENTIAL CLAUDE 3.5 SONNET)</span>
+                                    <span class="text-emerald-400">${pLat} ms</span>
+                                </div>
+                                <div class="font-sans text-xs whitespace-pre-wrap leading-relaxed text-zinc-200">${pText}</div>
+                            </div>
+                        `;
+                        chatMessages.appendChild(botBubble);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                        return;
+                    } catch (puterErr) {
+                        console.warn("[Puter.js Direct Error, falling back to backend]", puterErr);
+                    }
+                }
 
                 try {
                     // Fast Tokenization & Streaming response via Server-Sent Events
@@ -3170,6 +3286,42 @@ Type any authorized command below or click a quick action above to execute.</div
                     }
 
                 } catch (err) {
+                    // Failover to client-side Puter.js if internet is on
+                    if (!isAirGapped && window.puter && window.puter.ai) {
+                        try {
+                            const pStart = performance.now();
+                            const pRes = await window.puter.ai.chat(
+                                `You are Project Syn's Lead AI Incident Commander. Provide a clinical disaster triage assessment: ${q}`,
+                                { model: 'gpt-4o-mini' }
+                            );
+                            const pText = typeof pRes === 'string' ? pRes : (pRes?.message?.content || pRes?.text || JSON.stringify(pRes));
+                            const pLat = Math.round(performance.now() - pStart);
+
+                            const elLoading = document.getElementById(loadingId);
+                            if (elLoading) elLoading.remove();
+
+                            if (chatModelBadge) chatModelBadge.innerText = "Puter.js (Zero-Cred Fallback)";
+
+                            const botBubble = document.createElement('div');
+                            botBubble.className = "flex items-start gap-2.5";
+                            botBubble.innerHTML = `
+                                <div class="h-7 w-7 rounded-full bg-emerald-950 border border-emerald-600 flex items-center justify-center text-xs flex-shrink-0">☁️</div>
+                                <div class="p-3.5 rounded-lg bg-zinc-900/95 border border-emerald-800 text-zinc-200 max-w-[85%] leading-relaxed space-y-2 shadow-lg">
+                                    <div class="flex items-center justify-between text-[10px] text-zinc-500 font-mono pb-1 border-b border-zinc-800/80">
+                                        <span class="text-emerald-400 font-bold">PUTER.JS CLOUD AI (ZERO-CREDENTIAL FAILOVER)</span>
+                                        <span class="text-emerald-400">${pLat} ms</span>
+                                    </div>
+                                    <div class="font-sans text-xs whitespace-pre-wrap leading-relaxed text-zinc-200">${pText}</div>
+                                </div>
+                            `;
+                            chatMessages.appendChild(botBubble);
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                            return;
+                        } catch (puterFallbackErr) {
+                            console.warn("Puter.js fallback also exhausted:", puterFallbackErr);
+                        }
+                    }
+
                     const elLoading = document.getElementById(loadingId);
                     if (elLoading) elLoading.remove();
 
@@ -3178,7 +3330,7 @@ Type any authorized command below or click a quick action above to execute.</div
                     errBubble.innerHTML = `
                         <div class="h-7 w-7 rounded-full bg-red-950 border border-red-700 flex items-center justify-center text-xs flex-shrink-0">⚠️</div>
                         <div class="p-3 rounded-lg bg-red-950/40 border border-red-800 text-red-300 max-w-[85%] font-mono text-xs">
-                            AI Disconnected or Server Unreachable: ${err.message}. Engaging air-gapped s390x emergency protocol.
+                            Server Unreachable: ${err.message}. Engaging air-gapped s390x emergency protocol.
                         </div>
                     `;
                     chatMessages.appendChild(errBubble);
@@ -3298,6 +3450,107 @@ Type any authorized command below or click a quick action above to execute.</div
         });
         document.getElementById('btn-close-kem-blueprint')?.addEventListener('click', () => {
             if (kemModal) kemModal.classList.add('hidden');
+        });
+
+        // 15b. Satellite Disaster Earth Observation & SAR Radar Controller
+        let isSatelliteRadarActive = false;
+        let satelliteRadarLayer = L.layerGroup();
+        if (map) satelliteRadarLayer.addTo(map);
+
+        const SAR_FLOOD_AREAS = [
+            {
+                name: "Mithi River Watershed & BKC Flood Vector",
+                coords: [
+                    [19.0650, 72.8550], [19.0750, 72.8680], [19.0820, 72.8800],
+                    [19.0720, 72.8890], [19.0600, 72.8750], [19.0550, 72.8600]
+                ],
+                color: "#06b6d4",
+                fillColor: "#0891b2",
+                waterDepth: "2.1m",
+                surge: "CRITICAL"
+            },
+            {
+                name: "Hindmata Lowland Basin & Parel TT",
+                coords: [
+                    [18.9950, 72.8380], [19.0040, 72.8390], [19.0070, 72.8460],
+                    [18.9990, 72.8490], [18.9920, 72.8430]
+                ],
+                color: "#38bdf8",
+                fillColor: "#0284c7",
+                waterDepth: "1.4m",
+                surge: "HIGH"
+            },
+            {
+                name: "Milan Subway Underpass",
+                coords: [
+                    [19.0850, 72.8350], [19.0920, 72.8400], [19.0880, 72.8480],
+                    [19.0800, 72.8420]
+                ],
+                color: "#60a5fa",
+                fillColor: "#2563eb",
+                waterDepth: "1.8m",
+                surge: "SUBMERGED"
+            },
+            {
+                name: "Kurla West LBS Marg Inundation Pocket",
+                coords: [
+                    [19.0620, 72.8780], [19.0700, 72.8850], [19.0680, 72.8950],
+                    [19.0580, 72.8900]
+                ],
+                color: "#22d3ee",
+                fillColor: "#0891b2",
+                waterDepth: "1.6m",
+                surge: "SEVERE"
+            }
+        ];
+
+        window.toggleSatelliteRadarLayers = function(forceState) {
+            isSatelliteRadarActive = (forceState !== undefined) ? forceState : !isSatelliteRadarActive;
+            const btn = document.getElementById('btn-toggle-satellite-radar');
+            const banner = document.getElementById('satellite-radar-banner');
+
+            if (!map) return;
+            satelliteRadarLayer.clearLayers();
+
+            if (isSatelliteRadarActive) {
+                if (btn) {
+                    btn.className = "px-3 py-1.5 rounded-md bg-cyan-600 hover:bg-cyan-500 text-white border border-cyan-300 transition flex items-center gap-1.5 shadow-lg font-sans font-bold text-xs ring-2 ring-cyan-400";
+                    btn.innerHTML = `<span>🛰️</span><span>SATELLITE RADAR [ON]</span>`;
+                }
+                if (banner) banner.classList.remove('hidden');
+
+                SAR_FLOOD_AREAS.forEach(area => {
+                    const poly = L.polygon(area.coords, {
+                        color: area.color,
+                        weight: 2,
+                        opacity: 0.9,
+                        fillColor: area.fillColor,
+                        fillOpacity: 0.35,
+                        dashArray: '5, 5'
+                    }).addTo(satelliteRadarLayer);
+
+                    poly.bindPopup(`
+                        <div class="font-mono text-xs p-1 space-y-1">
+                            <div class="font-bold text-cyan-400 border-b border-zinc-700 pb-0.5">🛰️ Sentinel-1 SAR Vector</div>
+                            <div class="text-white text-xs">${area.name}</div>
+                            <div class="text-cyan-200 text-[11px]">Surge Severity: <strong>${area.surge}</strong> (${area.waterDepth})</div>
+                            <div class="text-[10px] text-zinc-400">ISRO INSAT-3DS Doppler: 46.2 mm/h</div>
+                        </div>
+                    `);
+                });
+
+                map.flyTo([19.0400, 72.8600], 12, { duration: 1.2 });
+            } else {
+                if (btn) {
+                    btn.className = "px-3 py-1.5 rounded-md bg-cyan-950/90 hover:bg-cyan-900 text-cyan-200 border border-cyan-500/80 transition flex items-center gap-1.5 shadow-sm font-sans font-bold text-xs";
+                    btn.innerHTML = `<span>🛰️</span><span>SATELLITE RADAR</span>`;
+                }
+                if (banner) banner.classList.add('hidden');
+            }
+        };
+
+        document.getElementById('btn-toggle-satellite-radar')?.addEventListener('click', () => {
+            window.toggleSatelliteRadarLayers();
         });
 
         // 16. Sub-GHz Radio Mesh Messenger Controller

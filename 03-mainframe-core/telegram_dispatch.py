@@ -30,6 +30,7 @@ load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 
@@ -49,10 +50,16 @@ OPENROUTER_MODELS = [
     "google/gemma-4-26b-a4b-it:free"
 ]
 
+GROQ_MODELS = [
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant",
+    "mixtral-8x7b-32768"
+]
+
 AI_STATUS_TRACKER = {
     "provider": "Google Gemini",
     "active_model": "gemini-3.8-flash",
-    "mode": "auto",  # auto, google, openrouter, local
+    "mode": "auto",  # auto, google, groq, openrouter, puter, local
     "input_token_limit": 1048576,
     "last_switch_time": None,
     "total_calls": 0,
@@ -61,8 +68,8 @@ AI_STATUS_TRACKER = {
 
 
 def set_ai_provider(mode: str) -> Dict[str, Any]:
-    """Manually switches active AI provider (auto, google, openrouter, or local)."""
-    valid_modes = ["auto", "google", "openrouter", "local"]
+    """Manually switches active AI provider (auto, google, groq, openrouter, puter, or local)."""
+    valid_modes = ["auto", "google", "groq", "openrouter", "puter", "local"]
     target_mode = mode.lower() if mode and mode.lower() in valid_modes else "auto"
     AI_STATUS_TRACKER["mode"] = target_mode
     now_iso = datetime.now(timezone.utc).isoformat()
@@ -71,16 +78,24 @@ def set_ai_provider(mode: str) -> Dict[str, Any]:
         AI_STATUS_TRACKER["provider"] = "Google Gemini"
         AI_STATUS_TRACKER["active_model"] = "gemini-3.8-flash"
         AI_STATUS_TRACKER["input_token_limit"] = 1048576
+    elif target_mode == "groq":
+        AI_STATUS_TRACKER["provider"] = "Groq Cloud High-Speed Llama 3.3"
+        AI_STATUS_TRACKER["active_model"] = "llama-3.3-70b-versatile"
+        AI_STATUS_TRACKER["input_token_limit"] = 131072
     elif target_mode == "openrouter":
         AI_STATUS_TRACKER["provider"] = "OpenRouter Multi-Cloud"
         AI_STATUS_TRACKER["active_model"] = "meta-llama/llama-3.3-70b-instruct"
         AI_STATUS_TRACKER["input_token_limit"] = 128000
+    elif target_mode == "puter":
+        AI_STATUS_TRACKER["provider"] = "Puter.js Zero-Credential Cloud AI"
+        AI_STATUS_TRACKER["active_model"] = "claude-3-5-sonnet"
+        AI_STATUS_TRACKER["input_token_limit"] = 200000
     elif target_mode == "local":
         AI_STATUS_TRACKER["provider"] = "IBM Z s390x Local Engine"
         AI_STATUS_TRACKER["active_model"] = "s390x-BigEndian-Deterministic"
         AI_STATUS_TRACKER["input_token_limit"] = 4096
     else:
-        AI_STATUS_TRACKER["provider"] = "Auto-Failover (Gemini -> OpenRouter -> Local)"
+        AI_STATUS_TRACKER["provider"] = "Auto-Failover (Gemini -> Groq -> OpenRouter -> Local)"
         AI_STATUS_TRACKER["active_model"] = "gemini-3.8-flash"
         AI_STATUS_TRACKER["input_token_limit"] = 1048576
 
@@ -98,7 +113,9 @@ def get_ai_status() -> Dict[str, Any]:
         "token_limit": f"{AI_STATUS_TRACKER['input_token_limit']:,} tokens",
         "rate_tier": "TOP_TPM_AUTO_SWITCHING",
         "gemini_ready": bool(GEMINI_API_KEY),
+        "groq_ready": bool(GROQ_API_KEY),
         "openrouter_ready": bool(OPENROUTER_API_KEY),
+        "puter_ready": True,
         "local_ready": True,
         "total_inferences": AI_STATUS_TRACKER["total_calls"],
         "switch_history": AI_STATUS_TRACKER["switch_history"][-5:]
@@ -410,6 +427,57 @@ def generate_openrouter_cascade(prompt: str) -> Tuple[Optional[str], str]:
             continue
 
     return None, "OPENROUTER_CASCADE_EXHAUSTED"
+
+
+def generate_groq_cascade(prompt: str) -> Tuple[Optional[str], str]:
+    """
+    Calls Groq Cloud ultra-fast inference (Llama 3.3 70B, Llama 3.1 8B):
+    Returns (generated_text, model_used).
+    """
+    if not GROQ_API_KEY:
+        return None, "NO_GROQ_KEY"
+
+    AI_STATUS_TRACKER["total_calls"] += 1
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    for model_name in GROQ_MODELS:
+        payload = {
+            "model": model_name,
+            "messages": [
+                {"role": "system", "content": "You are Project Syn's Lead AI Incident Commander on an IBM LinuxONE s390x mainframe."},
+                {"role": "user", "content": prompt}
+            ],
+            "max_tokens": 400,
+            "temperature": 0.2
+        }
+        try:
+            resp = requests.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers=headers,
+                json=payload,
+                timeout=4.0
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                if "choices" in data and len(data["choices"]) > 0:
+                    text = data["choices"][0]["message"]["content"].strip()
+                    now_iso = datetime.now(timezone.utc).isoformat()
+                    AI_STATUS_TRACKER["provider"] = "Groq Cloud High-Speed Llama 3.3"
+                    AI_STATUS_TRACKER["active_model"] = f"groq/{model_name}"
+                    AI_STATUS_TRACKER["input_token_limit"] = 131072
+                    AI_STATUS_TRACKER["switch_history"].append(f"[{now_iso}] Active via Groq: {model_name}")
+                    return text, f"groq/{model_name}"
+            else:
+                logger.warning(f"[GROQ LIMIT/FAIL] Model {model_name} returned {resp.status_code}: {resp.text[:80]}")
+                continue
+        except Exception as e:
+            logger.debug(f"[GROQ EXCEPTION] {model_name}: {e}")
+            continue
+
+    return None, "GROQ_CASCADE_EXHAUSTED"
 
 
 def format_alert_message(
