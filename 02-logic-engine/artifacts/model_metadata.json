@@ -1,5 +1,5 @@
 {
-  "model_type": "IsolationForest",
+  "model_type": "RandomForestClassifier",
   "library": "scikit-learn",
   "features": [
     "grid_voltage",
@@ -12,18 +12,14 @@
     "route_congestion"
   ],
   "n_estimators": 100,
-  "contamination": 0.040625,
+  "random_state": 42,
   "output_convention": {
-    "sklearn_raw_predict": {
-      "+1": "nominal (inlier)",
-      "-1": "anomaly (outlier)"
-    },
-    "binary_mapped": {
+    "raw_predict": {
       "0": "nominal",
       "1": "anomaly"
     }
   },
-  "backend_compatibility_note": "Pair 3's queue_worker.py checks `if prediction[0] == 1: is_anomaly = True`. Because scikit-learn IsolationForest returns +1 for inliers (nominal) and -1 for outliers (anomaly), Pair 3 should update inference check to `if prediction[0] == -1:` or map `prediction = np.where(prediction == -1, 1, 0)`.",
+  "backend_compatibility_note": "Directly compatible with Pair 3's queue_worker.py check: `if prediction[0] == 1: is_anomaly = True`. Outputs 0 for nominal sensor vectors and 1 for infrastructure anomalies.",
   "evaluation_metrics": {
     "accuracy": 1.0,
     "precision": 1.0,

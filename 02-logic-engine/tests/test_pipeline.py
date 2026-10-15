@@ -55,15 +55,27 @@ def test_model_loading_and_inference():
     sample_blackout = pd.DataFrame([[45.0, 0.10, 85]], columns=features)
     pred_blackout = model.predict(sample_blackout)[0]
 
-    print("[TEST 6: Sample Inference Output]")
-    print(f"  Nominal sample prediction: {pred_nominal} (Expected inlier: +1)")
-    print(f"  Flood anomaly prediction: {pred_flood} (Expected outlier: -1)")
-    print(f"  Blackout anomaly prediction: {pred_blackout} (Expected outlier: -1)")
+    print("[TEST 6: Sample Inference Output — Random Forest (Primary)]")
+    print(f"  Nominal sample prediction: {pred_nominal} (Expected nominal: 0)")
+    print(f"  Flood anomaly prediction: {pred_flood} (Expected anomaly: 1)")
+    print(f"  Blackout anomaly prediction: {pred_blackout} (Expected anomaly: 1)")
 
-    assert pred_nominal == 1, f"Expected +1 for nominal inlier, got {pred_nominal}"
-    assert pred_flood == -1, f"Expected -1 for flood outlier, got {pred_flood}"
-    assert pred_blackout == -1, f"Expected -1 for blackout outlier, got {pred_blackout}"
-    print("  -> All sample inferences match Isolation Forest convention (+1 normal, -1 anomaly).")
+    assert pred_nominal == 0, f"Expected 0 for nominal baseline, got {pred_nominal}"
+    assert pred_flood == 1, f"Expected 1 for flood anomaly, got {pred_flood}"
+    assert pred_blackout == 1, f"Expected 1 for blackout anomaly, got {pred_blackout}"
+    print("  -> Primary model inferences strictly match Pair 3 queue_worker convention (0=Nominal, 1=Anomaly).")
+
+    # Optional Benchmark Validation: Preserved Isolation Forest
+    iso_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'artifacts', 'isolation_forest.pkl')
+    if os.path.exists(iso_path):
+        iso_model = joblib.load(iso_path)
+        iso_nom = iso_model.predict(sample_nominal)[0]
+        iso_flood = iso_model.predict(sample_flood)[0]
+        iso_blackout = iso_model.predict(sample_blackout)[0]
+        assert iso_nom == 1, f"Expected +1 for IsolationForest inlier, got {iso_nom}"
+        assert iso_flood == -1, f"Expected -1 for IsolationForest outlier, got {iso_flood}"
+        assert iso_blackout == -1, f"Expected -1 for IsolationForest outlier, got {iso_blackout}"
+        print("  -> Benchmark Isolation Forest inferences verified (+1 nominal, -1 anomaly).")
 
 def test_metadata():
     """Verifies model metadata file and feature ordering documentation."""
@@ -118,6 +130,48 @@ def test_medical_triage_model():
     assert pred in (1, 2, 3), f"Expected emergency triage intervention code (1, 2, or 3), got {pred}"
     print("  -> Clinical triage model inference passed.")
 
+def test_hmac_serialization_and_signing():
+    """Verifies HMAC-SHA256 signature computation, contract adherence, constant-time software verification, and anti-tamper rejection."""
+    import hmac
+    import hashlib
+    import sys
+
+    src_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src')
+    if src_dir not in sys.path:
+        sys.path.insert(0, src_dir)
+
+    import telemetry_simulator as sim
+
+    print("[TEST 11: HMAC-SHA256 Serialization & Signature Validation]")
+    packet = sim.generate_telemetry_packet(tick=1)
+
+    # Contract checks
+    assert "packet_id" in packet and packet["packet_id"].startswith("SYN-")
+    assert "timestamp" in packet and "unix_timestamp" in packet
+    assert "nonce" in packet and len(packet["nonce"]) >= 8
+    assert "sensor_location" in packet
+    assert "metrics" in packet
+    assert "grid_voltage" in packet["metrics"]
+    assert "flood_index" in packet["metrics"]
+    assert "route_congestion" in packet["metrics"]
+    # Critical contract rule: signature is sent in X-Signature header, NOT inside body
+    assert "hmac_signature" not in packet, "hmac_signature must not be placed inside signed payload"
+
+    payload_bytes = json.dumps(packet).encode("utf-8")
+    sig = sim.sign_packet(payload_bytes)
+    assert len(sig) == 64, f"Expected 64-char SHA256 hex digest, got {len(sig)}"
+
+    # Software emulation of constant-time digest comparison matching the backend gate interface
+    # (Hardware CPACF KIMD/KLMD acceleration runs on native IBM s390x production deployments)
+    expected = hmac.new(sim.SECRET_KEY, payload_bytes, hashlib.sha256).hexdigest()
+    assert hmac.compare_digest(sig, expected), "HMAC signature mismatch"
+
+    # Anti-tamper verification: payload modification post-signature must fail digest match
+    tampered_bytes = json.dumps({**packet, "metrics": {**packet["metrics"], "grid_voltage": 0.0}}).encode("utf-8")
+    tampered_expected = hmac.new(sim.SECRET_KEY, tampered_bytes, hashlib.sha256).hexdigest()
+    assert not hmac.compare_digest(sig, tampered_expected), "Tampered payload was not rejected"
+    print("  -> HMAC serialization, constant-time software verification, and anti-tamper tests passed.")
+
 if __name__ == "__main__":
     print("=" * 60)
     print("PROJECT SYN — PAIR 2 PIPELINE TEST SUITE (EXTENDED)")
@@ -127,7 +181,8 @@ if __name__ == "__main__":
     test_metadata()
     test_road_corridors_and_fleet()
     test_medical_triage_model()
+    test_hmac_serialization_and_signing()
     print("=" * 60)
-    print("ALL TESTS PASSED SUCCESSFULLY (10/10)")
+    print("ALL TESTS PASSED SUCCESSFULLY (11/11)")
     print("=" * 60)
 
