@@ -2078,9 +2078,9 @@ Type any authorized command below or click a quick action above to execute.</div
             tab.addEventListener('click', () => {
                 const targetId = tab.getAttribute('data-tab');
                 tabs.forEach(t => {
-                    t.className = "nav-tab px-4 py-2 tab-btn-inactive rounded-t transition-all flex items-center gap-2";
+                    t.className = "nav-tab shrink-0 px-4 py-2 tab-btn-inactive rounded-t transition-all flex items-center gap-2";
                 });
-                tab.className = "nav-tab px-4 py-2 tab-btn-active rounded-t transition-all flex items-center gap-2";
+                tab.className = "nav-tab shrink-0 px-4 py-2 tab-btn-active rounded-t transition-all flex items-center gap-2";
 
                 panels.forEach(p => {
                     if (p.id === targetId) p.classList.remove('hidden');
@@ -2089,7 +2089,8 @@ Type any authorized command below or click a quick action above to execute.</div
 
                 // Trigger map resize if GIS tab selected
                 if (targetId === 'tab-gis' && map) {
-                    setTimeout(() => map.invalidateSize(), 150);
+                    setTimeout(() => map.invalidateSize(), 50);
+                    setTimeout(() => map.invalidateSize(), 200);
                 }
             });
         });
@@ -2715,8 +2716,8 @@ Type any authorized command below or click a quick action above to execute.</div
         // EMBEDDED CYBER WARFARE ADVERSARIAL CLI TERMINAL CONTROLLER
         // -------------------------------------------------------------
         const cliWindow = document.getElementById('cli-terminal-window');
-        const cliForm = document.getElementById('cli-terminal-form');
-        const cliInput = document.getElementById('cli-terminal-input');
+        const cliTerminalForm = document.getElementById('cli-terminal-form');
+        const cliTerminalInput = document.getElementById('cli-terminal-input');
 
         function appendCliLog(htmlLine) {
             if (!cliWindow) return;
@@ -2814,11 +2815,11 @@ Type any authorized command below or click a quick action above to execute.</div
             }
         }
 
-        if (cliForm) {
-            cliForm.addEventListener('submit', (e) => {
+        if (cliTerminalForm) {
+            cliTerminalForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const cmd = cliInput.value;
-                cliInput.value = '';
+                const cmd = cliTerminalInput ? cliTerminalInput.value : '';
+                if (cliTerminalInput) cliTerminalInput.value = '';
                 handleCliCommand(cmd);
             });
         }
@@ -3363,7 +3364,7 @@ Type any authorized command below or click a quick action above to execute.</div
 
         // 15. Sovereignty Mode & Real Offline Tactical Map Controller
         let isAirGapped = false;
-        const offlineLayerGroup = L.layerGroup();
+        if (!offlineLayerGroup) offlineLayerGroup = L.layerGroup();
         
         // Tactical offline vector road connections between Nagpur medical centers
         const offlineTacticalRoads = [
