@@ -217,7 +217,7 @@ async def get_telemetry_live():
             "packet_id": "SYN-INIT",
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "unix_timestamp": time.time(),
-            "sensor_location": "Nagpur_Central_Hospital",
+            "sensor_location": "KEM_Hospital_Parel",
             "network_mode": "satellite_api",
             "metrics": {
                 "grid_voltage": 220.0,
@@ -837,7 +837,7 @@ async def chat_with_incident_commander(req: AIChatRequest):
 from routing_algorithm import fetch_live_road_corridor
 
 @app.get("/api/routing/corridor")
-async def get_routing_corridor(origin: str = "GMC_Nagpur", destination: str = "AIIMS_Nagpur"):
+async def get_routing_corridor(origin: str = "KEM_Hospital_Parel", destination: str = "Sion_Hospital_LTMMC"):
     """
     Calculates turn-by-turn road network coordinates connecting hospital nodes
     using OpenRouteService (ORS) / OpenStreetMap OSRM with deterministic fallback.
@@ -848,10 +848,10 @@ async def get_routing_corridor(origin: str = "GMC_Nagpur", destination: str = "A
 @app.get("/api/routing/mesh")
 async def get_routing_mesh():
     """
-    Returns the comprehensive 12-hospital network and 6-artery metropolitan road corridors
+    Returns the comprehensive 35-hospital network and 7-artery Mumbai road corridors
     for realistic Leaflet tactical GIS rendering and real-time vehicle patrol animations.
     """
-    from routing_algorithm import HOSPITAL_COORDINATES, NAGPUR_ROAD_CORRIDORS
+    from routing_algorithm import HOSPITAL_COORDINATES, MUMBAI_ROAD_CORRIDORS
     from agentic_action_engine import HOSPITAL_REGISTRY
     
     return {
@@ -861,14 +861,17 @@ async def get_routing_mesh():
                 "id": k,
                 "name": v["name"],
                 "coords": v["coords"],
+                "tier": v.get("tier", "TERTIARY"),
                 "icu_total": v["icu_beds_total"],
                 "icu_occupied": v["icu_beds_occupied"],
                 "icu_available": v["icu_beds_total"] - v["icu_beds_occupied"],
                 "blood_stock": v["blood_stock"],
                 "diesel_liters": v["diesel_liters"],
-                "power_status": v["power_status"]
+                "power_status": v["power_status"],
+                "internal_blueprint": v.get("internal_blueprint")
             }
             for k, v in HOSPITAL_REGISTRY.items()
+            if "_Nagpur" not in k
         ],
         "corridors": {
             k: {
@@ -877,13 +880,13 @@ async def get_routing_mesh():
                 "distance_km": round(len(v) * 1.5, 1),
                 "duration_min": round(len(v) * 1.8, 1)
             }
-            for k, v in NAGPUR_ROAD_CORRIDORS.items()
+            for k, v in MUMBAI_ROAD_CORRIDORS.items()
         },
         "active_vehicles": [
-            {"id": "AMB-ALS-01", "name": "ALS Critical Ambulance 01", "type": "AMBULANCE", "corridor": "Wardha_Road_Expressway", "status": "GREEN_CORRIDOR_SIRENS"},
-            {"id": "AMB-ALS-02", "name": "ALS Critical Ambulance 02", "type": "AMBULANCE", "corridor": "Central_Avenue_Corridor", "status": "EMERGENCY_TRANSIT"},
-            {"id": "COURIER-SWARM-04", "name": "Blood Delivery Taxi Relay 04", "type": "BLOOD_RELAY", "corridor": "Ring_Road_Hingna_Artery", "status": "COLD_CHAIN_ACTIVE"},
-            {"id": "MOBILE-ICU-07", "name": "Mobile ICU Disaster Swarm 07", "type": "MOBILE_ICU", "corridor": "North_Koradi_Corridor", "status": "PATROL_READY"}
+            {"id": "AMB-ALS-01", "name": "ALS Critical Ambulance 01 (KEM-Sion)", "type": "AMBULANCE", "corridor": "Dr_Ambedkar_Road_Corridor", "status": "GREEN_CORRIDOR_SIRENS"},
+            {"id": "AMB-ALS-02", "name": "ALS Critical Ambulance 02 (KEM-JJ)", "type": "AMBULANCE", "corridor": "Lalbaug_Flyover_Ambulance_Corridor", "status": "EMERGENCY_TRANSIT"},
+            {"id": "COURIER-SWARM-04", "name": "Cold-Chain Blood Relay 04 (Sea Link)", "type": "BLOOD_RELAY", "corridor": "Bandra_Worli_Sea_Link_Express", "status": "COLD_CHAIN_ACTIVE"},
+            {"id": "MOBILE-ICU-07", "name": "Mobile ICU Disaster Swarm 07 (EEH)", "type": "MOBILE_ICU", "corridor": "Eastern_Express_Highway", "status": "PATROL_READY"}
         ]
     }
 

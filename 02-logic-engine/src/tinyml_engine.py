@@ -180,23 +180,23 @@ class DistilledCognitiveEngine:
         self.concept_embeddings = {
             "blood": {
                 "urgency": "HIGH",
-                "reasoning": "Acute hemorrhage requires uncrossmatched O-negative or type-specific blood within 15 minutes to avoid hypovolemic shock. AIIMS Nagpur possesses highest apex buffer.",
-                "action": "Trigger P2P transfer corridor from AIIMS Nagpur with siren priority."
+                "reasoning": "Acute hemorrhage requires uncrossmatched O-negative or type-specific blood within 15 minutes to avoid hypovolemic shock. KEM Hospital Parel possesses highest apex reserve buffer (45 O- units).",
+                "action": "Trigger P2P transfer corridor from KEM Hospital Parel with siren priority."
             },
             "fire": {
                 "urgency": "CRITICAL",
                 "reasoning": "High-voltage transformer arcing creates toxic smoke and rapid oxygen line ignition hazard. Substation electrical isolation required before water suppression.",
-                "action": "Trip substation breaker, evacuate adjacent wards via East Lawn ramp, alert fire station 4."
+                "action": "Trip BEST 22kV dual-substation breaker, evacuate adjacent wards via Zone-A Lalbaug ramp, alert Byculla fire station."
             },
             "flood": {
                 "urgency": "ELEVATED",
-                "reasoning": "Sitabuldi and Wardha Road low-lying underpasses become impassable at flood_index > 0.60. Ambulances risk engine hydrolock.",
-                "action": "Reroute ambulances via Ring Road Elevated Flyover; activate LoRa Sub-GHz radio mesh for telemetry."
+                "reasoning": "Hindmata, Parel TT, and Milan Subway lowlands become impassable during monsoon high-tide at flood_index > 0.45. Ambulances risk engine hydrolock.",
+                "action": "Reroute ambulances via Lalbaug Flyover Elevated Corridor and Western Express Highway; activate LoRa Sub-GHz radio mesh for telemetry."
             },
             "ambulance": {
                 "urgency": "HIGH",
-                "reasoning": "Golden hour trauma window requires transit latency under 12 minutes. Pre-clearing smart traffic signals increases survival probability by 43%.",
-                "action": "Signal pre-emption engaged on Sitabuldi corridor; emergency room on trauma code."
+                "reasoning": "Golden hour trauma window requires transit latency under 12 minutes. Pre-clearing smart traffic signals along Dr. Ambedkar Road increases survival probability by 43%.",
+                "action": "Signal pre-emption engaged on Lalbaug corridor; KEM Hospital Level-1 Resuscitation bay placed on Trauma Code Alpha."
             }
         }
 

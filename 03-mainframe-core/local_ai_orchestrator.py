@@ -35,13 +35,14 @@ class LocalDisasterAgent:
         self.start_time = time.time()
         self.memory_footprint_mb = 42.6
 
-        # Hospital Cluster Topology in Nagpur
+        # Hospital Cluster Topology in Mumbai Metropolitan Region
         self.nodes = {
-            "GMC_Nagpur": {"name": "GMC Nagpur (Trauma ICU)", "capacity": 120, "elevated": False},
-            "Mayo_Hospital": {"name": "Mayo Hospital (Indira Gandhi)", "capacity": 85, "elevated": False},
-            "AIIMS_Nagpur": {"name": "AIIMS Nagpur (Apex Triage)", "capacity": 200, "elevated": True},
-            "Lata_Mangeshkar_Hospital": {"name": "Lata Mangeshkar Hospital", "capacity": 60, "elevated": True},
-            "Wockhardt_Hospital": {"name": "Wockhardt Specialty Hospital", "capacity": 75, "elevated": True}
+            "KEM_Hospital_Parel": {"name": "KEM Hospital & Seth GS (Command Apex)", "capacity": 180, "elevated": True},
+            "Sion_Hospital_LTMMC": {"name": "Sion Hospital (Apex Trauma)", "capacity": 120, "elevated": True},
+            "Sir_JJ_Hospital_Byculla": {"name": "Sir JJ Group of Hospitals", "capacity": 130, "elevated": False},
+            "Nair_Hospital_Mumbai": {"name": "BYL Nair Hospital", "capacity": 95, "elevated": False},
+            "Lilavati_Hospital_Bandra": {"name": "Lilavati Hospital Bandra", "capacity": 65, "elevated": True},
+            "Nanavati_Max_Hospital": {"name": "Nanavati Max Super Specialty", "capacity": 75, "elevated": True}
         }
 
     def evaluate_telemetry(self, packet: Dict[str, Any]) -> Dict[str, Any]:
@@ -82,16 +83,16 @@ class LocalDisasterAgent:
 
         # Flood Mitigation Directive
         if flood_index >= 0.30:
-            route_recommendation = "Wardha Road Elevated Flyover Corridor"
+            route_recommendation = "Lalbaug Flyover Elevated Corridor"
             directives.append({
                 "action": "ENGAGE_ELEVATED_BYPASS",
                 "target": "Ambulance Routing Service",
-                "reason": f"River gauge flood index ({flood_index:.2f}) exceeds ground road safety limit"
+                "reason": f"Monsoon inundation flood index ({flood_index:.2f}) exceeds street clearance limit"
             })
 
         # Blood Resource Supply Balancing Directive
         if blood_units < 15:
-            donor_node = "AIIMS_Nagpur" if location != "AIIMS_Nagpur" else "GMC_Nagpur"
+            donor_node = "KEM_Hospital_Parel" if location != "KEM_Hospital_Parel" else "Sion_Hospital_LTMMC"
             directives.append({
                 "action": "AUTONOMOUS_PEER_SUPPLY_TRANSFER",
                 "source": donor_node,

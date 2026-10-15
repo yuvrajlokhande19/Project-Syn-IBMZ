@@ -62,14 +62,14 @@ def compute_safe_route(anomaly_type: str, sensor_location: str) -> str:
     valid_nodes = list(router.graph.keys())
 
     # Map sensor location to known hospital node if matching
-    incident_node = sensor_location if sensor_location in valid_nodes else "GMC_Nagpur"
+    incident_node = sensor_location if sensor_location in valid_nodes else "KEM_Hospital_Parel"
 
     # In case of flooding or severe damage, penalize routes through the incident area
     if anomaly_type in ("FLOOD", "EARTHQUAKE"):
         router.update_weights(incident_node, penalty=999)
 
     # Route towards closest alternate critical facility
-    target_node = "AIIMS_Nagpur" if incident_node != "AIIMS_Nagpur" else "Mayo_Hospital"
+    target_node = "Sion_Hospital_LTMMC" if incident_node != "Sion_Hospital_LTMMC" else "KEM_Hospital_Parel"
 
     try:
         path, cost = router.dijkstra(incident_node, target_node)
@@ -78,7 +78,7 @@ def compute_safe_route(anomaly_type: str, sensor_location: str) -> str:
     except Exception as e:
         logger.error(f"[ROUTER ERROR] Dijkstra calculation failed: {e}")
 
-    return "Corridor Wardha Road (Elevated Expressway)"
+    return "Corridor Lalbaug Flyover (Elevated Expressway)"
 
 
 def process_packet(item: Dict[str, Any]):

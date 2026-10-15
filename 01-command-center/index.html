@@ -124,6 +124,42 @@
             to { box-shadow: 0 0 16px #a855f7, 0 0 26px #a855f7; }
         }
 
+        /* ============================================================ */
+        /* TACTICAL HOSPITAL MONOCHROMATIC RADAR THEME (AIR-GAPPED MODE) */
+        /* ============================================================ */
+        body.theme-hospital-grey {
+            background-color: #17191d !important;
+            color: #dbe0e8 !important;
+        }
+        body.theme-hospital-grey header {
+            background-color: #131518 !important;
+            border-bottom-color: #2b3038 !important;
+        }
+        body.theme-hospital-grey .admin-card {
+            background: linear-gradient(180deg, #1f2228 0%, #17191d 100%) !important;
+            border: 1px solid #2f3540 !important;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4) !important;
+        }
+        body.theme-hospital-grey .admin-card-subtle {
+            background: #1a1c22 !important;
+            border: 1px solid #2a303a !important;
+        }
+        body.theme-hospital-grey .tab-btn-active {
+            background: #282d36 !important;
+            color: #f59e0b !important;
+            border-bottom: 2px solid #f59e0b !important;
+        }
+        body.theme-hospital-grey .tab-btn-inactive {
+            color: #8f97a5 !important;
+        }
+        body.theme-hospital-grey .tab-btn-inactive:hover {
+            color: #ffffff !important;
+            background: rgba(40, 45, 54, 0.5) !important;
+        }
+        body.theme-hospital-grey .leaflet-tile-pane {
+            filter: grayscale(1.0) contrast(1.4) brightness(0.68) !important;
+        }
+
         /* Printable Executive Report CSS */
         @media print {
             body { background: #ffffff !important; color: #000000 !important; }
@@ -188,34 +224,58 @@
                 </button>
             </div>
 
+            <!-- Tactile Internet Uplink Online/Air-Gapped Toggle -->
+            <div class="flex items-center gap-2 px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-700/80 shadow-inner" title="Toggle Internet connectivity to trigger Sovereign Air-Gapped Mode & Tactical Hospital Theme">
+                <span class="text-[11px] font-mono font-semibold flex items-center gap-1.5">
+                    <span id="uplink-dot" class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="uplink-label" class="text-emerald-300">UPLINK: ONLINE</span>
+                </span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="uplink-toggle-checkbox" class="sr-only peer" checked>
+                    <div class="w-8 h-4 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-emerald-600"></div>
+                </label>
+            </div>
+
+            <!-- Dedicated Real-Time Threat Sentinel Trigger Button -->
+            <button id="btn-realtime-threat" class="px-3 py-1.5 rounded-md bg-rose-950/90 hover:bg-rose-900 text-rose-300 border border-rose-700/80 transition flex items-center gap-1.5 shadow-sm font-sans font-bold text-xs" title="Simulate real-time cyber attack and verify CPACF hardware gate drop">
+                <span class="h-2 w-2 rounded-full bg-rose-500 animate-ping"></span>
+                <span>⚡ REAL-TIME THREAT SENTINEL</span>
+            </button>
+
+            <!-- KEM Hospital Command Apex Blueprint Modal Button -->
+            <button id="btn-kem-blueprint" class="px-3 py-1.5 rounded-md bg-sky-950/90 hover:bg-sky-900 text-sky-200 border border-sky-600/80 transition flex items-center gap-1.5 shadow-sm font-sans font-bold text-xs" title="View KEM Hospital internal blueprint, ICU telemetry and oxygen reserves">
+                <span>🏥</span>
+                <span>KEM BLUEPRINT</span>
+            </button>
+
             <!-- Right Telemetry & Utility Actions -->
-            <div class="flex items-center gap-2.5 text-xs font-mono">
-                <button id="btn-open-ai-chat" class="px-3 py-1.5 rounded-md bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 border border-indigo-700/60 transition flex items-center gap-1.5 shadow-sm font-sans font-semibold text-xs">
+            <div class="flex items-center gap-2 text-xs font-mono">
+                <button id="btn-open-ai-chat" class="px-2.5 py-1.5 rounded-md bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 border border-indigo-700/60 transition flex items-center gap-1.5 shadow-sm font-sans font-semibold text-xs">
                     <span>🤖</span>
                     <span>AI COMMANDER</span>
                 </button>
 
-                <button id="btn-open-report-modal" class="px-3 py-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-600 transition flex items-center gap-1.5 shadow-sm font-sans font-semibold text-xs">
+                <button id="btn-open-report-modal" class="px-2.5 py-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-600 transition flex items-center gap-1.5 shadow-sm font-sans font-semibold text-xs">
                     <span>📄</span>
-                    <span>AUDIT & ESG REPORT</span>
+                    <span>ESG REPORT</span>
                 </button>
 
-                <button id="btn-open-health-modal" class="px-3 py-1.5 rounded-md bg-emerald-950/70 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-700/60 transition flex items-center gap-1.5 shadow-sm font-sans font-semibold text-xs">
+                <button id="btn-open-health-modal" class="px-2.5 py-1.5 rounded-md bg-emerald-950/70 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-700/60 transition flex items-center gap-1.5 shadow-sm font-sans font-semibold text-xs">
                     <span class="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
-                    <span>SYSTEM HEALTH (100%)</span>
+                    <span>HEALTH (100%)</span>
                 </button>
                 
-                <button id="btn-kiosk-mode-toggle" class="px-3 py-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition flex items-center gap-1.5 font-sans font-medium text-xs">
+                <button id="btn-kiosk-mode-toggle" class="px-2.5 py-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition flex items-center gap-1.5 font-sans font-medium text-xs">
                     <span id="kiosk-status-dot" class="h-2 w-2 rounded-full bg-zinc-500"></span>
-                    <span id="kiosk-label">KIOSK AUTOPILOT</span>
+                    <span id="kiosk-label">KIOSK</span>
                 </button>
 
-                <button id="btn-telegram-toggle" class="px-3 py-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition flex items-center gap-1.5 font-sans font-medium text-xs" title="Click to mute/unmute automated background Telegram broadcasts">
+                <button id="btn-telegram-toggle" class="px-2.5 py-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition flex items-center gap-1.5 font-sans font-medium text-xs" title="Click to mute/unmute automated background Telegram broadcasts">
                     <span id="tg-status-dot" class="h-2 w-2 rounded-full bg-emerald-400"></span>
-                    <span id="tg-status-label">TG SENTINEL: ACTIVE (90s)</span>
+                    <span id="tg-status-label">TG SENTINEL</span>
                 </button>
 
-                <div class="px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 tracking-wider" id="header-clock">
+                <div class="px-2.5 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 tracking-wider text-[11px]" id="header-clock">
                     --:--:-- UTC
                 </div>
             </div>
@@ -253,6 +313,90 @@
 
     <!-- ==================== MAIN ADMIN WORKSPACE ==================== -->
     <main class="flex-1 max-w-[1720px] w-full mx-auto p-5">
+
+        <!-- Air-Gapped Sovereign Fallback Alert Ribbon -->
+        <div id="airgap-banner" class="hidden p-3.5 mb-4 rounded-lg bg-amber-950/80 border border-amber-500/70 text-amber-200 font-mono text-xs flex items-center justify-between shadow-lg">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl animate-pulse">📡</span>
+                <div>
+                    <div class="font-bold uppercase tracking-wider text-amber-100 flex items-center gap-2">
+                        <span>AIR-GAPPED SOVEREIGN MODE ENGAGED</span>
+                        <span class="px-2 py-0.5 rounded bg-amber-900 border border-amber-600 text-[10px] font-bold">SOVEREIGN s390x</span>
+                    </div>
+                    <div class="text-[11px] text-amber-300/90 mt-0.5">Internet uplink terminated · Tactical Monochromatic Radar Theme active · Local CPACF Hardware Zero-Trust verification &amp; TinyML decision matrix engaged locally.</div>
+                </div>
+            </div>
+            <button onclick="document.getElementById('uplink-toggle-checkbox').click()" class="px-3 py-1.5 rounded bg-amber-800 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition">
+                RESTORE UPLINK
+            </button>
+        </div>
+
+        <!-- ==================== KEM HOSPITAL PAREL BLUEPRINT MODAL ==================== -->
+        <div id="kem-blueprint-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <div class="admin-card w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 space-y-4 border-sky-500/50 shadow-2xl">
+                <div class="flex items-center justify-between pb-3 border-b border-zinc-700">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">🏥</span>
+                        <div>
+                            <h2 class="text-lg font-bold text-white uppercase tracking-wider">King Edward Memorial (KEM) Hospital &amp; Seth G.S. Medical College</h2>
+                            <p class="text-xs text-sky-400 font-mono">Parel, Mumbai Metropolitan Region · Primary Disaster Incident Command Apex</p>
+                        </div>
+                    </div>
+                    <button id="btn-close-kem-blueprint" class="text-zinc-400 hover:text-white text-2xl font-bold font-mono px-2 py-1">&times;</button>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                    <div class="p-3 rounded bg-zinc-900 border border-zinc-800">
+                        <span class="text-zinc-400 block text-[10px] uppercase">Total Inpatient Beds</span>
+                        <span class="text-xl font-bold text-white">1,800+</span>
+                        <span class="text-[10px] text-emerald-400 block">39 Super-Specialties</span>
+                    </div>
+                    <div class="p-3 rounded bg-zinc-900 border border-zinc-800">
+                        <span class="text-zinc-400 block text-[10px] uppercase">Critical Care (ICU)</span>
+                        <span class="text-xl font-bold text-emerald-400">180 Beds</span>
+                        <span class="text-[10px] text-zinc-400 block">SICU, MICU, PICU, Trauma</span>
+                    </div>
+                    <div class="p-3 rounded bg-zinc-900 border border-zinc-800">
+                        <span class="text-zinc-400 block text-[10px] uppercase">Cryogenic Liquid O2</span>
+                        <span class="text-xl font-bold text-sky-400">13,000 L</span>
+                        <span class="text-[10px] text-sky-300 block">4.2 bar (94.5% Nominal)</span>
+                    </div>
+                    <div class="p-3 rounded bg-zinc-900 border border-zinc-800">
+                        <span class="text-zinc-400 block text-[10px] uppercase">Substation Power</span>
+                        <span class="text-xl font-bold text-amber-400">22kV BEST</span>
+                        <span class="text-[10px] text-amber-300 block">Dual Feeder A+B + ATS</span>
+                    </div>
+                </div>
+
+                <!-- Blueprint Visual Architecture & Wards -->
+                <div class="p-4 rounded-lg bg-zinc-950 border border-zinc-800 font-mono text-xs space-y-3">
+                    <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                        <span class="font-bold text-white uppercase text-[11px]">Internal Tactical Blueprint &amp; Ward Telemetry</span>
+                        <span class="text-emerald-400 text-[10px]">ALL SYSTEMS 100% OPERATIONAL</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
+                        <div class="space-y-1.5 p-2.5 rounded bg-zinc-900/60 border border-zinc-800">
+                            <div class="font-bold text-sky-300">Level-1 Trauma &amp; Surgical Suites:</div>
+                            <ul class="space-y-1 text-zinc-300">
+                                <li>• <strong>Level-1 Resuscitation Bay:</strong> 6 Dedicated Trauma Crash Bays with point-of-care ultrasound</li>
+                                <li>• <strong>Modular Operating Theatres:</strong> 18 Surgical OTs on independent isolated emergency UPS</li>
+                                <li>• <strong>Central Blood Transfusion Unit:</strong> 68 Units A+, 45 Units O-Negative, 85 Units B+</li>
+                                <li>• <strong>Auxiliary Diesel Reservoir:</strong> 8,500 Liters (74.0 Hours continuous endurance at full load)</li>
+                            </ul>
+                        </div>
+                        <div class="space-y-1.5 p-2.5 rounded bg-zinc-900/60 border border-zinc-800">
+                            <div class="font-bold text-sky-300">Emergency Corridors &amp; Evacuation Blueprint:</div>
+                            <ul class="space-y-1 text-zinc-300">
+                                <li>• <strong>Zone-A Lalbaug Ramp:</strong> Direct ramp to elevated ambulance flyover corridor</li>
+                                <li>• <strong>Zone-B Acharya Donde Marg:</strong> Ground staging for mobile ambulance fleet</li>
+                                <li>• <strong>Zone-C Parel Station Link:</strong> Pedestrian mass casualty clearance artery</li>
+                                <li>• <strong>Radio Telemetry Gateway:</strong> LoRa 868MHz SX1276 Master Gateway &lt;-&gt; LinuxONE s390x</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- ==================================================================== -->
         <!-- TAB 1: EXECUTIVE OVERVIEW                                            -->
@@ -369,40 +513,43 @@
                 <div class="admin-card p-4 lg:col-span-4 flex flex-col justify-between">
                     <div class="flex justify-between items-center pb-3 border-b border-zinc-800">
                         <div>
-                            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Nagpur Trauma Cluster</h3>
-                            <p class="text-xs text-zinc-400">5 Supervised Nodes · LoRa Backhaul</p>
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Mumbai Metropolitan Trauma Cluster</h3>
+                            <p class="text-xs text-sky-400 font-mono">Command Apex: KEM Hospital Parel · 35 Supervised Nodes</p>
                         </div>
-                        <span class="text-xs text-emerald-400 font-mono font-bold">5/5 ONLINE</span>
+                        <span class="text-xs text-emerald-400 font-mono font-bold">35/35 ONLINE</span>
                     </div>
                     
                     <div class="space-y-2.5 pt-3 text-xs font-sans">
+                        <div class="p-2.5 rounded bg-zinc-900/80 border border-zinc-800 flex justify-between items-center cursor-pointer hover:border-sky-500 transition" onclick="document.getElementById('btn-kem-blueprint').click()">
+                            <div>
+                                <div class="font-bold text-white flex items-center gap-1.5">
+                                    <span>KEM Hospital &amp; Seth GS (Command Apex)</span>
+                                    <span class="text-[9px] px-1 py-0.2 rounded bg-sky-950 text-sky-300 border border-sky-800">APEX</span>
+                                </div>
+                                <div class="text-[11px] text-zinc-400 font-mono">Parel Medical Dist · 1,800 Beds (180 ICU)</div>
+                            </div>
+                            <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono font-bold text-[10px]">COMMAND APEX</span>
+                        </div>
                         <div class="p-2.5 rounded bg-zinc-900/80 border border-zinc-800 flex justify-between items-center">
                             <div>
-                                <div class="font-bold text-white">GMC Nagpur (Trauma ICU)</div>
-                                <div class="text-[11px] text-zinc-400 font-mono">Root LoRa 868.1M · 120 Beds</div>
+                                <div class="font-bold text-white">Sion Hospital (LTMMC - Apex Trauma)</div>
+                                <div class="text-[11px] text-zinc-400 font-mono">EEH/WEH Junction · 1,400 Beds (120 ICU)</div>
                             </div>
                             <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono font-bold text-[10px]">TRAUMA READY</span>
                         </div>
                         <div class="p-2.5 rounded bg-zinc-900/80 border border-zinc-800 flex justify-between items-center">
                             <div>
-                                <div class="font-bold text-white">Mayo Hospital (Indira Gandhi)</div>
-                                <div class="text-[11px] text-zinc-400 font-mono">Hop 1 Relay · 85 Beds</div>
-                            </div>
-                            <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono font-bold text-[10px]">SYNC ACTIVE</span>
-                        </div>
-                        <div class="p-2.5 rounded bg-zinc-900/80 border border-zinc-800 flex justify-between items-center">
-                            <div>
-                                <div class="font-bold text-white">AIIMS Nagpur (Apex Triage)</div>
-                                <div class="text-[11px] text-zinc-400 font-mono">Hop 2 Relay · 200 Beds (Elevated)</div>
+                                <div class="font-bold text-white">Sir J.J. Group of Hospitals (Byculla)</div>
+                                <div class="text-[11px] text-zinc-400 font-mono">Lalbaug Flyover Link · 2,800 Beds (130 ICU)</div>
                             </div>
                             <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono font-bold text-[10px]">SURPLUS STACK</span>
                         </div>
                         <div class="p-2.5 rounded bg-zinc-900/80 border border-zinc-800 flex justify-between items-center">
                             <div>
-                                <div class="font-bold text-white">Lata Mangeshkar Hospital</div>
-                                <div class="text-[11px] text-zinc-400 font-mono">Western Node · 60 Beds</div>
+                                <div class="font-bold text-white">Lilavati Hospital &amp; Research (Bandra)</div>
+                                <div class="text-[11px] text-zinc-400 font-mono">Sea Link Express · 320 Beds (65 ICU)</div>
                             </div>
-                            <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono font-bold text-[10px]">CLEAR</span>
+                            <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono font-bold text-[10px]">SEA LINK SYNC</span>
                         </div>
                     </div>
                 </div>
@@ -1899,32 +2046,48 @@ Type any authorized command below or click a quick action above to execute.</div
             });
         });
 
-        // 3. Leaflet GIS Initialization with CARTO Basemaps API Key
-        const CARTO_KEY = (typeof CONFIG !== 'undefined' && CONFIG.CARTO_API_KEY) ? CONFIG.CARTO_API_KEY : "cb1_3nqq_1_a586e19e0c11eefc021be78b";
+        // 3. Leaflet GIS Initialization with Standard Carto & OSM Basemaps
+        let cartoDark, cartoVoyager, cartoLight, osmLayer, currentBasemap, map;
+        let hospitalLayerGroup, corridorsLayerGroup, vehiclesLayerGroup, offlineLayerGroup;
 
-        const cartoDark = L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=${CARTO_KEY}`, {
-            maxZoom: 19,
-            subdomains: 'abcd',
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
-        });
+        try {
+            cartoDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19,
+                subdomains: 'abcd',
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> &copy; <a href="https://carto.com/" target="_blank">CARTO</a>'
+            });
 
-        const cartoVoyager = L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${CARTO_KEY}`, {
-            maxZoom: 19,
-            subdomains: 'abcd',
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
-        });
+            cartoVoyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19,
+                subdomains: 'abcd',
+                attribution: '&copy; OpenStreetMap &copy; CARTO'
+            });
 
-        const cartoLight = L.tileLayer(`https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png?key=${CARTO_KEY}`, {
-            maxZoom: 19,
-            subdomains: 'abcd',
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
-        });
+            cartoLight = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19,
+                subdomains: 'abcd',
+                attribution: '&copy; OpenStreetMap &copy; CARTO'
+            });
 
-        const map = L.map('gisMap', { zoomControl: false, layers: [cartoDark] }).setView([21.1458, 79.0882], 13);
-        let currentBasemap = cartoDark;
+            osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            });
+
+            map = L.map('gisMap', { zoomControl: false, layers: [cartoDark] }).setView([18.9996, 72.8428], 12);
+            currentBasemap = cartoDark;
+
+            hospitalLayerGroup = L.layerGroup().addTo(map);
+            corridorsLayerGroup = L.layerGroup().addTo(map);
+            vehiclesLayerGroup = L.layerGroup().addTo(map);
+            offlineLayerGroup = L.layerGroup();
+        } catch (mapErr) {
+            console.warn("[LEAFLET MAP INIT SAFEGUARD]", mapErr);
+        }
 
         function setBasemap(target) {
-            if (currentBasemap) map.removeLayer(currentBasemap);
+            if (!map) return;
+            if (currentBasemap && map.hasLayer(currentBasemap)) map.removeLayer(currentBasemap);
             if (target === 'voyager') currentBasemap = cartoVoyager;
             else if (target === 'light') currentBasemap = cartoLight;
             else currentBasemap = cartoDark;
@@ -1944,58 +2107,84 @@ Type any authorized command below or click a quick action above to execute.</div
         document.getElementById('btn-carto-voyager')?.addEventListener('click', () => setBasemap('voyager'));
         document.getElementById('btn-carto-light')?.addEventListener('click', () => setBasemap('light'));
 
-        // 3b. Tactical Dense 12-Hospital Network, 6 Corridors & Real Moving Patrol Animations
-        const hospitalLayerGroup = L.layerGroup().addTo(map);
-        const corridorsLayerGroup = L.layerGroup().addTo(map);
-        const vehiclesLayerGroup = L.layerGroup().addTo(map);
-
+        // 3b. Tactical Dense 35-Hospital Mumbai Network, 7 Corridors & Real Moving Patrol Animations
         let corridorPolylines = {};
         let activeVehiclesState = [];
         let vehicleAnimationTimer = null;
 
-        // Dynamic 12-Hospital Fallback Registry if API is offline
+        // Dynamic 35-Hospital Authentic Mumbai Registry if API is offline
         const DEFAULT_12_HOSPITALS = [
-            { id: "GMC_Nagpur", name: "GMC Nagpur (Trauma ICU)", coords: [21.1284, 79.0991], icu_total: 45, icu_occupied: 38, icu_available: 7, blood_stock: {"O-": 14, "A+": 28, "B+": 32}, diesel_liters: 3200, power_status: "230V Nominal" },
-            { id: "Mayo_Hospital", name: "Mayo Hospital (IGGMC)", coords: [21.1528, 79.1001], icu_total: 30, icu_occupied: 28, icu_available: 2, blood_stock: {"O-": 4, "A+": 12, "B+": 16}, diesel_liters: 1800, power_status: "218V Grid Drop" },
-            { id: "AIIMS_Nagpur", name: "AIIMS Nagpur (Apex Trauma)", coords: [21.0560, 79.0435], icu_total: 60, icu_occupied: 36, icu_available: 24, blood_stock: {"O-": 26, "A+": 45, "B+": 50}, diesel_liters: 5400, power_status: "235V Nominal" },
-            { id: "Kingsway_Hospitals", name: "Kingsway Hospitals (Near Station)", coords: [21.1512, 79.0880], icu_total: 35, icu_occupied: 22, icu_available: 13, blood_stock: {"O-": 18, "A+": 25, "B+": 30}, diesel_liters: 3600, power_status: "230V Nominal" },
-            { id: "Wockhardt_Hospital", name: "Wockhardt Super Specialty", coords: [21.1400, 79.0800], icu_total: 28, icu_occupied: 20, icu_available: 8, blood_stock: {"O-": 12, "A+": 20, "B+": 22}, diesel_liters: 2900, power_status: "228V Stable" },
-            { id: "Lata_Mangeshkar_Hospital", name: "Lata Mangeshkar Hospital", coords: [21.1250, 79.0550], icu_total: 25, icu_occupied: 18, icu_available: 7, blood_stock: {"O-": 9, "A+": 15, "B+": 19}, diesel_liters: 2400, power_status: "224V Stable" },
-            { id: "Orange_City_Hospital", name: "Orange City Hospital & Research", coords: [21.1180, 79.0720], icu_total: 20, icu_occupied: 15, icu_available: 5, blood_stock: {"O-": 7, "A+": 14, "B+": 16}, diesel_liters: 1950, power_status: "226V Stable" },
-            { id: "Alexis_Hospital", name: "Max Super Specialty (Alexis)", coords: [21.1780, 79.0750], icu_total: 26, icu_occupied: 16, icu_available: 10, blood_stock: {"O-": 11, "A+": 18, "B+": 21}, diesel_liters: 2700, power_status: "231V Nominal" },
-            { id: "Care_Hospital_Nagpur", name: "CARE Hospital (Panchsheel Square)", coords: [21.1340, 79.0820], icu_total: 22, icu_occupied: 17, icu_available: 5, blood_stock: {"O-": 8, "A+": 13, "B+": 17}, diesel_liters: 2100, power_status: "227V Stable" },
-            { id: "Crescent_Hospital", name: "Crescent Hospital & Heart Center", coords: [21.1390, 79.0920], icu_total: 18, icu_occupied: 12, icu_available: 6, blood_stock: {"O-": 6, "A+": 10, "B+": 14}, diesel_liters: 1750, power_status: "225V Stable" },
-            { id: "Sengupta_Hospital", name: "Dr. Sengupta Hospital (Ravinagar)", coords: [21.1490, 79.0580], icu_total: 16, icu_occupied: 10, icu_available: 6, blood_stock: {"O-": 5, "A+": 9, "B+": 11}, diesel_liters: 1500, power_status: "229V Stable" },
-            { id: "Platina_Heart_Hospital", name: "Platina Heart & Multi-Specialty", coords: [21.1120, 79.0850], icu_total: 15, icu_occupied: 9, icu_available: 6, blood_stock: {"O-": 5, "A+": 8, "B+": 12}, diesel_liters: 1600, power_status: "228V Stable" }
+            { id: "KEM_Hospital_Parel", name: "KEM Hospital & Seth GS (Command Apex)", coords: [18.9996, 72.8428], tier: "APEX_HEADQUARTERS", icu_total: 180, icu_occupied: 142, icu_available: 38, blood_stock: {"O-": 45, "A+": 68, "B+": 85}, diesel_liters: 8500, oxygen_liters: 13000, power_status: "22kV BEST Dual-Feed Nominal" },
+            { id: "Sion_Hospital_LTMMC", name: "Sion Hospital (LTMMC - Apex Trauma)", coords: [19.0360, 72.8601], tier: "APEX_TRAUMA", icu_total: 120, icu_occupied: 108, icu_available: 12, blood_stock: {"O-": 28, "A+": 42, "B+": 55}, diesel_liters: 5200, power_status: "220V Nominal" },
+            { id: "Sir_JJ_Hospital_Byculla", name: "Sir J.J. Group of Hospitals (Byculla)", coords: [18.9610, 72.8338], tier: "APEX", icu_total: 130, icu_occupied: 115, icu_available: 15, blood_stock: {"O-": 32, "A+": 50, "B+": 60}, diesel_liters: 6000, power_status: "220V Nominal" },
+            { id: "Nair_Hospital_Mumbai", name: "B.Y.L. Nair Charitable Hospital", coords: [18.9723, 72.8222], tier: "APEX", icu_total: 95, icu_occupied: 78, icu_available: 17, blood_stock: {"O-": 22, "A+": 35, "B+": 40}, diesel_liters: 4100, power_status: "220V Nominal" },
+            { id: "Tata_Memorial_Hospital", name: "Tata Memorial Centre (Apex Oncology)", coords: [19.0048, 72.8432], tier: "APEX", icu_total: 70, icu_occupied: 58, icu_available: 12, blood_stock: {"O-": 20, "A+": 30, "B+": 38}, diesel_liters: 4800, power_status: "220V Stable" },
+            { id: "Lilavati_Hospital_Bandra", name: "Lilavati Hospital & Research (Bandra)", coords: [19.0514, 72.8286], tier: "SUPER_SPECIALTY", icu_total: 65, icu_occupied: 52, icu_available: 13, blood_stock: {"O-": 18, "A+": 25, "B+": 32}, diesel_liters: 3800, power_status: "230V Stable" },
+            { id: "PD_Hinduja_Hospital", name: "P.D. Hinduja National Hospital (Mahim)", coords: [19.0330, 72.8402], tier: "SUPER_SPECIALTY", icu_total: 60, icu_occupied: 48, icu_available: 12, blood_stock: {"O-": 16, "A+": 24, "B+": 30}, diesel_liters: 3500, power_status: "230V Stable" },
+            { id: "Nanavati_Max_Hospital", name: "Nanavati Max Super Specialty (Vile Parle)", coords: [19.0968, 72.8407], tier: "SUPER_SPECIALTY", icu_total: 75, icu_occupied: 60, icu_available: 15, blood_stock: {"O-": 20, "A+": 28, "B+": 35}, diesel_liters: 4200, power_status: "228V Stable" },
+            { id: "Kokilaben_Hospital", name: "Kokilaben Dhirubhai Ambani (Andheri W)", coords: [19.1312, 72.8252], tier: "SUPER_SPECIALTY", icu_total: 90, icu_occupied: 72, icu_available: 18, blood_stock: {"O-": 25, "A+": 38, "B+": 45}, diesel_liters: 5500, power_status: "230V Optimal" },
+            { id: "Dr_RN_Cooper_Hospital", name: "Dr. R.N. Cooper Hospital (Juhu)", coords: [19.1080, 72.8360], tier: "MAJOR_MUNICIPAL", icu_total: 60, icu_occupied: 51, icu_available: 9, blood_stock: {"O-": 15, "A+": 22, "B+": 30}, diesel_liters: 2800, power_status: "220V Nominal" },
+            { id: "Rajawadi_Hospital_Ghatkopar", name: "Rajawadi Hospital (Ghatkopar East)", coords: [19.0779, 72.9064], tier: "APEX_MUNICIPAL_EAST", icu_total: 55, icu_occupied: 47, icu_available: 8, blood_stock: {"O-": 14, "A+": 22, "B+": 28}, diesel_liters: 2900, power_status: "222V Stable" },
+            { id: "Asian_Heart_Institute_BKC", name: "Asian Heart Institute (BKC)", coords: [19.0664, 72.8660], tier: "SUPER_SPECIALTY", icu_total: 50, icu_occupied: 40, icu_available: 10, blood_stock: {"O-": 14, "A+": 22, "B+": 28}, diesel_liters: 3100, power_status: "230V Optimal" },
+            { id: "Fortis_Hospital_Mulund", name: "Fortis Hospital (Mulund)", coords: [19.1678, 72.9405], tier: "SUPER_SPECIALTY", icu_total: 70, icu_occupied: 56, icu_available: 14, blood_stock: {"O-": 18, "A+": 26, "B+": 34}, diesel_liters: 4000, power_status: "230V Stable" },
+            { id: "Apollo_Hospitals_Navi_Mumbai", name: "Apollo Hospitals (CBD Belapur)", coords: [19.0222, 73.0297], tier: "SUPER_SPECIALTY", icu_total: 75, icu_occupied: 58, icu_available: 17, blood_stock: {"O-": 20, "A+": 30, "B+": 38}, diesel_liters: 4600, power_status: "230V Optimal" },
+            { id: "Bombay_Hospital_Marine_Lines", name: "Bombay Hospital (Marine Lines)", coords: [18.9398, 72.8284], tier: "SUPER_SPECIALTY", icu_total: 80, icu_occupied: 64, icu_available: 16, blood_stock: {"O-": 20, "A+": 32, "B+": 40}, diesel_liters: 4500, power_status: "228V Stable" },
+            { id: "HN_Reliance_Hospital", name: "H.N. Reliance Foundation Hospital", coords: [18.9572, 72.8193], tier: "SUPER_SPECIALTY", icu_total: 55, icu_occupied: 42, icu_available: 13, blood_stock: {"O-": 15, "A+": 22, "B+": 28}, diesel_liters: 3900, power_status: "230V Nominal" },
+            { id: "Saifee_Hospital_Charni_Road", name: "Saifee Hospital (Charni Road)", coords: [18.9535, 72.8188], tier: "SUPER_SPECIALTY", icu_total: 60, icu_occupied: 49, icu_available: 11, blood_stock: {"O-": 16, "A+": 25, "B+": 32}, diesel_liters: 3600, power_status: "230V Stable" },
+            { id: "Breach_Candy_Hospital", name: "Breach Candy Hospital (Mahalaxmi)", coords: [18.9719, 72.8054], tier: "SUPER_SPECIALTY", icu_total: 45, icu_occupied: 34, icu_available: 11, blood_stock: {"O-": 12, "A+": 18, "B+": 24}, diesel_liters: 3100, power_status: "230V Stable" },
+            { id: "Jaslok_Hospital", name: "Jaslok Hospital & Research (Pedder Rd)", coords: [18.9712, 72.8095], tier: "SUPER_SPECIALTY", icu_total: 50, icu_occupied: 39, icu_available: 11, blood_stock: {"O-": 14, "A+": 20, "B+": 26}, diesel_liters: 3300, power_status: "230V Stable" },
+            { id: "Kasturba_Hospital_Chinchpokli", name: "Kasturba Epidemic Hospital", coords: [18.9877, 72.8290], tier: "SPECIALTY", icu_total: 50, icu_occupied: 36, icu_available: 14, blood_stock: {"O-": 12, "A+": 18, "B+": 22}, diesel_liters: 2700, power_status: "220V Nominal" },
+            { id: "Bhabha_Hospital_Bandra", name: "Bhabha Hospital (Bandra West)", coords: [19.0558, 72.8339], tier: "MUNICIPAL", icu_total: 35, icu_occupied: 29, icu_available: 6, blood_stock: {"O-": 8, "A+": 14, "B+": 18}, diesel_liters: 1900, power_status: "218V Stable" },
+            { id: "Bhabha_Hospital_Kurla", name: "Bhabha Hospital (Kurla West)", coords: [19.0682, 72.8773], tier: "MUNICIPAL", icu_total: 40, icu_occupied: 35, icu_available: 5, blood_stock: {"O-": 9, "A+": 16, "B+": 20}, diesel_liters: 2100, power_status: "216V Sag" },
+            { id: "Shatabdi_Hospital_Govandi", name: "Shatabdi Hospital (Govandi)", coords: [19.0543, 72.9150], tier: "MUNICIPAL", icu_total: 35, icu_occupied: 30, icu_available: 5, blood_stock: {"O-": 7, "A+": 12, "B+": 16}, diesel_liters: 1800, power_status: "218V Stable" },
+            { id: "Shatabdi_Hospital_Kandivali", name: "Shatabdi Hospital (Kandivali)", coords: [19.2065, 72.8488], tier: "MUNICIPAL", icu_total: 45, icu_occupied: 38, icu_available: 7, blood_stock: {"O-": 10, "A+": 18, "B+": 24}, diesel_liters: 2300, power_status: "224V Stable" },
+            { id: "Hiranandani_Hospital_Powai", name: "Hiranandani Hospital (Powai)", coords: [19.1189, 72.9110], tier: "SUPER_SPECIALTY", icu_total: 55, icu_occupied: 44, icu_available: 11, blood_stock: {"O-": 14, "A+": 22, "B+": 28}, diesel_liters: 3200, power_status: "230V Stable" },
+            { id: "Godrej_Memorial_Hospital", name: "Godrej Memorial Hospital (Vikhroli)", coords: [19.1042, 72.9275], tier: "SUPER_SPECIALTY", icu_total: 40, icu_occupied: 31, icu_available: 9, blood_stock: {"O-": 9, "A+": 15, "B+": 20}, diesel_liters: 2200, power_status: "226V Stable" },
+            { id: "MGM_Hospital_Vashi", name: "MGM Hospital (Vashi)", coords: [19.0715, 72.9982], tier: "SUPER_SPECIALTY", icu_total: 45, icu_occupied: 36, icu_available: 9, blood_stock: {"O-": 10, "A+": 16, "B+": 22}, diesel_liters: 2400, power_status: "226V Stable" },
+            { id: "DY_Patil_Hospital_Nerul", name: "D.Y. Patil Hospital (Nerul)", coords: [19.0345, 73.0189], tier: "SUPER_SPECIALTY", icu_total: 60, icu_occupied: 46, icu_available: 14, blood_stock: {"O-": 15, "A+": 24, "B+": 30}, diesel_liters: 3500, power_status: "228V Stable" },
+            { id: "Thane_Civil_Hospital", name: "Thane Civil Hospital", coords: [19.1970, 72.9780], tier: "APEX_DISTRICT", icu_total: 65, icu_occupied: 56, icu_available: 9, blood_stock: {"O-": 15, "A+": 24, "B+": 32}, diesel_liters: 3000, power_status: "220V Nominal" },
+            { id: "St_George_Hospital_CST", name: "St. George Hospital (CST)", coords: [18.9402, 72.8378], tier: "GOVT", icu_total: 40, icu_occupied: 32, icu_available: 8, blood_stock: {"O-": 9, "A+": 15, "B+": 20}, diesel_liters: 2000, power_status: "220V Nominal" },
+            { id: "GT_Hospital_Marine_Lines", name: "G.T. Hospital (Marine Lines)", coords: [18.9442, 72.8315], tier: "GOVT", icu_total: 35, icu_occupied: 28, icu_available: 7, blood_stock: {"O-": 8, "A+": 14, "B+": 18}, diesel_liters: 1900, power_status: "220V Nominal" },
+            { id: "Cama_Albless_Hospital", name: "Cama & Albless Hospital", coords: [18.9419, 72.8327], tier: "SPECIALTY", icu_total: 30, icu_occupied: 22, icu_available: 8, blood_stock: {"O-": 6, "A+": 11, "B+": 15}, diesel_liters: 1600, power_status: "222V Stable" },
+            { id: "Holy_Family_Hospital_Bandra", name: "Holy Family Hospital (Bandra)", coords: [19.0540, 72.8270], tier: "SUPER_SPECIALTY", icu_total: 42, icu_occupied: 34, icu_available: 8, blood_stock: {"O-": 10, "A+": 16, "B+": 21}, diesel_liters: 2300, power_status: "228V Stable" },
+            { id: "Masina_Hospital_Byculla", name: "Masina Hospital (Byculla)", coords: [18.9734, 72.8367], tier: "SUPER_SPECIALTY", icu_total: 35, icu_occupied: 27, icu_available: 8, blood_stock: {"O-": 8, "A+": 13, "B+": 17}, diesel_liters: 1800, power_status: "222V Stable" },
+            { id: "Balabhai_Nanavati_Santacruz", name: "Nanavati Trauma Unit (Santacruz)", coords: [19.0880, 72.8390], tier: "TRAUMA", icu_total: 30, icu_occupied: 23, icu_available: 7, blood_stock: {"O-": 7, "A+": 12, "B+": 15}, diesel_liters: 1600, power_status: "224V Stable" }
         ];
 
         const CORRIDOR_COLOR_MAP = {
-            "Wardha_Road_Expressway": { color: "#10b981", name: "Wardha Rd Elevated Expressway (AIIMS Link)", weight: 5 },
-            "Central_Avenue_Corridor": { color: "#f59e0b", name: "Central Avenue Commercial Corridor (Mayo Link)", weight: 4 },
-            "Ring_Road_Hingna_Artery": { color: "#a855f7", name: "Inner Ring Road & Hingna Artery (Care Link)", weight: 4 },
-            "Amravati_Road_West": { color: "#0ea5e9", name: "Amravati Road West Transit Axis (Alexis Link)", weight: 4 },
-            "North_Koradi_Corridor": { color: "#f43f5e", name: "North Koradi Highway Rapid Link (Koradi Link)", weight: 4 },
-            "Dhantoli_Medical_Link": { color: "#14b8a6", name: "Dhantoli Medical District Bypass Link", weight: 4 }
+            "Lalbaug_Flyover_Ambulance_Corridor": { color: "#10b981", name: "Lalbaug Flyover Elevated Corridor (KEM - JJ Link)", weight: 5 },
+            "Dr_Ambedkar_Road_Corridor": { color: "#0ea5e9", name: "Dr. Ambedkar Road Rapid Transit (KEM - Sion Link)", weight: 4 },
+            "Eastern_Express_Highway": { color: "#f59e0b", name: "Eastern Express Highway (EEH Arterial)", weight: 5 },
+            "Western_Express_Highway": { color: "#38bdf8", name: "Western Express Highway (WEH Arterial)", weight: 5 },
+            "Bandra_Worli_Sea_Link_Express": { color: "#a855f7", name: "Bandra-Worli Sea Link Express Route", weight: 5 },
+            "Santacruz_Chembur_Link_Road_SCLR": { color: "#f43f5e", name: "Santacruz-Chembur Link Road (SCLR East-West)", weight: 4 },
+            "Eastern_Freeway_Highspeed": { color: "#14b8a6", name: "Eastern Freeway Highspeed Bypass", weight: 4 }
         };
 
         function renderHospitalPins(hospitals) {
+            if (!hospitalLayerGroup) return;
             hospitalLayerGroup.clearLayers();
             hospitals.forEach(h => {
-                const isApex = h.id === "AIIMS_Nagpur" || h.id === "GMC_Nagpur" || h.id === "Kingsway_Hospitals";
-                const badgeColor = isApex ? "bg-emerald-500 shadow-emerald-500/80" : "bg-sky-500 shadow-sky-500/80";
+                const isApex = h.id === "KEM_Hospital_Parel" || h.id === "Sion_Hospital_LTMMC" || h.id === "Sir_JJ_Hospital_Byculla" || (h.tier && h.tier.includes("APEX"));
+                const badgeColor = h.id === "KEM_Hospital_Parel" ? "bg-amber-500 shadow-amber-500/80 ring-2 ring-white" : (isApex ? "bg-emerald-500 shadow-emerald-500/80" : "bg-sky-500 shadow-sky-500/80");
+                const iconSymbol = h.id === "KEM_Hospital_Parel" ? "👑" : "🏥";
                 const markerIcon = L.divIcon({
                     className: 'custom-hosp',
-                    html: `<div class="h-6 w-6 rounded-full ${badgeColor} border-2 border-zinc-900 flex items-center justify-center text-white font-black text-[10px] shadow-lg transition-transform hover:scale-125 cursor-pointer">🏥</div>`,
+                    html: `<div class="h-6 w-6 rounded-full ${badgeColor} border-2 border-zinc-900 flex items-center justify-center text-white font-black text-[10px] shadow-lg transition-transform hover:scale-125 cursor-pointer">${iconSymbol}</div>`,
                     iconSize: [24, 24], iconAnchor: [12, 12]
                 });
                 const m = L.marker(h.coords, { icon: markerIcon }).addTo(hospitalLayerGroup);
                 
                 const availBeds = h.icu_available ?? (h.icu_total - (h.icu_occupied || 0));
                 const oNeg = h.blood_stock ? (h.blood_stock["O-"] || 0) : 0;
-                const dieselHours = h.diesel_liters ? Math.round(h.diesel_liters / 80) : 24;
+                const dieselHours = h.diesel_liters ? Math.round(h.diesel_liters / 85) : 48;
+
+                const kemActionBtn = h.id === "KEM_Hospital_Parel" 
+                    ? `<button onclick="document.getElementById('btn-kem-blueprint').click()" class="w-full mt-1.5 px-2 py-1 rounded bg-sky-600 hover:bg-sky-500 text-white font-bold text-[10px] font-sans transition flex items-center justify-center gap-1"><span>🏥</span> VIEW KEM BLUEPRINT</button>`
+                    : `<button onclick="dispatchCorridorToHospital('${h.id}', '${h.name.replace(/'/g, "\\'")}')" class="w-full mt-1.5 px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] font-sans transition flex items-center justify-center gap-1"><span>🚨</span> LOCK AMBULANCE CORRIDOR</button>`;
 
                 const popupHtml = `
-                    <div class="font-mono text-xs p-1.5 space-y-1.5 min-w-[210px] text-zinc-200">
+                    <div class="font-mono text-xs p-1.5 space-y-1.5 min-w-[220px] text-zinc-200">
                         <div class="font-bold text-white text-[13px] border-b border-zinc-700 pb-1 flex items-center justify-between">
                             <span>${h.name}</span>
                         </div>
@@ -2003,18 +2192,17 @@ Type any authorized command below or click a quick action above to execute.</div
                             <div>ICU Avail: <strong class="text-emerald-400 font-bold">${availBeds} / ${h.icu_total} Beds</strong></div>
                             <div>O- Blood: <strong class="text-rose-400 font-bold">${oNeg} Units</strong></div>
                             <div>Genset: <strong class="text-amber-400 font-bold">${dieselHours} hrs</strong></div>
-                            <div>Grid: <strong class="text-sky-400 font-bold">${h.power_status || '230V Nominal'}</strong></div>
+                            <div>Power: <strong class="text-sky-400 font-bold">${h.power_status || '220V Nominal'}</strong></div>
                         </div>
-                        <button onclick="dispatchCorridorToHospital('${h.id}', '${h.name.replace(/'/g, "\\'")}')" class="w-full mt-1.5 px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] font-sans transition flex items-center justify-center gap-1">
-                            <span>🚨</span> LOCK AMBULANCE CORRIDOR
-                        </button>
+                        ${kemActionBtn}
                     </div>
                 `;
-                m.bindPopup(popupHtml, { maxWidth: 260 });
+                m.bindPopup(popupHtml, { maxWidth: 280 });
             });
         }
 
         function renderCorridorArteries(corridors) {
+            if (!corridorsLayerGroup) return;
             corridorsLayerGroup.clearLayers();
             corridorPolylines = {};
 
@@ -2022,11 +2210,12 @@ Type any authorized command below or click a quick action above to execute.</div
                 const conf = CORRIDOR_COLOR_MAP[cId] || { color: "#38bdf8", name: (cData && cData.name) || cId, weight: 4 };
                 const coords = Array.isArray(cData) ? cData : ((cData && cData.coordinates) ? cData.coordinates : []);
                 if (coords && coords.length > 0) {
+                    const isFlyover = cId.includes("Lalbaug") || cId.includes("Expressway") || cId.includes("Sea_Link");
                     const poly = L.polyline(coords, {
                         color: conf.color,
                         weight: conf.weight,
-                        opacity: 0.85,
-                        dashArray: cId === "Wardha_Road_Expressway" ? null : "8, 4"
+                        opacity: 0.88,
+                        dashArray: isFlyover ? null : "8, 4"
                     }).addTo(corridorsLayerGroup);
                     
                     const distKm = (cData && cData.distance_km) ? cData.distance_km : (Math.round(coords.length * 1.5 * 10) / 10);
@@ -2035,7 +2224,7 @@ Type any authorized command below or click a quick action above to execute.</div
                     poly.bindPopup(`
                         <div class="font-mono text-xs p-1">
                             <strong class="text-white">${conf.name}</strong><br>
-                            <span class="text-zinc-400">Length: ${distKm} km · Duration: ${durMin} min</span>
+                            <span class="text-zinc-400">Length: ${distKm} km · Transit Duration: ${durMin} min</span>
                         </div>
                     `);
                     corridorPolylines[cId] = { poly, data: { coordinates: coords, distance_km: distKm, duration_min: durMin }, conf };
@@ -2044,6 +2233,7 @@ Type any authorized command below or click a quick action above to execute.</div
         }
 
         function startMovingVehicles(vehicles, corridors) {
+            if (!vehiclesLayerGroup) return;
             vehiclesLayerGroup.clearLayers();
             if (vehicleAnimationTimer) clearInterval(vehicleAnimationTimer);
 
@@ -2056,7 +2246,7 @@ Type any authorized command below or click a quick action above to execute.</div
                 if (v.type === "BLOOD_RELAY") { iconSymbol = "🩸"; pulseClass = "pulse-siren-red"; }
                 else if (v.type === "MOBILE_ICU") { iconSymbol = "🏥"; pulseClass = "pulse-siren-purple"; }
 
-                const initialPos = coords.length > 0 ? coords[0] : [21.1458, 79.0882];
+                const initialPos = coords.length > 0 ? coords[0] : [18.9996, 72.8428];
                 const vIcon = L.divIcon({
                     className: 'vehicle-marker',
                     html: `<div class="h-7 w-7 rounded-full bg-zinc-950 border border-zinc-700 flex items-center justify-center text-xs shadow-xl ${pulseClass} transition-transform hover:scale-125 cursor-pointer">${iconSymbol}</div>`,
@@ -3052,16 +3242,33 @@ Type any authorized command below or click a quick action above to execute.</div
                 bDeg.className = mode === 'degraded' ? "px-3 py-1 rounded text-[11px] font-semibold bg-red-600 text-white shadow transition-all" : "px-3 py-1 rounded text-[11px] text-zinc-400 hover:text-white transition-all";
             }
 
+            const upChk = document.getElementById('uplink-toggle-checkbox');
+            const upDot = document.getElementById('uplink-dot');
+            const upLbl = document.getElementById('uplink-label');
+            const airBanner = document.getElementById('airgap-banner');
+
             if (mode === 'sovereign' || mode === 'degraded') {
                 isAirGapped = true;
-                if (currentBasemap && map.hasLayer(currentBasemap)) map.removeLayer(currentBasemap);
-                if (!map.hasLayer(offlineLayerGroup)) offlineLayerGroup.addTo(map);
+                document.body.classList.add('theme-hospital-grey');
+                if (upChk) upChk.checked = false;
+                if (upDot) upDot.className = "h-2 w-2 rounded-full bg-amber-400";
+                if (upLbl) { upLbl.className = "text-amber-300"; upLbl.innerText = "UPLINK: AIR-GAPPED"; }
+                if (airBanner) airBanner.classList.remove('hidden');
+
+                if (map && currentBasemap && map.hasLayer(currentBasemap)) map.removeLayer(currentBasemap);
+                if (map && offlineLayerGroup && !map.hasLayer(offlineLayerGroup)) offlineLayerGroup.addTo(map);
                 const engineEl = document.getElementById('gis-routing-engine');
                 if (engineEl) engineEl.innerText = "AIR-GAPPED OFFLINE VECTOR GRID";
             } else {
                 isAirGapped = false;
-                if (map.hasLayer(offlineLayerGroup)) map.removeLayer(offlineLayerGroup);
-                if (currentBasemap && !map.hasLayer(currentBasemap)) currentBasemap.addTo(map);
+                document.body.classList.remove('theme-hospital-grey');
+                if (upChk) upChk.checked = true;
+                if (upDot) upDot.className = "h-2 w-2 rounded-full bg-emerald-400 animate-pulse";
+                if (upLbl) { upLbl.className = "text-emerald-300"; upLbl.innerText = "UPLINK: ONLINE"; }
+                if (airBanner) airBanner.classList.add('hidden');
+
+                if (map && offlineLayerGroup && map.hasLayer(offlineLayerGroup)) map.removeLayer(offlineLayerGroup);
+                if (map && currentBasemap && !map.hasLayer(currentBasemap)) currentBasemap.addTo(map);
                 const engineEl = document.getElementById('gis-routing-engine');
                 if (engineEl) engineEl.innerText = "OSRM ROAD NETWORK";
             }
@@ -3070,6 +3277,28 @@ Type any authorized command below or click a quick action above to execute.</div
         document.getElementById('mode-btn-connected')?.addEventListener('click', () => setSovereigntyMode('connected'));
         document.getElementById('mode-btn-sovereign')?.addEventListener('click', () => setSovereigntyMode('sovereign'));
         document.getElementById('mode-btn-degraded')?.addEventListener('click', () => setSovereigntyMode('degraded'));
+
+        // Tactile Internet Uplink Online / Air-Gapped Toggle Switch
+        document.getElementById('uplink-toggle-checkbox')?.addEventListener('change', (e) => {
+            const isOnline = e.target.checked;
+            setSovereigntyMode(isOnline ? 'connected' : 'sovereign');
+        });
+
+        // Dedicated Real-Time Threat Sentinel Trigger Button
+        document.getElementById('btn-realtime-threat')?.addEventListener('click', () => {
+            const attacks = ['tamper', 'replay', 'stale', 'spoof'];
+            const chosen = attacks[Math.floor(Math.random() * attacks.length)];
+            triggerAttackVector(chosen);
+        });
+
+        // KEM Hospital Command Apex Blueprint Modal Listeners
+        const kemModal = document.getElementById('kem-blueprint-modal');
+        document.getElementById('btn-kem-blueprint')?.addEventListener('click', () => {
+            if (kemModal) kemModal.classList.remove('hidden');
+        });
+        document.getElementById('btn-close-kem-blueprint')?.addEventListener('click', () => {
+            if (kemModal) kemModal.classList.add('hidden');
+        });
 
         // 16. Sub-GHz Radio Mesh Messenger Controller
         async function pollMeshChat() {

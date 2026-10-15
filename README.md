@@ -216,8 +216,8 @@ Navigate to `http://148.100.112.151/ui/` in your browser.
 
 | Contributor | Role & Domain | Primary Modules & Contributions |
 | :--- | :--- | :--- |
-| **Anshika Tripathi** | **Pair 2: Data Logic & ML Engine** | • Synthetic 10k Hospital Dataset Generation (`synthetic_hospital_data_10k.csv`)<br>• Isolation Forest Telemetry Anomaly Detector (`train_ml.py`, `anomaly_model.pkl`)<br>• TinyML Feature space matrix calibration & multi-variate sensor consensus |
-| **Yuvraj Lokhande** | **Pair 1 & 3: Mainframe Core & Architecture** | • IBM LinuxONE s390x CPACF Cryptographic Gate (`crypto_gate.py`)<br>• Sequential Chained Hash Ledger & SQLite WAL (`hash_ledger.py`)<br>• FastAPI Gateway & Shock-Absorber Queue (`main.py`, `queue_worker.py`)<br>• Command Center GIS Dashboard & Kiosk Controller (`01-command-center/`)<br>• Native Docker Engine Integration & Linux Cloud Terminal |
+| **Anshika Tripathi** | **Pair 2: Data Logic & ML Engine** | • 50,000-Event Mumbai Historical Deluge & Disaster Dataset (`mumbai_historical_disaster_dataset.csv`, `kem_hospital_historical_admissions.csv`)<br>• Isolation Forest & Random Forest Telemetry Anomaly Detector (`train_ml.py`, `anomaly_model.pkl`)<br>• TinyML Feature space matrix calibration & multi-variate sensor consensus<br>• Edge ESP32 C++ Sensor & LoRa Gateway Firmware Traces (`04-hardware-firmware/`) |
+| **Yuvraj Lokhande** | **Pair 1 & 3: Mainframe Core & Architecture** | • IBM LinuxONE s390x CPACF Cryptographic Gate (`crypto_gate.py`)<br>• Sequential Chained Hash Ledger & SQLite WAL (`hash_ledger.py`)<br>• FastAPI Gateway & Shock-Absorber Queue (`main.py`, `queue_worker.py`)<br>• Command Center GIS Dashboard & Kiosk Controller with Tactical Hospital Grey Theme (`01-command-center/`)<br>• Native Docker Engine Integration & Linux Cloud Terminal |
 
 ---
 

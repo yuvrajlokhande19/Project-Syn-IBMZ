@@ -159,62 +159,78 @@ def generate_local_s390x_llm(
 def generate_local_hospital_intelligence(query: str, extra_metrics: Optional[Dict[str, Any]] = None) -> str:
     """
     Onboard Local Disaster & Clinical Knowledge Engine (100% Air-Gapped s390x).
-    Provides rich, domain-grounded intelligence regarding Nagpur's hospitals,
-    bed vacancies, trauma facilities, blood supply, evacuation corridors,
-    and architectural status (including Jev AI / TypeSafe integration).
+    Provides rich, domain-grounded intelligence regarding Mumbai Metropolitan Region (MMR)
+    and KEM Hospital Command Apex, bed vacancies, trauma facilities, blood supply,
+    evacuation corridors, and architectural status.
     """
     q = query.lower().strip()
     metrics = extra_metrics or {}
     flood_idx = metrics.get("flood_index", 0.12)
-    blood_val = metrics.get("blood_units_o_neg", 80)
-    diesel_val = metrics.get("diesel_fuel_liters", 2500)
+    blood_val = metrics.get("blood_units_o_neg", 120)
+    diesel_val = metrics.get("diesel_fuel_liters", 8500)
 
-    # 1. AIIMS / AIMS / All India Institute of Medical Sciences
-    if any(k in q for k in ("aims", "aiims", "mihan", "all india")):
+    # 1. KEM Hospital & Seth GS Medical College (Command Apex)
+    if any(k in q for k in ("kem", "king edward", "seth gs", "parel")):
         return (
-            "🏥 *AIIMS NAGPUR // APEX TERTIARY CARE INSTITUTE*\n"
-            "• *Campus:* MIHAN SEZ Sector 20, South Nagpur (Coords: 21.0560° N, 79.0435° E).\n"
-            "• *Sanctioned Capacity:* 750 Inpatient Beds across 19 Super-Specialty departments.\n"
-            "• *Intensive Care:* 50+ Critical Care beds (Trauma ICU, Medical ICU, Surgical ICU, Neonatal ICU).\n"
-            "• *Emergency & Trauma:* 24/7 Level-1 Emergency Resuscitation Bay with dedicated acute cardiac and neuro-trauma surgical suites.\n"
-            "• *Critical Resources:* Dedicated Onsite Oxygen Generation Plant (1,000 LPM capacity), Central Blood Bank with Apheresis & Cryo-storage, and 2,500 kVA backup genset.\n"
-            "• *Disaster Corridor:* Elevated Wardha Road Expressway Bypass connects GMC/City Center directly to AIIMS (18.5 min transit), protected from Nag River lowlands."
+            "🏥 *KEM HOSPITAL & SETH G.S. MEDICAL COLLEGE // COMMAND APEX*\n"
+            "• *Campus:* Acharya Donde Marg, Parel, Mumbai (Coords: 18.9996° N, 72.8428° E).\n"
+            "• *Sanctioned Capacity:* 1,800+ Inpatient Beds across 39 Super-Specialty departments.\n"
+            "• *Intensive Care:* 180+ Critical Care beds (SICU: 40, MICU: 50, PICU: 30, Level-1 Trauma ICU: 60).\n"
+            "• *Emergency Infrastructure:* 24/7 Level-1 Emergency Resuscitation Complex with 18 Modular Surgical Theatres.\n"
+            "• *Cryogenic Oxygen Plant:* 13,000 Liters liquid medical oxygen tank operating at 4.2 bar nominal.\n"
+            "• *Power Substation:* Dual 22kV BEST feeders (Parel Substation Feeder A & B) backed by 8,500L diesel genset (74h autonomy).\n"
+            "• *Disaster Corridor:* Elevated Lalbaug Flyover Green Corridor links directly to Sir JJ Hospital and Dr. Ambedkar Road."
         )
 
-    # 2. GMC / GMCH / Government Medical College
-    if any(k in q for k in ("gmc", "gmch", "government medical")):
+    # 2. Sion Hospital / LTMMC (Apex Trauma Hub)
+    if any(k in q for k in ("sion", "ltmmc", "lokmanya")):
         return (
-            "🏥 *GMC NAGPUR // GOVERNMENT MEDICAL COLLEGE & HOSPITAL*\n"
-            "• *Campus:* Medical Square, Ajni, Central Nagpur (Coords: 21.1284° N, 79.0991° E).\n"
-            "• *Bed Capacity:* 1,400 Inpatient Beds, including 120 ICU & High-Dependency units.\n"
-            "• *Trauma Center:* Level-1 Regional Trauma Centre, Regional Burns Center, and 24/7 Pediatric Critical Care.\n"
-            "• *Disaster Role:* Municipal coordination hub for Project Syn's 40-vehicle ambulance and civilian transit swarm.\n"
-            f"• *Current Status:* Grid Voltage 220V nominal, O-Neg Blood reserve: {blood_val} units, Diesel reserve: {diesel_val}L (48h runtime)."
+            "🏥 *SION HOSPITAL // LOKMANYA TILAK MUNICIPAL MEDICAL COLLEGE*\n"
+            "• *Campus:* Sion West, Central Mumbai Transit Junction (Coords: 19.0360° N, 72.8601° E).\n"
+            "• *Bed Capacity:* 1,400+ Inpatient Beds, including 120 Trauma & Critical Care ICU beds.\n"
+            "• *Trauma Center:* Premier Level-1 Regional Trauma Centre for Eastern & Western Express Highway casualties.\n"
+            "• *Critical Resources:* 9,500L Cryogenic Oxygen storage, Regional Blood Transfusion Center with 28 O- units.\n"
+            "• *Disaster Role:* Northern anchor node in Project Syn's Mumbai arterial green corridor."
         )
 
-    # 3. Mayo / IGGMCH / Indira Gandhi
-    if any(k in q for k in ("mayo", "iggmch", "indira gandhi")):
+    # 3. Sir J.J. Group of Hospitals (Byculla)
+    if any(k in q for k in ("jj", "sir jj", "grant medical", "byculla")):
         return (
-            "🏥 *MAYO HOSPITAL // INDIRA GANDHI GOVT MEDICAL COLLEGE*\n"
-            "• *Campus:* Central Avenue (CA) Road, Mominpura / Railway Station Corridor (Coords: 21.1528° N, 79.1001° E).\n"
-            "• *Bed Capacity:* ~600 Beds with 40 ICU units.\n"
-            "• *Trauma & Emergency:* 24/7 Casualty Resuscitation & Mass Disaster Influx Ward.\n"
-            f"• *Flood Vulnerability Alert:* Proximity to Nag River basin renders Mayo sensitive to flash floods (Current gauge: {flood_idx}m). "
-            "Dijkstra engine automatically activates Elevated Wardha Bypass when flood gauge exceeds 0.45m."
+            "🏥 *SIR J.J. GROUP OF HOSPITALS & GRANT MEDICAL COLLEGE*\n"
+            "• *Campus:* J.J. Marg, Byculla, South Mumbai (Coords: 18.9610° N, 72.8338° E).\n"
+            "• *Bed Capacity:* 2,800+ Beds (Flagship State Government Apex Referral Center).\n"
+            "• *Intensive Care:* 130 ICU beds, 11,000L Medical Oxygen cryogenic tanks, 6,000L diesel genset reserve.\n"
+            "• *Corridor Access:* Directly accessible via Lalbaug Flyover Ramp and Eastern Freeway."
         )
 
-    # 4. Lata Mangeshkar / NKP Salve
-    if any(k in q for k in ("lata", "mangeshkar", "nkp", "salve")):
+    # 4. B.Y.L. Nair Charitable Hospital (Mumbai Central)
+    if any(k in q for k in ("nair", "byl nair", "topiwala")):
         return (
-            "🏥 *LATA MANGESHKAR HOSPITAL // NKP SALVE MEDICAL INSTITUTE*\n"
-            "• *Campus:* Hingna Road, Digdoh Hills, Western Industrial Belt (Coords: 21.1250° N, 79.0550° E).\n"
-            "• *Bed Capacity:* 1,000+ Teaching Hospital Beds with 60 ICU/ICCU/SICU beds.\n"
-            "• *Trauma Center:* Level-2 Emergency & Industrial Trauma Bay, Dialysis Unit, and Component Blood Bank.\n"
-            "• *Transit Route:* Connected via Hingna Road bypass to Amravati Highway."
+            "🏥 *B.Y.L. NAIR CHARITABLE HOSPITAL & T.N. MEDICAL COLLEGE*\n"
+            "• *Campus:* Dr. A.L. Nair Road, Mumbai Central (Coords: 18.9723° N, 72.8222° E).\n"
+            "• *Bed Capacity:* 1,300+ Beds with 95 Critical Care ICU units.\n"
+            "• *Specialty:* Advanced cardiology, neurosurgery, and infectious disease triage."
         )
 
-    # 5. Wockhardt Hospital
-    if any(k in q for k in ("wockhardt", "cardiac", "heart")):
+    # 5. Lilavati Hospital & Research Centre (Bandra)
+    if any(k in q for k in ("lilavati", "bandra")):
+        return (
+            "🏥 *LILAVATI HOSPITAL & RESEARCH CENTRE*\n"
+            "• *Campus:* Bandra Reclamation, Bandra West (Coords: 19.0514° N, 72.8286° E).\n"
+            "• *Capacity:* 320 Inpatient Beds, 65 ICU beds, Advanced Catheterization Labs.\n"
+            "• *Corridor:* Instant access to Bandra-Worli Sea Link for south Mumbai rapid transit."
+        )
+
+    # 6. Legacy queries (AIIMS / GMC / Mayo)
+    if any(k in q for k in ("aims", "aiims", "gmc", "mayo")):
+        return (
+            "🏥 *PROJECT SYN MUMBAI METROPOLITAN OPERATIONAL CORE*\n"
+            "• *Command Apex:* **KEM Hospital & Seth GS Medical College, Parel** (1,800+ Beds, 180 ICU beds).\n"
+            "• *Apex Trauma:* **Sion Hospital (LTMMC)** (1,400 Beds, 120 ICU beds).\n"
+            "• *South Hub:* **Sir J.J. Hospital, Byculla** (2,800 Beds, 130 ICU beds).\n"
+            "• *West Corridor:* **Lilavati Hospital & Nanavati Max Super Specialty**.\n"
+            "• *Zero-Trust Security:* CPACF Hardware HMAC Signed, Sub-GHz P2P Mesh Active."
+        )
         return (
             "🏥 *WOCKHARDT SUPER SPECIALTY HOSPITAL*\n"
             "• *Campus:* 1643 North Ambazari Road, Shankar Nagar, Nagpur (Coords: 21.1400° N, 79.0800° E).\n"
