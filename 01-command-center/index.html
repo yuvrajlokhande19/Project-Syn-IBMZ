@@ -1110,6 +1110,9 @@
                             <a href="https://t.me/Synthcityaibot" target="_blank" class="px-2.5 py-1 rounded bg-sky-950 text-sky-300 hover:text-white border border-sky-800 text-[10px] font-bold flex items-center gap-1 transition">
                                 <span>🤖</span> @Synthcityaibot
                             </a>
+                            <button id="btn-broadcast-all-roster" class="px-2.5 py-1 rounded bg-indigo-950 hover:bg-indigo-900 text-indigo-300 border border-indigo-800 text-[10px] font-bold flex items-center gap-1 transition">
+                                <span>📢</span> Ping All Team
+                            </button>
                             <button id="btn-refresh-tg-roster" class="px-2 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] transition">
                                 🔄 Refresh
                             </button>
@@ -3376,6 +3379,32 @@ Type any authorized command below or click a quick action above to execute.</div
         });
 
         document.getElementById('btn-refresh-tg-roster')?.addEventListener('click', loadTelegramTeamRoster);
+
+        const btnBroadcastAll = document.getElementById('btn-broadcast-all-roster');
+        if (btnBroadcastAll) {
+            btnBroadcastAll.addEventListener('click', async () => {
+                const origText = btnBroadcastAll.innerHTML;
+                btnBroadcastAll.innerHTML = "<span>⏳</span> Transmitting...";
+                btnBroadcastAll.disabled = true;
+                try {
+                    const res = await fetch('/api/telegram/broadcast-all', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: "🚨 *PROJECT SYN OPERATIONAL DISPATCH*\n\nCentral Command ping from IBM LinuxONE z16 s390x Mainframe.\nAll telemetry corridors operational." })
+                    });
+                    const d = await res.json();
+                    btnBroadcastAll.innerHTML = `<span>✅</span> Sent (${d.delivered || 0}/${d.total_roster || 6})`;
+                    loadTelegramTeamRoster();
+                } catch (e) {
+                    btnBroadcastAll.innerHTML = "<span>⚠️</span> Error";
+                } finally {
+                    setTimeout(() => {
+                        btnBroadcastAll.innerHTML = origText;
+                        btnBroadcastAll.disabled = false;
+                    }, 4000);
+                }
+            });
+        }
 
         // Populate 12-Hospital Metropolitan Logistics Grid Table
         function populateHospitalLogisticsGrid(hospitals) {

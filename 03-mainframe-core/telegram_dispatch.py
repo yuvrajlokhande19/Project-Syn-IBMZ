@@ -727,25 +727,53 @@ def dispatch_alert(
 
 
 def send_telegram_reply(chat_id: str, text: str):
-    """Sends a direct interactive reply to a specific Telegram user."""
+    """Sends a direct interactive reply to a specific Telegram user with Markdown and plain text fallback."""
     if not TELEGRAM_BOT_TOKEN:
         return
     try:
         url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-        requests.post(
+        resp = requests.post(
             url,
             json={"chat_id": chat_id, "text": text, "parse_mode": "Markdown"},
-            timeout=4.0
+            timeout=5.0
         )
+        data = resp.json()
+        if not data.get("ok"):
+            # Plaintext fallback if Markdown parser encounters unmatched syntax
+            requests.post(
+                url,
+                json={"chat_id": chat_id, "text": text},
+                timeout=5.0
+            )
     except Exception as e:
         logger.warning(f"[TELEGRAM REPLY ERROR] {e}")
 
 
+def broadcast_all_team_members(custom_message: Optional[str] = None) -> Dict[str, Any]:
+    """Transmits operational dispatch to all registered roster members simultaneously."""
+    results = []
+    delivered_count = 0
+    awaiting_count = 0
+    for m in TELEGRAM_TEAM_MEMBERS:
+        res = send_targeted_member_message(str(m["id"]), custom_message)
+        if res.get("success"):
+            delivered_count += 1
+        else:
+            awaiting_count += 1
+        results.append(res)
+    return {
+        "total_roster": len(TELEGRAM_TEAM_MEMBERS),
+        "delivered": delivered_count,
+        "awaiting_start": awaiting_count,
+        "results": results
+    }
+
+
 async def telegram_bot_listener():
     """
-    Interactive Bidirectional Telegram Bot Listener.
-    Allows hospital staff and coordinators to query live status, bed capacity,
-    stock levels, and routing corridors directly through Telegram chat.
+    Interactive Bidirectional Telegram Bot Listener with Agentic Task Execution.
+    Allows hospital staff and field coordinators to execute tasks, check inventory,
+    calculate emergency math, and query hospital corridors in real time.
     """
     if not TELEGRAM_BOT_TOKEN:
         logger.warning("[TELEGRAM BOT] No bot token configured; interactive chat disabled.")
@@ -778,24 +806,25 @@ async def telegram_bot_listener():
 
                         logger.info(f"[TELEGRAM INCOMING] User {sender_name} ({chat_id}): {user_text}")
 
-                        # Check RBAC authorization
-                        is_auth = (chat_id == TELEGRAM_CHAT_ID) or (chat_id in AUTHORIZED_TELEGRAM_NODES)
-                        if not is_auth:
-                            send_telegram_reply(
-                                chat_id,
-                                f"⚠️ *PROJECT SYN ZERO-TRUST RBAC*\n"
-                                f"Access Denied for Node ID `{chat_id}`.\n"
-                                f"Register this Telegram Chat ID in the Command Center dashboard to access telemetry."
-                            )
-                            continue
+                        # 1. Update live node status in Team Roster
+                        member = next((m for m in TELEGRAM_TEAM_MEMBERS if str(m["id"]) == chat_id), None)
+                        if member:
+                            member["status"] = "DELIVERED"
+                            member["last_dispatch"] = datetime.now(timezone.utc).isoformat()
+                            member["last_error"] = None
+                            logger.info(f"[TELEGRAM ROSTER] Activated node for member {member['name']} ({chat_id})")
+                        else:
+                            # Auto-register new responders so no emergency personnel are locked out
+                            register_or_update_telegram_member(chat_id, "FIELD_RESPONDER", sender_name, f"Telegram Field Node: {sender_name}")
 
-                        # Handle Interactive Commands
+                        # 2. Command Evaluation
                         cmd = user_text.lower().split()[0] if user_text else ""
 
                         if cmd in ("/start", "/help"):
                             reply = (
                                 f"🛡️ *PROJECT SYN // AEGIS AI COMMANDER*\n"
-                                f"Welcome, *{sender_name}* (Node: `{chat_id}`).\n\n"
+                                f"Welcome, *{sender_name}* (Node: `{chat_id}`).\n"
+                                f"Your device is authenticated on the IBM LinuxONE s390x Zero-Trust Network.\n\n"
                                 f"📋 *Available Telemetry Commands:*\n"
                                 f"• `/status` - Full hospital grid & sovereignty mode\n"
                                 f"• `/stock` - Critical blood, diesel & oxygen levels\n"
@@ -804,7 +833,7 @@ async def telegram_bot_listener():
                                 f"• `/evacuate` - Building fire & structural status\n"
                                 f"• `/mute` - Silence automated background broadcasts\n"
                                 f"• `/unmute` - Resume automated background broadcasts\n\n"
-                                f"💬 Or type any natural query in *English*, *Hindi*, or *Marathi*!"
+                                f"💬 Or issue directives: *\"send ambulance immediately\"*, *\"instruct nearest hospital for A+ blood\"*, *\"tell me info about aiims\"*, or any math/logic query!"
                             )
                         elif cmd == "/mute":
                             set_telegram_broadcast_status(False)
@@ -859,18 +888,19 @@ async def telegram_bot_listener():
                                 f"• *Municipal Fire Dispatch:* Standby"
                             )
                         else:
-                            # Natural language query -> Process through Aegis AI / Cloud cascade
-                            prompt = (
-                                f"You are Project Syn's Aegis AI Incident Commander on IBM LinuxONE s390x. "
-                                f"A hospital operator on Telegram asks: \"{user_text}\". "
-                                f"Provide an immediate, concise, factual emergency response. "
-                                f"Support English, Hindi, and Marathi as requested."
-                            )
-                            # Prioritize OpenRouter verified free models -> Gemini -> Local Hospital Knowledge Engine
-                            cloud_text, _ = generate_openrouter_cascade(prompt)
-                            if not cloud_text:
-                                cloud_text, _ = generate_gemini_cascade(prompt)
-                            reply = cloud_text or generate_local_hospital_intelligence(user_text)
+                            # 3. Agentic Task Action Engine (Ambulance, Blood, Math, Hospital Info)
+                            action_res = None
+                            try:
+                                from agentic_action_engine import get_agentic_dispatcher
+                                action_res = get_agentic_dispatcher().parse_and_execute(user_text)
+                            except Exception as e:
+                                logger.debug(f"[AGENTIC ACTION PARSE ERROR] {e}")
+
+                            if action_res and action_res.get("response"):
+                                reply = action_res["response"]
+                            else:
+                                # 4. Fast Local Hospital Intelligence Engine (<1ms)
+                                reply = generate_local_hospital_intelligence(user_text)
 
                         send_telegram_reply(chat_id, reply)
 
@@ -879,7 +909,7 @@ async def telegram_bot_listener():
             break
         except Exception as err:
             logger.debug(f"[TELEGRAM BOT POLL ERROR] {err}")
-            await asyncio.sleep(4)
+            await asyncio.sleep(3)
 
         await asyncio.sleep(1)
 

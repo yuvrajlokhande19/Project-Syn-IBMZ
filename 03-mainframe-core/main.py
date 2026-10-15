@@ -1156,6 +1156,22 @@ async def register_telegram_node(req: TelegramRegisterNodeRequest):
     return res
 
 
+class TelegramBroadcastAllRequest(BaseModel):
+    message: Optional[str] = Field(default=None, description="Optional custom operational broadcast message")
+
+
+@app.post("/api/telegram/broadcast-all")
+async def broadcast_to_entire_roster(req: Optional[TelegramBroadcastAllRequest] = None):
+    """
+    Transmits an operational dispatch to all registered roster members simultaneously.
+    Returns live delivery statistics across the team.
+    """
+    from telegram_dispatch import broadcast_all_team_members
+    custom_msg = req.message if req else None
+    return broadcast_all_team_members(custom_msg)
+
+
+
 # -----------------------------------------------------------------------------
 # Interactive Linux Cloud Terminal & Docker Execution Endpoints (IBM Z s390x)
 # -----------------------------------------------------------------------------
