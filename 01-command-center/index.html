@@ -99,7 +99,10 @@
 
         /* Tactical Dark-Grey Night-Vision Basemap & GPS Vehicle Animations */
         .tactical-night-map .leaflet-tile-pane {
-            filter: brightness(0.68) contrast(1.30) saturate(0.18) hue-rotate(180deg);
+            filter: contrast(1.12) brightness(0.96);
+        }
+        .tactical-night-map, .tactical-night-map .leaflet-container {
+            background-color: #0b0f17 !important;
         }
         .vehicle-marker {
             transition: all 1.3s cubic-bezier(0.2, 0, 0.2, 1);
@@ -659,28 +662,29 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center pb-3 border-b border-zinc-800 gap-2">
                     <div>
                         <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                            <span>🛰️</span> NAGPUR METROPOLITAN DISASTER CORRIDOR MATRIX
+                            <span>🛰️</span> MUMBAI METROPOLITAN COASTAL DISASTER CORRIDOR MATRIX
                         </h3>
-                        <p class="text-xs text-zinc-400">Dijkstra Shortest Path with Dynamic Flood Edge Weights & 6 Multi-Arterial Corridors</p>
+                        <p class="text-xs text-zinc-400">Dijkstra Shortest Path with Dynamic Flood Edge Weights & 7 Multi-Arterial Coastal Corridors</p>
                     </div>
 
                     <div class="flex items-center gap-3 text-xs font-mono">
-                        <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow shadow-emerald-500/50"></span> 12 Trauma Hospitals</span>
-                        <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-rose-500 animate-pulse"></span> 4 Moving Patrols</span>
-                        <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-sky-400"></span> 6 Road Arteries</span>
+                        <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow shadow-emerald-500/80"></span> 35 Hospitals</span>
+                        <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-rose-500 animate-pulse"></span> 40 Moving Ambulances</span>
+                        <span class="flex items-center gap-1.5"><span class="h-2.5 w-2.5 rounded-full bg-sky-400"></span> 7 Coastal Arteries</span>
                     </div>
                 </div>
 
                 <!-- Tactical Arterial Corridor Filter Buttons -->
                 <div class="flex items-center gap-1.5 py-2 overflow-x-auto text-[11px] font-mono border-b border-zinc-800/80">
                     <span class="text-zinc-500 text-[10px] uppercase font-bold mr-1">CORRIDOR SELECTION:</span>
-                    <button class="corridor-filter-btn px-2.5 py-1 rounded bg-sky-600 text-white font-semibold transition" data-corridor="ALL">🌐 ALL (6 Corridors)</button>
-                    <button class="corridor-filter-btn px-2.5 py-1 rounded bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition" data-corridor="Wardha_Road_Expressway">🟢 Wardha Rd (AIIMS)</button>
-                    <button class="corridor-filter-btn px-2.5 py-1 rounded bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition" data-corridor="Central_Avenue_Corridor">🟡 Central Ave (Mayo)</button>
-                    <button class="corridor-filter-btn px-2.5 py-1 rounded bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition" data-corridor="Ring_Road_Hingna_Artery">🟣 Inner Ring Rd (Care)</button>
-                    <button class="corridor-filter-btn px-2.5 py-1 rounded bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition" data-corridor="Amravati_Road_West">🔵 Amravati Rd (Alexis)</button>
-                    <button class="corridor-filter-btn px-2.5 py-1 rounded bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition" data-corridor="North_Koradi_Corridor">🔴 North Koradi Link</button>
-                    <button class="corridor-filter-btn px-2.5 py-1 rounded bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition" data-corridor="Dhantoli_Medical_Link">🟢 Dhantoli Bypass</button>
+                    <button class="corridor-filter-btn px-2.5 py-1 rounded bg-sky-600 text-white font-semibold transition" data-corridor="ALL">🌐 ALL (7 Corridors)</button>
+                    <button class="corridor-filter-btn px-2.5 py-1 rounded bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition" data-corridor="Bandra_Worli_Sea_Link_Express">🌊 Bandra-Worli Sea Link</button>
+                    <button class="corridor-filter-btn px-2.5 py-1 rounded bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition" data-corridor="Lalbaug_Flyover_Ambulance_Corridor">🟢 Lalbaug Flyover (KEM-JJ)</button>
+                    <button class="corridor-filter-btn px-2.5 py-1 rounded bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition" data-corridor="Dr_Ambedkar_Road_Corridor">🔵 Dr. Ambedkar Rd (KEM-Sion)</button>
+                    <button class="corridor-filter-btn px-2.5 py-1 rounded bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition" data-corridor="Western_Express_Highway">⚡ Western Express (WEH)</button>
+                    <button class="corridor-filter-btn px-2.5 py-1 rounded bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition" data-corridor="Eastern_Express_Highway">🟡 Eastern Express (EEH)</button>
+                    <button class="corridor-filter-btn px-2.5 py-1 rounded bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition" data-corridor="Santacruz_Chembur_Link_Road_SCLR">🔴 SCLR East-West</button>
+                    <button class="corridor-filter-btn px-2.5 py-1 rounded bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition" data-corridor="Eastern_Freeway_Highspeed">🟣 Eastern Freeway</button>
                 </div>
 
                 <div class="flex-1 my-2 relative rounded-lg overflow-hidden border border-zinc-800 tactical-night-map">
@@ -2100,19 +2104,20 @@ Type any authorized command below or click a quick action above to execute.</div
         let hospitalLayerGroup, corridorsLayerGroup, vehiclesLayerGroup, offlineLayerGroup;
 
         try {
-            cartoDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            const CARTO_API_KEY = 'cb1_3nqq_1_a586e19e0c11eefc021be78b';
+            cartoDark = L.tileLayer(`https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=${CARTO_API_KEY}`, {
                 maxZoom: 19,
                 subdomains: 'abcd',
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> &copy; <a href="https://carto.com/" target="_blank">CARTO</a>'
             });
 
-            cartoVoyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            cartoVoyager = L.tileLayer(`https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${CARTO_API_KEY}`, {
                 maxZoom: 19,
                 subdomains: 'abcd',
                 attribution: '&copy; OpenStreetMap &copy; CARTO'
             });
 
-            cartoLight = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            cartoLight = L.tileLayer(`https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=${CARTO_API_KEY}`, {
                 maxZoom: 19,
                 subdomains: 'abcd',
                 attribution: '&copy; OpenStreetMap &copy; CARTO'
@@ -2123,7 +2128,8 @@ Type any authorized command below or click a quick action above to execute.</div
                 attribution: '&copy; OpenStreetMap contributors'
             });
 
-            map = L.map('gisMap', { zoomControl: false, layers: [cartoDark] }).setView([18.9996, 72.8428], 12);
+            // Panoramic Mumbai Coastal View: Arabian Sea on the West, 35 Trauma Hospitals, and Trans-Harbour Corridor
+            map = L.map('gisMap', { zoomControl: false, layers: [cartoDark] }).setView([19.0400, 72.8500], 11);
             currentBasemap = cartoDark;
 
             hospitalLayerGroup = L.layerGroup().addTo(map);
@@ -2374,9 +2380,9 @@ Type any authorized command below or click a quick action above to execute.</div
                     Object.values(corridorPolylines).forEach(item => {
                         item.poly.setStyle({ opacity: 0.85, weight: item.conf.weight });
                     });
-                    map.setView([21.1458, 79.0882], 12);
+                    map.setView([19.0400, 72.8500], 11);
                     const nameEl = document.getElementById('gis-corridor-name');
-                    if (nameEl) nameEl.innerText = "All 6 Nagpur Metropolitan Corridors Active";
+                    if (nameEl) nameEl.innerText = "All 7 Mumbai Metropolitan Arteries & Coastal Corridors Active";
                 } else if (corridorPolylines[corridorKey]) {
                     Object.entries(corridorPolylines).forEach(([key, item]) => {
                         if (key === corridorKey) {
@@ -2395,11 +2401,11 @@ Type any authorized command below or click a quick action above to execute.</div
         });
 
         // Green Corridor Dispatch Trigger
-        function dispatchCorridorToHospital(hospitalId, hospitalName = "AIIMS Nagpur") {
+        function dispatchCorridorToHospital(hospitalId, hospitalName = "KEM Hospital & Seth GS (Command Apex)") {
             const destEl = document.getElementById('gis-trauma-dest');
             if (destEl) destEl.innerText = hospitalName;
 
-            loadRoadCorridor("GMC_Nagpur", hospitalId, true);
+            loadRoadCorridor("KEM_Hospital_Parel", hospitalId, true);
 
             // Switch to GIS Tab if not currently open
             const gisTab = document.querySelector('[data-tab="tab-gis"]');
@@ -3366,12 +3372,15 @@ Type any authorized command below or click a quick action above to execute.</div
         let isAirGapped = false;
         if (!offlineLayerGroup) offlineLayerGroup = L.layerGroup();
         
-        // Tactical offline vector road connections between Nagpur medical centers
+        // Tactical offline vector road connections between Mumbai medical centers
         const offlineTacticalRoads = [
-            [[21.1284, 79.0991], [21.1528, 79.1001]], // GMC to Mayo
-            [[21.1284, 79.0991], [21.1400, 79.0800]], // GMC to Wockhardt
-            [[21.1400, 79.0800], [21.1250, 79.0550]], // Wockhardt to Lata Mangeshkar
-            [[21.1284, 79.0991], [21.0560, 79.0435]]  // GMC to AIIMS Express Corridor
+            [[18.9996, 72.8428], [19.0360, 72.8601]], // KEM to Sion (Dr Ambedkar Rd)
+            [[18.9996, 72.8428], [18.9610, 72.8338]], // KEM to Sir JJ (Lalbaug Flyover)
+            [[18.9996, 72.8428], [19.0514, 72.8286]], // KEM to Lilavati (Bandra-Worli Sea Link)
+            [[19.0360, 72.8601], [19.0664, 72.8660]], // Sion to BKC Asian Heart
+            [[19.0514, 72.8286], [19.0968, 72.8407]], // Lilavati to Nanavati (WEH)
+            [[19.0968, 72.8407], [19.1312, 72.8252]], // Nanavati to Kokilaben (Link Rd)
+            [[19.0360, 72.8601], [19.0222, 73.0297]]  // Sion to Apollo Belapur (Atal Setu / Sion-Panvel)
         ];
         offlineTacticalRoads.forEach(pts => {
             L.polyline(pts, { color: '#38bdf8', weight: 3, opacity: 0.7, dashArray: '6, 6' }).addTo(offlineLayerGroup);
