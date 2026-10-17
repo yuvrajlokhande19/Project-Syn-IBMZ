@@ -1,2 +1,0 @@
-﻿# TASK 5: ADVANCED METADATA INGESTION
-Your task is to expand 	elemetry_simulator.py. The Edge AI CCTV string currently supports Flood and Green Corridor. You must add new Computer Vision scenarios (e.g., 'RIOT_DETECTED', 'AMBULANCE_CRASH') and ensure they correctly alter the traffic/congestion metrics before HMAC signing.

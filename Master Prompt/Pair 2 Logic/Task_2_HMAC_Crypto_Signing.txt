@@ -1,2 +1,0 @@
-Assignee: Member 4
-Take the telemetry stream and implement Python `hmac` + `hashlib`. Sign every packet and ensure the `nonce` and timestamp are perfectly synchronized.

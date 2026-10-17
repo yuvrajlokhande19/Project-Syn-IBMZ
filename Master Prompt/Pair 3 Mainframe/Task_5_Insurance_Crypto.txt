@@ -1,2 +1,0 @@
-﻿# TASK 5: INSURANCE LEDGER INTEGRATION
-Your task is to update hash_ledger.py in the Mainframe Core. The incoming telemetry payload now contains insurance_claim auto-filing statuses. You must ensure this field is successfully hashed into the CPACF block, proving that the financial claim is cryptographically immutable and verified.
